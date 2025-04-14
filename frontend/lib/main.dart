@@ -1,3 +1,5 @@
+import 'package:bracket_helper/core/routing/router.dart';
+import 'package:bracket_helper/ui/app_theme.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,8 +11,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Bracket Helper'))),
+    return MaterialApp.router(
+      title: 'Flutter Demo',
+      theme: appTheme,
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
