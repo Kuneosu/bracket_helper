@@ -29,7 +29,11 @@ part 'app_database.g.dart';
   daos: [TournamentDao, PlayerDao, GroupDao, MatchDao, TeamDao],
 )
 class AppDatabase extends _$AppDatabase {
+  // 일반 생성자
   AppDatabase() : super(_openConnection());
+  
+  // 테스트용 생성자
+  AppDatabase.forTesting(super.executor);
 
   @override
   int get schemaVersion => 1;
