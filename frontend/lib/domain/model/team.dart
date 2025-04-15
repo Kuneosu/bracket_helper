@@ -1,3 +1,5 @@
+// ignore_for_file: annotate_overrides
+
 import 'package:bracket_helper/domain/model/player.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

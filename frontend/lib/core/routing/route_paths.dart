@@ -5,4 +5,5 @@ abstract class RoutePaths {
   static const String match = '/match';
   static const String home = '/home';
   static const String createMatch = '/create-match';
+  static const String dbTest = '/db-test';
 }
