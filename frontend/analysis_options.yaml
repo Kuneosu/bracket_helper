@@ -11,6 +11,8 @@ analyzer:
   errors:
     annotate_overrides: ignore
 include: package:flutter_lints/flutter.yaml
+exclude:
+  - "**/*.mocks.dart"
 
 linter:
   # The lint rules applied to this project can be customized in the

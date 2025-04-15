@@ -27,7 +27,9 @@ class GetAllTournamentsUseCase {
       // 디버그 로그
       if (kDebugMode) {
         if (result.isSuccess) {
-          print('GetAllTournamentsUseCase: 토너먼트 목록 ${result.value.length}개 조회 성공');
+          print(
+            'GetAllTournamentsUseCase: 토너먼트 목록 ${result.value.length}개 조회 성공',
+          );
         } else {
           print('GetAllTournamentsUseCase: 토너먼트 목록 조회 실패 - ${result.error}');
         }
@@ -41,10 +43,7 @@ class GetAllTournamentsUseCase {
       }
 
       return Result.failure(
-        TournamentError(
-          message: '토너먼트 목록을 조회하는 중 오류가 발생했습니다.',
-          cause: e,
-        ),
+        TournamentError(message: '토너먼트 목록을 조회하는 중 오류가 발생했습니다.', cause: e),
       );
     }
   }
