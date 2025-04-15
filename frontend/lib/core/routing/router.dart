@@ -1,5 +1,6 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/presentation/create_match/create_match_screen.dart';
+import 'package:bracket_helper/presentation/db_test/db_test_screen.dart';
 import 'package:bracket_helper/presentation/home/home_screen.dart';
 import 'package:bracket_helper/presentation/main/main_screen.dart';
 import 'package:bracket_helper/presentation/match/match_screen.dart';
@@ -26,6 +27,10 @@ final router = GoRouter(
     GoRoute(
       path: RoutePaths.createMatch,
       builder: (context, state) => const CreateMatchScreen(),
+    ),
+    GoRoute(
+      path: RoutePaths.dbTest,
+      builder: (context, state) => const DbTestScreen(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {

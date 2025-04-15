@@ -1,0 +1,141 @@
+import 'package:bracket_helper/data/database/app_database.dart';
+import 'package:bracket_helper/data/dao/match_dao.dart';
+import 'package:bracket_helper/data/dao/tournament_dao.dart';
+import 'package:bracket_helper/domain/error/app_error.dart';
+import 'package:bracket_helper/domain/error/result.dart';
+import 'package:bracket_helper/domain/model/match.dart' as domain;
+import 'package:bracket_helper/domain/repository/tournament_repository.dart';
+import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
+
+class TournamentRepositoryImpl implements TournamentRepository {
+  final TournamentDao _tournamentDao;
+  final MatchDao _matchDao;
+  final AppDatabase _database;
+
+  TournamentRepositoryImpl(this._tournamentDao, this._matchDao, this._database);
+
+  @override
+  Future<Result<List<Tournament>>> fetchAllTournaments() async {
+    try {
+      final tournaments = await _tournamentDao.fetchAllTournaments();
+      return Result.success(tournaments);
+    } catch (e) {
+      debugPrint('TournamentRepositoryImpl: 토너먼트 목록 조회 실패 - $e');
+      return Result.failure(
+        DatabaseError(message: '토너먼트 목록을 불러오는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+
+  @override
+  Future<Result<int>> addTournament(TournamentsCompanion tournament) async {
+    try {
+      final id = await _tournamentDao.insertTournamentWithMatches(
+        tournament,
+        [],
+      );
+      return Result.success(id);
+    } catch (e) {
+      debugPrint('TournamentRepositoryImpl: 토너먼트 추가 실패 - $e');
+      return Result.failure(
+        DatabaseError(message: '토너먼트를 추가하는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+
+  @override
+  Future<Result<int>> addTournamentWithMatches(
+    TournamentsCompanion tournament,
+    List<domain.Match> matches,
+  ) async {
+    try {
+      final matchesCompanions =
+          matches.map((match) {
+            final teamAId = match.teamAId ?? 0;
+            final teamBId = match.teamBId ?? 0;
+
+            return MatchesCompanion(
+              tournamentId: Value(0),
+              teamAId: Value(teamAId),
+              teamBId: Value(teamBId),
+              order: match.order != null ? Value(match.order!) : const Value(0),
+              scoreA:
+                  match.scoreA != null
+                      ? Value(match.scoreA!)
+                      : const Value.absent(),
+              scoreB:
+                  match.scoreB != null
+                      ? Value(match.scoreB!)
+                      : const Value.absent(),
+            );
+          }).toList();
+
+      final id = await _tournamentDao.insertTournamentWithMatches(
+        tournament,
+        matchesCompanions,
+      );
+      return Result.success(id);
+    } catch (e) {
+      debugPrint('TournamentRepositoryImpl: 토너먼트와 매치 추가 실패 - $e');
+      return Result.failure(
+        DatabaseError(message: '토너먼트와 매치를 추가하는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+
+  @override
+  Future<Result<Tournament?>> getTournament(int id) async {
+    try {
+      final tournamentWithMatches = await _tournamentDao.fetchTournament(id);
+      return Result.success(tournamentWithMatches?.tournament);
+    } catch (e) {
+      debugPrint('TournamentRepositoryImpl: 토너먼트 정보 조회 실패 - $e');
+      return Result.failure(
+        DatabaseError(message: '토너먼트 정보를 불러오는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+
+  @override
+  Future<Result<void>> deleteTournament(int id) async {
+    try {
+      await _tournamentDao.deleteTournament(id);
+      return Result.success(null);
+    } catch (e) {
+      debugPrint('TournamentRepositoryImpl: 토너먼트 삭제 실패 - $e');
+      return Result.failure(
+        DatabaseError(message: '토너먼트를 삭제하는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+
+  @override
+  Future<Result<void>> updateTournament(TournamentsCompanion tournament) async {
+    try {
+      await (_database.update(_database.tournaments)
+        ..where((tbl) => tbl.id.equals(tournament.id.value))).write(tournament);
+      return Result.success(null);
+    } catch (e) {
+      debugPrint('TournamentRepositoryImpl: 토너먼트 업데이트 실패 - $e');
+      return Result.failure(
+        DatabaseError(message: '토너먼트 정보를 업데이트하는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+
+  @override
+  Future<Result<List<domain.Match>>> fetchMatchesByTournament(
+    int tournamentId,
+  ) async {
+    try {
+      final matches = await _matchDao.fetchMatchesByTournament(tournamentId);
+      return Result.success(matches);
+    } catch (e) {
+      debugPrint('TournamentRepositoryImpl: 토너먼트 내 매치 조회 실패 - $e');
+      return Result.failure(
+        DatabaseError(message: '토너먼트 내 매치를 불러오는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+}
