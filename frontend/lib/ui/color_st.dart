@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 abstract class CST {
   static const Color black = Color(0xFF000000);
+
   static const Color gray1 = Color(0xFF484848);
   static const Color gray2 = Color(0xFF797979);
   static const Color gray3 = Color(0xFFA9A9A9);
@@ -20,7 +21,7 @@ abstract class CST {
   static const Color secondary40 = Color(0xFFFFCE80);
   static const Color secondary20 = Color(0xFFFFE1B3);
 
-  static const Color error = Color(0xFFE94A59);
+  static const Color error = Color(0xFFFD3654);
   static const Color warning = Color(0xFFFFE1E7);
 
   static const Color success = Color(0xFF31B057);
