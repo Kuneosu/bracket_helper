@@ -50,6 +50,20 @@ final router = GoRouter(
             GoRoute(
               path: RoutePaths.savePlayer,
               builder: (context, state) => const SavePlayerRoot(),
+              routes: [
+                GoRoute(
+                  path: RoutePaths.createGroup,
+                  builder: (context, state) => const SavePlayerRoot(),
+                ),
+                GoRoute(
+                  path: RoutePaths.groupDetail,
+                  builder: (context, state) => const SavePlayerRoot(),
+                ),
+                GoRoute(
+                  path: RoutePaths.groupList,
+                  builder: (context, state) => const SavePlayerRoot(),
+                ),
+              ],
             ),
           ],
         ),

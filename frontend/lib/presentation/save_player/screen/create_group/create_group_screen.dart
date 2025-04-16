@@ -1,8 +1,10 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/core/presentation/components/default_text_field.dart';
+import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/presentation/save_player/components/group_avatar_picker.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CreateGroupScreen extends StatelessWidget {
   const CreateGroupScreen({super.key});
@@ -37,7 +39,12 @@ class CreateGroupScreen extends StatelessWidget {
               SizedBox(height: 20),
               GroupAvatarPicker(onTap: () {}),
               SizedBox(height: 40),
-              DefaultButton(text: '그룹 생성하기', onTap: () {}),
+              DefaultButton(
+                text: '그룹 생성하기',
+                onTap: () {
+                  context.go('${RoutePaths.savePlayer}${RoutePaths.groupList}');
+                },
+              ),
             ],
           ),
         ),
