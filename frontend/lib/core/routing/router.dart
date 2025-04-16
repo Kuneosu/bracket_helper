@@ -4,7 +4,7 @@ import 'package:bracket_helper/presentation/db_test/db_test_screen.dart';
 import 'package:bracket_helper/presentation/home/screen/home_root.dart';
 import 'package:bracket_helper/presentation/main/main_screen.dart';
 import 'package:bracket_helper/presentation/match/match_screen.dart';
-import 'package:bracket_helper/presentation/save_player/save_player_screen.dart';
+import 'package:bracket_helper/presentation/save_player/screen/save_player_root.dart';
 import 'package:bracket_helper/presentation/setting/setting_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -49,7 +49,7 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: RoutePaths.savePlayer,
-              builder: (context, state) => const SavePlayerScreen(),
+              builder: (context, state) => const SavePlayerRoot(),
             ),
           ],
         ),
