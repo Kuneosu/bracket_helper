@@ -2,10 +2,11 @@ import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:bracket_helper/core/routing/router.dart';
 import 'package:bracket_helper/ui/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // 의존성 설정 초기화
   await setupDependencies();
 
@@ -17,8 +18,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterNativeSplash.remove();
     return MaterialApp.router(
-      title: 'Flutter Demo',
+      title: '대진 도우미',
       theme: appTheme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
