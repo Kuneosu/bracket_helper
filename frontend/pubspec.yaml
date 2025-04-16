@@ -22,6 +22,7 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.32
   sqlite3: ^2.7.5
   mockito: ^5.4.5
+  flutter_native_splash: ^2.4.6
 
 dev_dependencies:
   flutter_test:
@@ -45,3 +46,12 @@ flutter:
         - asset: assets/font/Poppins-Regular.ttf
         - asset: assets/font/Poppins-Bold.ttf
           weight: 700
+
+flutter_native_splash:
+  color: "#129575" # 배경 색상
+  image: assets/image/logo_icon.png # 스플래시 이미지 경로
+  android: true
+  ios: true
+  android_12:
+    image: assets/image/logo_icon.png
+    icon_background_color: "#129575"
