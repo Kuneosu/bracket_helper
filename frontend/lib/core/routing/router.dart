@@ -1,7 +1,7 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/presentation/create_match/create_match_screen.dart';
 import 'package:bracket_helper/presentation/db_test/db_test_screen.dart';
-import 'package:bracket_helper/presentation/home/home_screen.dart';
+import 'package:bracket_helper/presentation/home/screen/home_root.dart';
 import 'package:bracket_helper/presentation/main/main_screen.dart';
 import 'package:bracket_helper/presentation/match/match_screen.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_screen.dart';
@@ -11,10 +11,6 @@ import 'package:go_router/go_router.dart';
 final router = GoRouter(
   initialLocation: RoutePaths.home,
   routes: [
-    GoRoute(
-      path: RoutePaths.savePlayer,
-      builder: (context, state) => const SavePlayerScreen(),
-    ),
     GoRoute(
       path: RoutePaths.match,
       builder: (context, state) => const MatchScreen(),
@@ -45,8 +41,15 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: RoutePaths.home,
-              builder: (context, state) => const HomeScreen(),
-              
+              builder: (context, state) => HomeRoot(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RoutePaths.savePlayer,
+              builder: (context, state) => const SavePlayerScreen(),
             ),
           ],
         ),
