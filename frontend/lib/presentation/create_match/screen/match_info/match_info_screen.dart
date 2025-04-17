@@ -86,6 +86,13 @@ class MatchInfoScreen extends StatelessWidget {
           SizedBox(height: 40),
           Row(
             children: [
+              DefaultButton(
+                text: '종료',
+                onTap: () {
+                  context.pop();
+                },
+                width: 70,
+              ),
               Spacer(),
               DefaultButton(
                 text: '다음',
