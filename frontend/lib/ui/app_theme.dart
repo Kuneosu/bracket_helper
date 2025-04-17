@@ -1,17 +1,25 @@
 import 'package:bracket_helper/ui/color_st.dart';
+import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 final appTheme = ThemeData(
   fontFamily: 'Poppins',
   colorScheme: ColorScheme.light(),
   scaffoldBackgroundColor: CST.white,
   useMaterial3: true,
-  textTheme: const TextTheme(
-    bodyLarge: TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.normal,
-      color: CST.labelColor,
+  appBarTheme: AppBarTheme(
+    backgroundColor: CST.primary100,
+    foregroundColor: CST.white,
+    elevation: 0,
+    systemOverlayStyle: const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
     ),
+  ),
+  textTheme: const TextTheme(
+    bodyLarge: TST.normalTextRegular
   ),
   inputDecorationTheme: const InputDecorationTheme(
     border: OutlineInputBorder(borderSide: BorderSide(color: CST.gray4)),

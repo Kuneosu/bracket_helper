@@ -49,10 +49,12 @@ flutter:
           weight: 700
 
 flutter_native_splash:
-  color: "#129575" # 배경 색상
+  # color: "#129575" # 배경 색상
+  color: "#4B89DC" # 배경 
   image: assets/image/logo_icon.png # 스플래시 이미지 경로
   android: true
   ios: true
   android_12:
     image: assets/image/logo_icon.png
-    icon_background_color: "#129575"
+    # icon_background_color: "#129575"
+    icon_background_color: "#4B89DC"
