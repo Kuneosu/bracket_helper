@@ -1,6 +1,7 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/data/database/app_database.dart';
+import 'package:bracket_helper/presentation/create_match/widgets/add_player_bottom_sheet.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class AddPlayerScreen extends StatelessWidget {
       child: Column(
         children: [
           // 상단 헤더
-          _buildHeader(players.length),
+          _buildHeader(context, players.length),
 
           // 목록 부분은 또 다른 Expanded로 감싸서 남은 공간을 차지하도록 설정
           Expanded(
@@ -101,7 +102,7 @@ class AddPlayerScreen extends StatelessWidget {
   }
 
   // 상단 헤더 위젯
-  Widget _buildHeader(int playerCount) {
+  Widget _buildHeader(BuildContext context, int playerCount) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -115,12 +116,31 @@ class AddPlayerScreen extends StatelessWidget {
           Text("참가 인원 수 : $playerCount 명", style: TST.largeTextRegular),
           DefaultButton(
             text: "선수 추가하기",
-            onTap: () {},
+            onTap: () {
+              // 바텀시트 표시
+              _showAddPlayerBottomSheet(context);
+            },
             width: 133,
             textStyle: TST.normalTextBold,
           ),
         ],
       ),
+    );
+  }
+
+  // 선수 추가 바텀시트 표시 메서드
+  void _showAddPlayerBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // 키보드가 올라올 때 바텀시트가 위로 올라가도록 설정
+      backgroundColor: Colors.transparent, // 배경을 투명하게 설정하여 모서리 둥글게 보이도록
+      builder:
+          (context) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: const AddPlayerBottomSheet(),
+          ),
     );
   }
 
@@ -144,4 +164,3 @@ class AddPlayerScreen extends StatelessWidget {
     );
   }
 }
-
