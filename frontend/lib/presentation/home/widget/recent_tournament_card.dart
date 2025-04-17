@@ -58,12 +58,12 @@ class RecentTournamentCard extends StatelessWidget {
             ),
           ),
           Container(width: 1, height: 100, color: CST.gray4),
-          SizedBox(
-            width: 39,
-            height: 100,
-            child: Center(
-              child: GestureDetector(
-                onTap: onTapDelete,
+          GestureDetector(
+            onTap: onTapDelete,
+            child: SizedBox(
+              width: 39,
+              height: 100,
+              child: Center(
                 child: Icon(
                   Icons.delete_forever_rounded,
                   color: CST.error,

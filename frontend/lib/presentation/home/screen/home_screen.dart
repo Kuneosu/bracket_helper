@@ -87,7 +87,11 @@ class HomeScreen extends StatelessWidget {
                           onTapCard: () {
                             context.push(RoutePaths.match);
                           },
-                          onTapDelete: () {},
+                          onTapDelete: () {
+                            onAction(
+                              OnTapDeleteTournament(tournaments[index].id),
+                            );
+                          },
                         ),
                       );
                     },
@@ -252,9 +256,9 @@ class HomeScreen extends StatelessWidget {
                         subtitle,
                         style: TST.smallTextRegular.copyWith(
                           color: Colors.white.withValues(alpha: 0.9),
-                          fontSize: 10,
+                          fontSize: 13,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -319,7 +323,7 @@ class HomeScreen extends StatelessWidget {
                     subtitle,
                     style: TST.smallTextRegular.copyWith(
                       color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 10,
+                      fontSize: 12,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

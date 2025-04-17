@@ -135,6 +135,7 @@ Future<void> setupDependencies() async {
   getIt.registerFactory<HomeViewModel>(
     () => HomeViewModel(
       getAllTournamentsUseCase: getIt<GetAllTournamentsUseCase>(),
+      deleteTournamentUseCase: getIt<DeleteTournamentUseCase>(),
     ),
   );
 }
