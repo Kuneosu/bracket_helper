@@ -1,8 +1,5 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
-import 'package:bracket_helper/presentation/create_match/add_player_screen.dart';
 import 'package:bracket_helper/presentation/create_match/create_match_root.dart';
-import 'package:bracket_helper/presentation/create_match/edit_match_screen.dart';
-import 'package:bracket_helper/presentation/create_match/match_info_screen.dart';
 import 'package:bracket_helper/presentation/db_test/db_test_screen.dart';
 import 'package:bracket_helper/presentation/home/screen/home_root.dart';
 import 'package:bracket_helper/presentation/main/main_screen.dart';
@@ -24,15 +21,15 @@ final router = GoRouter(
       routes: [
         GoRoute(
           path: RoutePaths.matchInfo,
-          builder: (context, state) => const MatchInfoScreen(),
+          builder: (context, state) => const CreateMatchRoot(),
         ),
         GoRoute(
           path: RoutePaths.editMatch,
-          builder: (context, state) => const EditMatchScreen(),
+          builder: (context, state) => const CreateMatchRoot(),
         ),
         GoRoute(
           path: RoutePaths.addPlayer,
-          builder: (context, state) => const AddPlayerScreen(),
+          builder: (context, state) => const CreateMatchRoot(),
         ),
       ],
     ),

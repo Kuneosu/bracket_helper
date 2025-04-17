@@ -12,16 +12,21 @@ class CreateMatchRoot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
-    final currentPageIndex = switch (location) {
-      RoutePaths.matchInfo => 0,
-      RoutePaths.addPlayer => 1,
-      RoutePaths.editMatch => 2,
-      _ => 0,
-    };
-    final body = switch (location) {
-      RoutePaths.matchInfo => const MatchInfoScreen(),
-      RoutePaths.editMatch => const EditMatchScreen(),
-      RoutePaths.addPlayer => const AddPlayerScreen(),
+
+    int currentPageIndex = 0;
+
+    if (location.endsWith(RoutePaths.matchInfo)) {
+      currentPageIndex = 0;
+    } else if (location.endsWith(RoutePaths.editMatch)) {
+      currentPageIndex = 2;
+    } else if (location.endsWith(RoutePaths.addPlayer)) {
+      currentPageIndex = 1;
+    }
+
+    final body = switch (currentPageIndex) {
+      0 => const MatchInfoScreen(),
+      1 => const AddPlayerScreen(),
+      2 => const EditMatchScreen(),
       _ => const MatchInfoScreen(),
     };
     return CreateMatchScreen(body: body, currentPageIndex: currentPageIndex);

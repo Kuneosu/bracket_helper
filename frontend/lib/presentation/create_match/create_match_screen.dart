@@ -21,7 +21,10 @@ class CreateMatchScreen extends StatelessWidget {
       ),
       body: SizedBox(
         width: double.infinity,
-        child: Column(children: [_buildProcessHeader(), body]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [_buildProcessHeader(), body],
+        ),
       ),
     );
   }
