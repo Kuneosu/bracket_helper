@@ -90,7 +90,7 @@ class MatchInfoScreen extends StatelessWidget {
               DefaultButton(
                 text: '다음',
                 onTap: () {
-                  context.pushReplacement(
+                  context.push(
                     '${RoutePaths.createMatch}${RoutePaths.addPlayer}',
                   );
                 },
