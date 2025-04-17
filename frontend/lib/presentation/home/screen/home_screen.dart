@@ -1,9 +1,11 @@
+import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/data/database/app_database.dart';
 import 'package:bracket_helper/presentation/home/widget/default_menu_card.dart';
 import 'package:bracket_helper/presentation/home/widget/recent_tournament_card.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
   final List<Tournament> tournaments;
@@ -86,7 +88,9 @@ class HomeScreen extends StatelessWidget {
                     title: "대진표\n생성하기",
                     subtitle: "복식/단식 매칭",
                     imagePath: "assets/image/logo_760.png",
-                    onTap: () {},
+                    onTap: () {
+                      context.push(RoutePaths.createMatch);
+                    },
                   ),
                   SizedBox(height: 10),
                   SizedBox(height: 20),

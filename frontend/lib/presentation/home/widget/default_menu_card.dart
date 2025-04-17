@@ -19,41 +19,44 @@ class DefaultMenuCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Container(
-        width: double.infinity,
-        height: 200,
-        padding: EdgeInsets.all(25),
-        decoration: BoxDecoration(
-          color: CST.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: CST.black.withValues(alpha: 0.1),
-              blurRadius: 6,
-              spreadRadius: 2,
-              offset: Offset(0, 0),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    subtitle,
-                    style: TST.normalTextRegular,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(title, style: TST.headerTextBold),
-                ],
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          height: 200,
+          padding: EdgeInsets.all(25),
+          decoration: BoxDecoration(
+            color: CST.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: CST.black.withValues(alpha: 0.1),
+                blurRadius: 6,
+                spreadRadius: 2,
+                offset: Offset(0, 0),
               ),
-            ),
-            Image.asset(imagePath, width: 120, height: 120),
-          ],
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      subtitle,
+                      style: TST.normalTextRegular,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(title, style: TST.headerTextBold),
+                  ],
+                ),
+              ),
+              Image.asset(imagePath, width: 120, height: 120),
+            ],
+          ),
         ),
       ),
     );
