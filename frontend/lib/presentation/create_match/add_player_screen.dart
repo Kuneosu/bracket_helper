@@ -37,9 +37,32 @@ class AddPlayerScreen extends StatelessWidget {
           // 목록 부분은 또 다른 Expanded로 감싸서 남은 공간을 차지하도록 설정
           Expanded(
             child: ListView.builder(
-              itemCount: players.length,
+              // 오버스크롤 동작 제어를 위한 physics 설정
+              physics: const ClampingScrollPhysics(),
+              itemCount: players.length + 1,
               itemBuilder: (context, index) {
-                return _buildPlayerItem(players[index], index + 1);
+                if (index == players.length) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
+                    decoration: BoxDecoration(
+                      color: CST.primary40,
+                      border: Border(bottom: BorderSide(color: CST.gray3)),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "+",
+                        style: TST.mediumTextBold.copyWith(
+                          color: CST.primary100,
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  return _buildPlayerItem(players[index], index + 1);
+                }
               },
             ),
           ),
@@ -108,7 +131,6 @@ class AddPlayerScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(bottom: BorderSide(color: CST.gray3)),
-        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
@@ -122,3 +144,4 @@ class AddPlayerScreen extends StatelessWidget {
     );
   }
 }
+

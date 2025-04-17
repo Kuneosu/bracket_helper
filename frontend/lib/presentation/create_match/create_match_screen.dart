@@ -18,6 +18,7 @@ class CreateMatchScreen extends StatelessWidget {
         title: Column(children: [Text('대진표 생성', style: TST.largeTextRegular)]),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        scrolledUnderElevation: 0,
       ),
       body: SizedBox(
         width: double.infinity,
