@@ -2,7 +2,7 @@
 // in bracket_helper/test/mock_dao/test_mock_player_dao.dart.
 // Do not manually edit this file.
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes, invalid_use_of_internal_member
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
 
 import 'package:bracket_helper/data/dao/player_dao.dart' as _i6;

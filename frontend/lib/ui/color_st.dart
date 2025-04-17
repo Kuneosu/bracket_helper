@@ -9,11 +9,17 @@ abstract class CST {
   static const Color gray4 = Color(0xFFD9D9D9);
   static const Color white = Color(0xFFFFFFFF);
 
-  static const Color primary100 = Color(0xFF129575);
-  static const Color primary80 = Color(0xFF71B1A1);
-  static const Color primary60 = Color(0xFFAFD3CA);
-  static const Color primary40 = Color(0xFFDBEBE7);
-  static const Color primary20 = Color(0xFFF6FAF9);
+  // static const Color primary100 = Color(0xFF129575);
+  // static const Color primary80 = Color(0xFF71B1A1);
+  // static const Color primary60 = Color(0xFFAFD3CA);
+  // static const Color primary40 = Color(0xFFDBEBE7);
+  // static const Color primary20 = Color(0xFFF6FAF9);
+
+  static const Color primary100 = Color(0xFF4B89DC); // 기준 색상
+  static const Color primary80 = Color(0xFF7DAAE5); // 약간 더 밝은 파란색
+  static const Color primary60 = Color(0xFFAAC7EE); // 더 밝은 파란색
+  static const Color primary40 = Color(0xFFD3E4F7); // 연한 하늘색
+  static const Color primary20 = Color(0xFFF2F8FD); // 거의 흰색에 가까운 하늘색
 
   static const Color secondary100 = Color(0xFFFF9C00);
   static const Color secondary80 = Color(0xFFFFA61A);
