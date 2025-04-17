@@ -40,6 +40,7 @@ class _DefaultTextFieldState extends State<DefaultTextField> {
     return TextField(
       controller: _controller,
       textAlign: widget.textAlign!,
+      textAlignVertical: TextAlignVertical.center,
       onChanged: widget.onChanged,
       decoration: InputDecoration(
         hintText: widget.hintText,

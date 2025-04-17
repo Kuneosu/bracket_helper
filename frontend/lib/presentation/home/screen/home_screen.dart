@@ -67,7 +67,9 @@ class HomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 10),
                     child: RecentTournamentCard(
                       tournament: tournaments[index],
-                      onTapCard: () {},
+                      onTapCard: () {
+                        context.push(RoutePaths.match);
+                      },
                       onTapDelete: () {},
                     ),
                   );
