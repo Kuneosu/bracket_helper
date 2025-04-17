@@ -55,17 +55,143 @@ class MatchScreen extends StatelessWidget {
                   // 대진표 탭 내용
                   _buildBracketTab(context, matchList, players),
                   // 현재 순위 탭 내용
-                  Center(
-                    child: Text(
-                      '현재 순위 내용이 여기에 표시됩니다',
-                      style: TST.normalTextRegular,
-                    ),
+                  _buildRankTab(players),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                bottom: 40,
+                top: 20,
+              ),
+              child: Row(
+                children: [
+                  DefaultButton(
+                    text: "섞어서 다시 돌리기",
+                    onTap: () {
+                      context.pop();
+                    },
+                    width: 150,
                   ),
+                  Spacer(),
+                  DefaultButton(text: "경기 종료", onTap: () {}, width: 150),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildRankTab(List<Player> players) {
+    final List<String> sortOptions = ["이름", "승점", "득실"];
+
+    return Column(
+      children: [
+        // 정렬 옵션 라디오 버튼
+        Row(
+          children: [
+            Spacer(),
+            RadioMenuButton(
+              value: "name",
+              onChanged: (value) {},
+              groupValue: "sort",
+              child: Text(sortOptions[0]),
+            ),
+            RadioMenuButton(
+              value: "points",
+              onChanged: (value) {},
+              groupValue: "sort",
+              child: Text(sortOptions[1]),
+            ),
+            RadioMenuButton(
+              value: "difference",
+              onChanged: (value) {},
+              groupValue: "sort",
+              child: Text(sortOptions[2]),
+            ),
+          ],
+        ),
+        // 랭킹 테이블 섹션
+        Expanded(
+          child: Row(
+            children: [
+              // 테이블 컬럼 생성
+              Expanded(
+                child: Column(
+                  children: [
+                    // 테이블 헤더
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: CST.gray3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(flex: 1, child: _buildRankItem('순위', 0)),
+                          Expanded(flex: 2, child: _buildRankItem('이름', 0)),
+                          Expanded(flex: 1, child: _buildRankItem('승', 0)),
+                          Expanded(flex: 1, child: _buildRankItem('무', 0)),
+                          Expanded(flex: 1, child: _buildRankItem('패', 0)),
+                          Expanded(flex: 1, child: _buildRankItem('승점', 0)),
+                          Expanded(flex: 1, child: _buildRankItem('득실', 0)),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    // 선수 목록
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: players.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5.0),
+                            child: Container(
+                              padding: const EdgeInsets.only(bottom: 14),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(color: CST.gray4),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(flex: 1, child: _buildRankItem('${index + 1}', 0)),
+                                  Expanded(flex: 2, child: _buildRankItem(players[index].name, 0)),
+                                  Expanded(flex: 1, child: _buildRankItem('1', 0)),
+                                  Expanded(flex: 1, child: _buildRankItem('1', 0)),
+                                  Expanded(flex: 1, child: _buildRankItem('1', 0)),
+                                  Expanded(flex: 1, child: _buildRankItem('1', 0)),
+                                  Expanded(flex: 1, child: _buildRankItem('3', 0)),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Container _buildRankItem(String text, double width) {
+    return Container(
+      width: width,
+      alignment: Alignment.center,
+      child: Text(
+        text,
+        style: TST.smallTextRegular,
+        textAlign: TextAlign.center,
       ),
     );
   }
@@ -78,6 +204,7 @@ class MatchScreen extends StatelessWidget {
   ) {
     return Column(
       children: [
+        // 매치 리스트
         Expanded(
           child: ListView.builder(
             physics: const ClampingScrollPhysics(),
@@ -85,27 +212,6 @@ class MatchScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               return _buildMatchList(index, players);
             },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(
-            left: 20,
-            right: 20,
-            bottom: 40,
-            top: 20,
-          ),
-          child: Row(
-            children: [
-              DefaultButton(
-                text: "섞어서 다시 돌리기",
-                onTap: () {
-                  context.pop();
-                },
-                width: 150,
-              ),
-              Spacer(),
-              DefaultButton(text: "경기 종료", onTap: () {}, width: 150),
-            ],
           ),
         ),
       ],
