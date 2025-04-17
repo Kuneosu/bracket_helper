@@ -1,6 +1,6 @@
-import 'package:bracket_helper/data/database/app_database.dart';
 import 'package:bracket_helper/domain/error/app_error.dart';
 import 'package:bracket_helper/domain/error/result.dart';
+import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/repository/tournament_repository.dart';
 import 'package:flutter/foundation.dart';
 
@@ -12,9 +12,9 @@ class GetAllTournamentsUseCase {
 
   /// 모든 토너먼트 목록 조회 실행
   ///
-  /// 반환값: 성공 시 [Result.success]와 함께 토너먼트 목록,
+  /// 반환값: 성공 시 [Result.success]와 함께 토너먼트 목록,s
   /// 실패 시 에러 정보를 포함한 [Result.failure]
-  Future<Result<List<Tournament>>> execute() async {
+  Future<Result<List<TournamentModel>>> execute() async {
     try {
       // 디버그 로그
       if (kDebugMode) {

@@ -98,7 +98,7 @@ class MatchInfoScreen extends StatelessWidget {
                 text: '다음',
                 onTap: () {
                   context.push(
-                    '${RoutePaths.createMatch}${RoutePaths.addPlayer}',
+                    '${RoutePaths.createTournament}${RoutePaths.addPlayer}',
                   );
                 },
                 width: 70,

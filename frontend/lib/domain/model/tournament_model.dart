@@ -2,11 +2,12 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'tournament.freezed.dart';
+part 'tournament_model.freezed.dart';
+part 'tournament_model.g.dart';
 
 @freezed
 @JsonSerializable()
-class Tournament with _$Tournament {
+class TournamentModel with _$TournamentModel {
   final int id;
   final String title;
   final DateTime date;
@@ -16,7 +17,7 @@ class Tournament with _$Tournament {
   final int gamesPerPlayer;
   final bool isDoubles;
 
-  const Tournament({
+  const TournamentModel({
     required this.id,
     required this.title,
     required this.date,
@@ -26,4 +27,9 @@ class Tournament with _$Tournament {
     this.gamesPerPlayer = 4,
     this.isDoubles = true,
   });
+
+  factory TournamentModel.fromJson(Map<String, dynamic> json) =>
+      _$TournamentModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TournamentModelToJson(this);
 }
