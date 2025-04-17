@@ -1,8 +1,8 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
-import 'package:bracket_helper/presentation/create_match/add_player_screen.dart';
+import 'package:bracket_helper/presentation/create_match/screen/add_player/add_player_screen.dart';
 import 'package:bracket_helper/presentation/create_match/create_match_screen.dart';
-import 'package:bracket_helper/presentation/create_match/edit_match_screen.dart';
-import 'package:bracket_helper/presentation/create_match/match_info_screen.dart';
+import 'package:bracket_helper/presentation/create_match/screen/edit_match/edit_match_screen.dart';
+import 'package:bracket_helper/presentation/create_match/screen/match_info/match_info_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
