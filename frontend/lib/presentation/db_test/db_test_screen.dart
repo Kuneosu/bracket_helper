@@ -20,6 +20,7 @@ import 'package:bracket_helper/domain/use_case/group/get_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/get_matches_in_tournament_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/remove_player_from_group_use_case.dart';
 import 'package:bracket_helper/domain/model/match.dart' as domain;
+import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:flutter/material.dart';
 
 class DbTestScreen extends StatefulWidget {
@@ -37,7 +38,7 @@ class _DbTestScreenState extends State<DbTestScreen>
   List<Player> _players = [];
   List<Group> _groups = [];
   List<TeamWithPlayers> _teams = [];
-  List<Tournament> _tournaments = [];
+  List<TournamentModel> _tournaments = [];
   String _statusMessage = '';
 
   // 선택한 그룹의 상세 정보
@@ -1404,7 +1405,7 @@ class _DbTestScreenState extends State<DbTestScreen>
   }
 
   // 토너먼트 삭제 다이얼로그
-  Future<void> _confirmDeleteTournament(Tournament tournament) async {
+  Future<void> _confirmDeleteTournament(TournamentModel tournament) async {
     await showDialog(
       context: context,
       builder:

@@ -4,6 +4,7 @@ import 'package:bracket_helper/data/dao/tournament_dao.dart';
 import 'package:bracket_helper/domain/error/app_error.dart';
 import 'package:bracket_helper/domain/error/result.dart';
 import 'package:bracket_helper/domain/model/match.dart' as domain;
+import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/repository/tournament_repository.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
@@ -15,11 +16,28 @@ class TournamentRepositoryImpl implements TournamentRepository {
 
   TournamentRepositoryImpl(this._tournamentDao, this._matchDao, this._database);
 
+  // 데이터베이스 Tournament 모델을 도메인 Tournament 모델로 변환
+  TournamentModel _mapToDomainTournament(Tournament dbTournament) {
+    return TournamentModel(
+      id: dbTournament.id,
+      title: dbTournament.title,
+      date: dbTournament.date,
+      winPoint: dbTournament.winPoint,
+      drawPoint: dbTournament.drawPoint,
+      losePoint: dbTournament.losePoint,
+      gamesPerPlayer: dbTournament.gamesPerPlayer,
+      isDoubles: dbTournament.isDoubles,
+    );
+  }
+
   @override
-  Future<Result<List<Tournament>>> fetchAllTournaments() async {
+  Future<Result<List<TournamentModel>>> fetchAllTournaments() async {
     try {
       final tournaments = await _tournamentDao.fetchAllTournaments();
-      return Result.success(tournaments);
+      // 데이터베이스 모델을 도메인 모델로 변환
+      final domainTournaments =
+          tournaments.map(_mapToDomainTournament).toList();
+      return Result.success(domainTournaments);
     } catch (e) {
       debugPrint('TournamentRepositoryImpl: 토너먼트 목록 조회 실패 - $e');
       return Result.failure(
@@ -85,10 +103,16 @@ class TournamentRepositoryImpl implements TournamentRepository {
   }
 
   @override
-  Future<Result<Tournament?>> getTournament(int id) async {
+  Future<Result<TournamentModel?>> getTournament(int id) async {
     try {
       final tournamentWithMatches = await _tournamentDao.fetchTournament(id);
-      return Result.success(tournamentWithMatches?.tournament);
+      if (tournamentWithMatches?.tournament != null) {
+        // 데이터베이스 모델을 도메인 모델로 변환
+        return Result.success(
+          _mapToDomainTournament(tournamentWithMatches!.tournament),
+        );
+      }
+      return Result.success(null);
     } catch (e) {
       debugPrint('TournamentRepositoryImpl: 토너먼트 정보 조회 실패 - $e');
       return Result.failure(

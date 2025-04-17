@@ -1,11 +1,11 @@
 import 'package:bracket_helper/core/utils/date_formatter.dart';
-import 'package:bracket_helper/data/database/app_database.dart';
+import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
 
 class RecentTournamentCard extends StatelessWidget {
-  final Tournament tournament;
+  final TournamentModel tournament;
   final void Function() onTapCard;
   final void Function() onTapDelete;
   const RecentTournamentCard({

@@ -16,7 +16,7 @@ final router = GoRouter(
       builder: (context, state) => const MatchRoot(),
     ),
     GoRoute(
-      path: RoutePaths.createMatch,
+      path: RoutePaths.createTournament,
       builder: (context, state) => const CreateMatchRoot(),
       routes: [
         GoRoute(
