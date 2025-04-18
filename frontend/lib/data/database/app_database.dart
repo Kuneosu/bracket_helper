@@ -36,7 +36,23 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+  
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) {
+      return m.createAll();
+    },
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        // 버전 1에서 버전 2로 업데이트: Groups 테이블에 color 컬럼 추가
+        await m.addColumn(groups, groups.color);
+      }
+    },
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
 }
 
 LazyDatabase _openConnection() {

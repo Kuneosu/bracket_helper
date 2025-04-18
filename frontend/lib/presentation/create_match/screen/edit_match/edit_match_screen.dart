@@ -1,6 +1,6 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/domain/model/match.dart';
-import 'package:bracket_helper/domain/model/player.dart';
+import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +18,11 @@ class EditMatchScreen extends StatelessWidget {
       Match(id: 2, teamAId: 3, teamBId: 4, scoreA: 3, scoreB: 4),
       Match(id: 3, teamAId: 1, teamBId: 3, scoreA: 1, scoreB: 3),
     ];
-    final List<Player> mockPlayerList = [
-      Player(id: 1, name: "홍길동"),
-      Player(id: 2, name: "이순신"),
-      Player(id: 3, name: "김유신"),
-      Player(id: 4, name: "오쌤"),
+    final List<PlayerModel> mockPlayerList = [
+      PlayerModel(id: 1, name: "홍길동"),
+      PlayerModel(id: 2, name: "이순신"),
+      PlayerModel(id: 3, name: "김유신"),
+      PlayerModel(id: 4, name: "오쌤"),
     ];
     return Expanded(
       child: Column(
@@ -114,7 +114,7 @@ class EditMatchScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMatchList(int index, List<Player> playerList) {
+  Widget _buildMatchList(int index, List<PlayerModel> playerList) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

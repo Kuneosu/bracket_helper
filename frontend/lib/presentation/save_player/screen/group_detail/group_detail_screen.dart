@@ -31,11 +31,13 @@ class GroupDetailScreen extends StatelessWidget {
                 SquareIconMenu(
                   title: "선수 추가하기",
                   imagePath: "assets/image/persons.png",
+                  onTap: () {},
                 ),
                 SizedBox(width: 20),
                 SquareIconMenu(
                   title: "관리",
                   imagePath: "assets/image/setting.png",
+                  onTap: () {},
                 ),
               ],
             ),

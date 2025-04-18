@@ -35,11 +35,17 @@ class GroupListScreen extends StatelessWidget {
                   SquareIconMenu(
                     title: '그룹 생성',
                     imagePath: 'assets/image/add.png',
+                    onTap: () {
+                      context.push(
+                        '${RoutePaths.savePlayer}${RoutePaths.createGroup}',
+                      );
+                    },
                   ),
                   SizedBox(width: 20),
                   SquareIconMenu(
                     title: '관리',
                     imagePath: 'assets/image/setting.png',
+                    onTap: () {},
                   ),
                 ],
               ),
@@ -58,7 +64,9 @@ class GroupListScreen extends StatelessWidget {
                     child: GroupListItem(
                       group: groups[index],
                       onTap: () {
-                        context.push('${RoutePaths.savePlayer}${RoutePaths.groupDetail}');
+                        context.push(
+                          '${RoutePaths.savePlayer}${RoutePaths.groupDetail}',
+                        );
                       },
                       onRemoveTap: () {},
                       isEditMode: isEditMode,

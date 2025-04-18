@@ -1,4 +1,6 @@
+import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
+import 'package:bracket_helper/presentation/save_player/save_player_view_model.dart';
 import 'package:bracket_helper/presentation/save_player/screen/create_group/create_group_root.dart';
 import 'package:bracket_helper/presentation/save_player/screen/group_detail/group_detail_root.dart';
 import 'package:bracket_helper/presentation/save_player/screen/group_list/group_list_root.dart';
@@ -11,27 +13,60 @@ class SavePlayerRoot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = getIt<SavePlayerViewModel>();
     // 현재 URL에서 마지막 경로 부분을 추출
     final location = GoRouterState.of(context).matchedLocation;
-    
-    String title = '그룹 정보';
-    Widget body = const CreateGroupRoot();
-    bool showBackButton = false;
-    
-    if (location.endsWith(RoutePaths.groupList)) {
-      title = '그룹 목록';
-      body = const GroupListRoot();
-      showBackButton = false;
-    } else if (location.endsWith(RoutePaths.groupDetail)) {
-      title = '그룹 상세';
-      body = const GroupDetailRoot();
-      showBackButton = true;
-    }
-    
-    return SavePlayerScreen(
-      title: title, 
-      body: body,
-      showBackButton: showBackButton,
+
+    return ListenableBuilder(
+      listenable: viewModel,
+      builder: (context, child) {
+        String title = '그룹 생성';
+        Widget body;
+        bool showBackButton = false;
+
+        // 선택된 색상 계산 (기본값: 파란색)
+        final selectedColor =
+            viewModel.state.selectedGroupColor != null
+                ? Color(viewModel.state.selectedGroupColor!)
+                : Colors.blue;
+
+        // 그룹 생성 화면 생성
+        final createGroupRoot = CreateGroupRoot(
+          isGroupNameValid: viewModel.state.isGroupNameValid,
+          selectedColor: selectedColor,
+          onAction: (action) => viewModel.onAction(action),
+        );
+
+        if (viewModel.state.groups.isEmpty) {
+          title = '그룹 생성';
+          body = createGroupRoot;
+          showBackButton = false;
+        } else {
+          title = '그룹 목록';
+          body = const GroupListRoot();
+          showBackButton = false;
+        }
+
+        if (location.endsWith(RoutePaths.groupList)) {
+          title = '그룹 목록';
+          body = const GroupListRoot();
+          showBackButton = false;
+        } else if (location.endsWith(RoutePaths.groupDetail)) {
+          title = '그룹 상세';
+          body = const GroupDetailRoot();
+          showBackButton = true;
+        } else if (location.endsWith(RoutePaths.createGroup)) {
+          title = '그룹 생성';
+          body = createGroupRoot;
+          showBackButton = true;
+        }
+
+        return SavePlayerScreen(
+          title: title,
+          body: body,
+          showBackButton: showBackButton,
+        );
+      },
     );
   }
 }
