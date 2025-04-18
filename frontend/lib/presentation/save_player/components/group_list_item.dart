@@ -56,7 +56,7 @@ class _GroupListItemState extends State<GroupListItem>
     if (oldWidget.group.name != widget.group.name) {
       _nameController.text = widget.group.name;
     }
-    
+
     // 편집 모드가 종료될 때 이름 변경 적용 - microtask를 사용하여 빌드 중에 UI 업데이트 방지
     if (oldWidget.isEditMode && !widget.isEditMode) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -76,7 +76,7 @@ class _GroupListItemState extends State<GroupListItem>
   // 이름 변경 확인 및 적용
   void _checkAndApplyNameChange() {
     final trimmedName = _nameController.text.trim();
-    if (trimmedName.isNotEmpty && 
+    if (trimmedName.isNotEmpty &&
         trimmedName != widget.group.name &&
         widget.onRename != null) {
       widget.onRename!(trimmedName);
@@ -94,153 +94,156 @@ class _GroupListItemState extends State<GroupListItem>
     // 빌드 단계에서 호출될 경우를 대비해 microtask로 지연시켜 실행
     Future.microtask(() {
       if (!context.mounted) return;
-      
+
       showDialog(
         context: context,
-        builder: (dialogContext) => Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: CST.white,
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: CST.black.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 상단 아이콘
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: CST.error.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.delete_forever,
-                    color: CST.error,
-                    size: 36,
-                  ),
-                ),
-                const SizedBox(height: 15),
-                
-                // 제목
-                Text(
-                  '그룹 삭제',
-                  style: TST.normalTextBold.copyWith(color: CST.gray1),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 15),
-                
-                // 내용
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: TST.smallTextRegular.copyWith(color: CST.gray2),
-                    children: [
-                      TextSpan(
-                        text: '"${widget.group.name}" ',
-                        style: TST.smallTextBold.copyWith(color: CST.error),
-                      ),
-                      const TextSpan(text: '그룹을 삭제하시겠습니까?'),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                
-                // 경고 메시지
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: CST.error.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.warning_amber_rounded,
-                        color: CST.error,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '이 작업은 되돌릴 수 없으며 그룹 내 모든 연결 정보가 삭제됩니다.',
-                          style: TST.smallerTextRegular.copyWith(color: CST.error),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 25),
-                
-                // 버튼
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // 취소 버튼
-                    ElevatedButton(
-                      onPressed: () => Navigator.of(dialogContext).pop(),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: CST.gray2,
-                        backgroundColor: CST.gray4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                      ),
-                      child: Text(
-                        '취소',
-                        style: TST.smallTextBold.copyWith(color: CST.gray1),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    
-                    // 삭제 버튼
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(dialogContext).pop();
-                        // 삭제 액션 호출
-                        widget.onRemoveTap();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: CST.white,
-                        backgroundColor: CST.error,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                      ),
-                      child: Text(
-                        '삭제',
-                        style: TST.smallTextBold.copyWith(color: CST.white),
-                      ),
+        builder:
+            (dialogContext) => Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: CST.white,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CST.black.withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
                     ),
                   ],
                 ),
-              ],
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 상단 아이콘
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: CST.error.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.delete_forever,
+                        color: CST.error,
+                        size: 36,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
+                    // 제목
+                    Text(
+                      '그룹 삭제',
+                      style: TST.normalTextBold.copyWith(color: CST.gray1),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 15),
+
+                    // 내용
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: TST.smallTextRegular.copyWith(color: CST.gray2),
+                        children: [
+                          TextSpan(
+                            text: '"${widget.group.name}" ',
+                            style: TST.smallTextBold.copyWith(color: CST.error),
+                          ),
+                          const TextSpan(text: '그룹을 삭제하시겠습니까?'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // 경고 메시지
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: CST.error.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            color: CST.error,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '이 작업은 되돌릴 수 없으며 그룹 내 모든 연결 정보가 삭제됩니다.',
+                              style: TST.smallerTextRegular.copyWith(
+                                color: CST.error,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+
+                    // 버튼
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // 취소 버튼
+                        ElevatedButton(
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: CST.gray2,
+                            backgroundColor: CST.gray4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                          ),
+                          child: Text(
+                            '취소',
+                            style: TST.smallTextBold.copyWith(color: CST.gray1),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+
+                        // 삭제 버튼
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                            // 삭제 액션 호출
+                            widget.onRemoveTap();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: CST.white,
+                            backgroundColor: CST.error,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                          ),
+                          child: Text(
+                            '삭제',
+                            style: TST.smallTextBold.copyWith(color: CST.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
       );
     });
   }
@@ -249,174 +252,219 @@ class _GroupListItemState extends State<GroupListItem>
   void _showColorPickerDialog(BuildContext context) {
     // 현재 그룹 색상
     Color selectedColor = widget.group.color ?? CST.primary60;
-    
+
     // 빌드 단계에서 호출될 경우를 대비해 microtask로 지연시켜 실행
     Future.microtask(() {
       if (!context.mounted) return;
-      
+
       showDialog(
         context: context,
-        builder: (dialogContext) => Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: StatefulBuilder(
-            builder: (context, setState) => Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: CST.white,
-                shape: BoxShape.rectangle,
+        builder:
+            (dialogContext) => Dialog(
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: CST.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // 상단 아이콘
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: selectedColor.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.color_lens,
-                      color: selectedColor,
-                      size: 36,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  
-                  // 제목
-                  Text(
-                    '그룹 색상 변경',
-                    style: TST.normalTextBold.copyWith(color: CST.gray1),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 15),
-                  
-                  // 색상 선택 영역
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    alignment: WrapAlignment.center,
-                    children: [
-                      // 기본 색상 목록
-                      _buildColorOption(CST.primary100, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(CST.primary80, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(CST.primary60, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(CST.secondary100, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(CST.secondary80, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(CST.secondary60, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(Colors.purple, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(Colors.teal, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(Colors.green, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(Colors.red, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(Colors.deepOrange, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                      _buildColorOption(Colors.brown, selectedColor, (color) {
-                        setState(() => selectedColor = color);
-                      }),
-                    ],
-                  ),
-                  const SizedBox(height: 25),
-                  
-                  // 버튼
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // 취소 버튼
-                      ElevatedButton(
-                        onPressed: () => Navigator.of(dialogContext).pop(),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: CST.gray2,
-                          backgroundColor: CST.gray4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              child: StatefulBuilder(
+                builder:
+                    (context, setState) => Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: CST.white,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: CST.black.withValues(alpha: 0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
                           ),
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
-                          ),
-                        ),
-                        child: Text(
-                          '취소',
-                          style: TST.smallTextBold.copyWith(color: CST.gray1),
-                        ),
+                        ],
                       ),
-                      const SizedBox(width: 16),
-                      
-                      // 변경 버튼
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(dialogContext).pop();
-                          // 색상 변경 액션 호출
-                          if (widget.onUpdateColor != null) {
-                            widget.onUpdateColor!(selectedColor);
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: CST.white,
-                          backgroundColor: selectedColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // 상단 아이콘
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: selectedColor.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.color_lens,
+                              color: selectedColor,
+                              size: 36,
+                            ),
                           ),
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
+                          const SizedBox(height: 15),
+
+                          // 제목
+                          Text(
+                            '그룹 색상 변경',
+                            style: TST.normalTextBold.copyWith(
+                              color: CST.gray1,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        child: Text(
-                          '변경',
-                          style: TST.smallTextBold.copyWith(color: CST.white),
-                        ),
+                          const SizedBox(height: 15),
+
+                          // 색상 선택 영역
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              // 기본 색상 목록
+                              _buildColorOption(CST.primary100, selectedColor, (
+                                color,
+                              ) {
+                                setState(() => selectedColor = color);
+                              }),
+                              _buildColorOption(CST.primary80, selectedColor, (
+                                color,
+                              ) {
+                                setState(() => selectedColor = color);
+                              }),
+                              _buildColorOption(CST.primary60, selectedColor, (
+                                color,
+                              ) {
+                                setState(() => selectedColor = color);
+                              }),
+                              _buildColorOption(
+                                CST.secondary100,
+                                selectedColor,
+                                (color) {
+                                  setState(() => selectedColor = color);
+                                },
+                              ),
+                              _buildColorOption(
+                                CST.secondary80,
+                                selectedColor,
+                                (color) {
+                                  setState(() => selectedColor = color);
+                                },
+                              ),
+                              _buildColorOption(
+                                CST.secondary60,
+                                selectedColor,
+                                (color) {
+                                  setState(() => selectedColor = color);
+                                },
+                              ),
+                              _buildColorOption(Colors.purple, selectedColor, (
+                                color,
+                              ) {
+                                setState(() => selectedColor = color);
+                              }),
+                              _buildColorOption(Colors.teal, selectedColor, (
+                                color,
+                              ) {
+                                setState(() => selectedColor = color);
+                              }),
+                              _buildColorOption(Colors.green, selectedColor, (
+                                color,
+                              ) {
+                                setState(() => selectedColor = color);
+                              }),
+                              _buildColorOption(Colors.red, selectedColor, (
+                                color,
+                              ) {
+                                setState(() => selectedColor = color);
+                              }),
+                              _buildColorOption(
+                                Colors.deepOrange,
+                                selectedColor,
+                                (color) {
+                                  setState(() => selectedColor = color);
+                                },
+                              ),
+                              _buildColorOption(Colors.brown, selectedColor, (
+                                color,
+                              ) {
+                                setState(() => selectedColor = color);
+                              }),
+                            ],
+                          ),
+                          const SizedBox(height: 25),
+
+                          // 버튼
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // 취소 버튼
+                              ElevatedButton(
+                                onPressed:
+                                    () => Navigator.of(dialogContext).pop(),
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: CST.gray2,
+                                  backgroundColor: CST.gray4,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
+                                  ),
+                                ),
+                                child: Text(
+                                  '취소',
+                                  style: TST.smallTextBold.copyWith(
+                                    color: CST.gray1,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+
+                              // 변경 버튼
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(dialogContext).pop();
+                                  // 색상 변경 액션 호출
+                                  if (widget.onUpdateColor != null) {
+                                    widget.onUpdateColor!(selectedColor);
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: CST.white,
+                                  backgroundColor: selectedColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
+                                  ),
+                                ),
+                                child: Text(
+                                  '변경',
+                                  style: TST.smallTextBold.copyWith(
+                                    color: CST.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
+                    ),
               ),
             ),
-          ),
-        ),
       );
     });
   }
-  
+
   // 색상 선택 옵션 위젯
-  Widget _buildColorOption(Color color, Color selectedColor, Function(Color) onSelect) {
+  Widget _buildColorOption(
+    Color color,
+    Color selectedColor,
+    Function(Color) onSelect,
+  ) {
     final bool isSelected = color.toARGB32() == selectedColor.toARGB32();
-    
+
     return GestureDetector(
       onTap: () => onSelect(color),
       child: Container(
@@ -437,13 +485,10 @@ class _GroupListItemState extends State<GroupListItem>
             ),
           ],
         ),
-        child: isSelected
-            ? const Icon(
-                Icons.check,
-                color: Colors.white,
-                size: 20,
-              )
-            : null,
+        child:
+            isSelected
+                ? const Icon(Icons.check, color: Colors.white, size: 20)
+                : null,
       ),
     );
   }
@@ -514,9 +559,10 @@ class _GroupListItemState extends State<GroupListItem>
                     height: 80,
                     padding: const EdgeInsets.all(15),
                     child: InkWell(
-                      onTap: widget.isEditMode && widget.onUpdateColor != null
-                          ? () => _showColorPickerDialog(context)
-                          : null,
+                      onTap:
+                          widget.isEditMode && widget.onUpdateColor != null
+                              ? () => _showColorPickerDialog(context)
+                              : null,
                       customBorder: const CircleBorder(),
                       child: Container(
                         decoration: BoxDecoration(
@@ -531,62 +577,64 @@ class _GroupListItemState extends State<GroupListItem>
                             ),
                           ],
                         ),
-                        child: widget.isEditMode && widget.onUpdateColor != null
-                            ? Center(
-                                child: Icon(
-                                  Icons.color_lens,
-                                  color: Colors.white.withValues(alpha: 0.7),
-                                  size: 20,
-                                ),
-                              )
-                            : null,
+                        child:
+                            widget.isEditMode && widget.onUpdateColor != null
+                                ? Center(
+                                  child: Icon(
+                                    Icons.color_lens,
+                                    color: Colors.white.withValues(alpha: 0.7),
+                                    size: 20,
+                                  ),
+                                )
+                                : null,
                       ),
                     ),
                   ),
-          
+
                   const SizedBox(width: 12),
-          
+
                   // 그룹 이름 - 편집 모드에서는 텍스트 필드로 변경
                   Expanded(
-                    child: widget.isEditMode
-                        ? InkWell(
-                            onTap: () {
-                              // 포커스 설정하여 키보드 표시
-                              _nameFocusNode.requestFocus();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: CST.primary60),
-                                borderRadius: BorderRadius.circular(8),
-                                color: CST.primary20,
-                              ),
-                              child: TextField(
-                                controller: _nameController,
-                                focusNode: _nameFocusNode,
-                                style: TST.mediumTextBold.copyWith(
-                                  color: CST.primary100,
+                    child:
+                        widget.isEditMode
+                            ? InkWell(
+                              onTap: () {
+                                // 포커스 설정하여 키보드 표시
+                                _nameFocusNode.requestFocus();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
                                 ),
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.zero,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: CST.primary60),
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: CST.primary20,
                                 ),
-                                onEditingComplete: _onRenameComplete,
+                                child: TextField(
+                                  controller: _nameController,
+                                  focusNode: _nameFocusNode,
+                                  style: TST.mediumTextBold.copyWith(
+                                    color: CST.primary100,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  onEditingComplete: _onRenameComplete,
+                                ),
                               ),
+                            )
+                            : Text(
+                              widget.group.name,
+                              style: TST.mediumTextBold,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          )
-                        : Text(
-                            widget.group.name,
-                            style: TST.mediumTextBold,
-                            overflow: TextOverflow.ellipsis,
-                          ),
                   ),
-          
+
                   const SizedBox(width: 12),
-          
+
                   // 편집 모드일 때 제거 버튼, 아닐 때 플레이어 수 표시
                   widget.isEditMode
                       ? Padding(
@@ -616,6 +664,9 @@ class _GroupListItemState extends State<GroupListItem>
   }
 
   Widget _buildPlayerCountBadge() {
+    debugPrint(
+      'GroupListItem: 그룹 ${widget.group.id}(${widget.group.name}) - 선수 수: ${widget.playerCount}명 표시',
+    );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -627,7 +678,10 @@ class _GroupListItemState extends State<GroupListItem>
         children: [
           Icon(Icons.person, size: 18, color: CST.gray2),
           const SizedBox(width: 6),
-          Text(widget.playerCount.toString(), style: TST.smallTextBold.copyWith(color: CST.gray2)),
+          Text(
+            widget.playerCount.toString(),
+            style: TST.smallTextBold.copyWith(color: CST.gray2),
+          ),
         ],
       ),
     );

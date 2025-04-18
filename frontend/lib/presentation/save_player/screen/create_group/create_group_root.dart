@@ -48,11 +48,16 @@ class _CreateGroupRootState extends State<CreateGroupRoot> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('CreateGroupRoot.build - isFormValid: ${widget.isGroupNameValid}');
+    
     return CreateGroupScreen(
       groupNameController: _controller,
       isFormValid: widget.isGroupNameValid,
-      // onChanged 핸들러는 이제 컨트롤러 리스너로 대체
-      onGroupNameChanged: (_) {},
+      // TextField의 onChanged 이벤트에서도 직접 액션 호출하도록 설정
+      onGroupNameChanged: (text) {
+        debugPrint('직접 호출된 onGroupNameChanged: $text');
+        widget.onAction(SavePlayerAction.onGroupNameChanged(text));
+      },
       selectedColor: widget.selectedColor,
       onColorSelected: (color) {
         widget.onAction(SavePlayerAction.onGroupColorSelected(color));

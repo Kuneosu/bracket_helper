@@ -19,7 +19,11 @@ sealed class SavePlayerAction with _$SavePlayerAction {
   // 선수 관련 액션
   const factory SavePlayerAction.onPlayerNameChanged(String name) = OnPlayerNameChanged;
   const factory SavePlayerAction.onSavePlayer(String name, int groupId) = OnSavePlayer;
-  const factory SavePlayerAction.onDeletePlayer(int playerId) = OnDeletePlayer;
+  const factory SavePlayerAction.onDeletePlayer(int playerId, int groupId) = OnDeletePlayer;
+  const factory SavePlayerAction.onUpdatePlayer({
+    required int playerId,
+    required String newName,
+  }) = OnUpdatePlayer;
   const factory SavePlayerAction.onMovePlayerToGroup(int playerId, int groupId) = OnMovePlayerToGroup;
   
   // 그룹 리스트 화면 관련 액션
@@ -29,4 +33,7 @@ sealed class SavePlayerAction with _$SavePlayerAction {
   // 일반 액션
   const factory SavePlayerAction.onRefresh() = OnRefresh;
   const factory SavePlayerAction.onToggleEditMode() = OnToggleEditMode;
+
+  // 그룹 선택 액션
+  const factory SavePlayerAction.onSelectGroup(int groupId) = OnSelectGroup;
 }

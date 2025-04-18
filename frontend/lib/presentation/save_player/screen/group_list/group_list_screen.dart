@@ -24,6 +24,8 @@ class GroupListScreen extends StatefulWidget {
   final Function(int, String?) onUpdateGroup;
   final Function(int, Color) onUpdateColor;
   final Function(int) getPlayerCount;
+  final Function(int) onSelectGroup;
+  final VoidCallback? onRefresh;
 
   const GroupListScreen({
     super.key,
@@ -38,6 +40,8 @@ class GroupListScreen extends StatefulWidget {
     required this.onUpdateGroup,
     required this.onUpdateColor,
     required this.getPlayerCount,
+    required this.onSelectGroup,
+    this.onRefresh,
   });
 
   @override
@@ -89,6 +93,18 @@ class _GroupListScreenState extends State<GroupListScreen>
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
+  }
+
+  // 새로고침 함수
+  Future<void> _handleRefresh() async {
+    debugPrint('GroupListScreen - 화면 새로고침 시작');
+    if (widget.onRefresh != null) {
+      widget.onRefresh!();
+    }
+    // 새로고침이 완료됐다고 간주하기 위해 잠시 대기
+    await Future.delayed(const Duration(milliseconds: 500));
+    debugPrint('GroupListScreen - 화면 새로고침 완료');
+    return Future.value();
   }
 
   @override
@@ -249,14 +265,17 @@ class _GroupListScreenState extends State<GroupListScreen>
 
             // 그룹 목록 (그리드 또는 리스트)
             Expanded(
-              child:
-                  filteredGroups.isEmpty
-                      ? _buildEmptyState()
-                      : widget.isEditMode
-                      ? _buildListView(filteredGroups) // 편집 모드에서는 항상 리스트뷰
-                      : widget.isGridView
-                      ? _buildGridView(filteredGroups)
-                      : _buildListView(filteredGroups),
+              child: RefreshIndicator(
+                onRefresh: _handleRefresh,
+                color: CST.primary100,
+                child: filteredGroups.isEmpty
+                    ? _buildEmptyStateWithScrollView()
+                    : widget.isEditMode
+                    ? _buildListView(filteredGroups) // 편집 모드에서는 항상 리스트뷰
+                    : widget.isGridView
+                    ? _buildGridView(filteredGroups)
+                    : _buildListView(filteredGroups),
+              ),
             ),
 
             // 편집 모드일 때 저장 버튼
@@ -286,12 +305,31 @@ class _GroupListScreenState extends State<GroupListScreen>
     );
   }
 
+  // RefreshIndicator가 작동하기 위해 스크롤 가능한 빈 상태 위젯
+  Widget _buildEmptyStateWithScrollView() {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.6,
+        child: Center(
+          child: _buildEmptyState(),
+        ),
+      ),
+    );
+  }
+
   Widget _buildListView(List<GroupModel> groups) {
     return AnimationLimiter(
       child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
         itemCount: groups.length,
         itemBuilder: (context, index) {
           final group = groups[index];
+          final playerCount = widget.getPlayerCount(group.id);
+          debugPrint(
+            'GroupListScreen - 그룹 ${group.id}(${group.name}): 선수 $playerCount명 표시',
+          );
+
           return AnimationConfiguration.staggeredList(
             position: index,
             duration: const Duration(milliseconds: 375),
@@ -300,11 +338,21 @@ class _GroupListScreenState extends State<GroupListScreen>
               child: FadeInAnimation(
                 child: GroupListItem(
                   group: group,
-                  playerCount: widget.getPlayerCount(group.id),
+                  playerCount: playerCount,
                   onTap: () {
-                    context.push(
-                      '${RoutePaths.savePlayer}${RoutePaths.groupDetail}',
+                    // 그룹 ID 선택하고 상세 화면으로 이동
+                    widget.onSelectGroup(group.id);
+                    debugPrint(
+                      'GroupListScreen - 그룹 선택 후 화면 이동: ID=${group.id}, 이름=${group.name}',
                     );
+                    // 약간의 지연 후 화면 이동 (상태 업데이트 시간 확보)
+                    Future.microtask(() {
+                      if (context.mounted) {
+                        context.push(
+                          '${RoutePaths.savePlayer}/group-detail/${group.id}',
+                        );
+                      }
+                    });
                   },
                   onRemoveTap: () {
                     widget.onDeleteGroup(group.id);
@@ -351,6 +399,7 @@ class _GroupListScreenState extends State<GroupListScreen>
   Widget _buildGridView(List<GroupModel> groups) {
     return AnimationLimiter(
       child: GridView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 1.1,
@@ -374,11 +423,26 @@ class _GroupListScreenState extends State<GroupListScreen>
   }
 
   Widget _buildGridItem(GroupModel group) {
+    final playerCount = widget.getPlayerCount(group.id);
+    debugPrint(
+      'GroupListScreen(Grid) - 그룹 ${group.id}(${group.name}): 선수 $playerCount명 표시',
+    );
+
     return GroupGridItem(
       group: group,
-      playerCount: widget.getPlayerCount(group.id),
+      playerCount: playerCount,
       onTap: () {
-        context.push('${RoutePaths.savePlayer}${RoutePaths.groupDetail}');
+        // 그룹 ID 선택하고 상세 화면으로 이동
+        widget.onSelectGroup(group.id);
+        debugPrint(
+          'GroupListScreen - 그룹 선택 후 화면 이동: ID=${group.id}, 이름=${group.name}',
+        );
+        // 약간의 지연 후 화면 이동 (상태 업데이트 시간 확보)
+        Future.microtask(() {
+          if (context.mounted) {
+            context.push('${RoutePaths.savePlayer}/group-detail/${group.id}');
+          }
+        });
       },
     );
   }

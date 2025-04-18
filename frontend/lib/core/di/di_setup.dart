@@ -33,6 +33,7 @@ import 'package:bracket_helper/domain/use_case/group/get_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/get_matches_in_tournament_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/remove_player_from_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/update_group_use_case.dart';
+import 'package:bracket_helper/domain/use_case/player/update_player_use_case.dart';
 import 'package:bracket_helper/presentation/home/home_view_model.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_view_model.dart';
 import 'package:get_it/get_it.dart';
@@ -136,6 +137,9 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<UpdateGroupUseCase>(
     () => UpdateGroupUseCase(getIt<GroupRepository>()),
   );
+  getIt.registerLazySingleton<UpdatePlayerUseCase>(
+    () => UpdatePlayerUseCase(getIt<PlayerRepository>()),
+  );
   getIt.registerLazySingleton(
     () => CountPlayersInGroupUseCase(getIt<GroupRepository>()),
   );
@@ -154,6 +158,11 @@ Future<void> setupDependencies() async {
       countPlayersInGroupUseCase: getIt<CountPlayersInGroupUseCase>(),
       deleteGroupUseCase: getIt<DeleteGroupUseCase>(),
       updateGroupUseCase: getIt<UpdateGroupUseCase>(),
+      getGroupUseCase: getIt<GetGroupUseCase>(),
+      addPlayerToGroupUseCase: getIt<AddPlayerToGroupUseCase>(),
+      removePlayerFromGroupUseCase: getIt<RemovePlayerFromGroupUseCase>(),
+      deletePlayerUseCase: getIt<DeletePlayerUseCase>(),
+      updatePlayerUseCase: getIt<UpdatePlayerUseCase>(),
     ),
   );
 }

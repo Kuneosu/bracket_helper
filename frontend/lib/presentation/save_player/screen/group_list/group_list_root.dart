@@ -22,10 +22,32 @@ class _GroupListRootState extends State<GroupListRoot> {
   @override
   void initState() {
     super.initState();
-    // 초기화 시점에만 한 번 갱신
+    _refreshPlayerCounts();
+  }
+  
+  @override
+  void didUpdateWidget(GroupListRoot oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 그룹 목록이 변경되었을 때에도 선수 수 갱신
+    if (oldWidget.groups.length != widget.groups.length) {
+      _refreshPlayerCounts();
+    }
+  }
+  
+  // 선수 수 갱신 메서드
+  void _refreshPlayerCounts() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.viewModel.refreshPlayerCounts();
     });
+  }
+
+  // 새로고침 처리 메서드
+  void _handleRefresh() {
+    debugPrint('GroupListRoot - 새로고침 요청 처리 시작');
+    // 그룹 목록 및 선수 수 갱신 요청
+    widget.viewModel.fetchAllGroups();
+    _refreshPlayerCounts();
+    debugPrint('GroupListRoot - 새로고침 요청 처리 완료');
   }
 
   @override
@@ -84,6 +106,13 @@ class _GroupListRootState extends State<GroupListRoot> {
               ),
             );
           },
+          onSelectGroup: (groupId) {
+            debugPrint('Selected group: $groupId');
+            widget.viewModel.onAction(
+              SavePlayerAction.onSelectGroup(groupId),
+            );
+          },
+          onRefresh: _handleRefresh,
         );
       },
     );

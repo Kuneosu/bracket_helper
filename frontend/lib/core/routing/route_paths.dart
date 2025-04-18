@@ -6,7 +6,7 @@ abstract class RoutePaths {
   static const String createTournament = '/create-tournament';
   static const String dbTest = '/db-test';
   static const String createGroup = '/create-group';
-  static const String groupDetail = '/group-detail';
+  static const String groupDetail = '/group-detail/:id';
   static const String groupList = '/group-list';
   static const String matchInfo = '/match-info';
   static const String editMatch = '/edit-match';
