@@ -1,51 +1,126 @@
-import 'package:bracket_helper/core/presentation/components/default_button.dart';
-import 'package:bracket_helper/core/presentation/components/default_text_field.dart';
-import 'package:bracket_helper/core/routing/route_paths.dart';
-import 'package:bracket_helper/presentation/save_player/components/group_avatar_picker.dart';
-import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/presentation/save_player/components/action_button_row.dart';
+import 'package:bracket_helper/presentation/save_player/components/color_picker_grid.dart';
+import 'package:bracket_helper/presentation/save_player/components/form_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class CreateGroupScreen extends StatelessWidget {
-  const CreateGroupScreen({super.key});
+  final TextEditingController groupNameController;
+  final bool isFormValid;
+  final Function(String) onGroupNameChanged;
+  final Color selectedColor;
+  final Function(Color) onColorSelected;
+  final VoidCallback onSaveGroup;
+
+  const CreateGroupScreen({
+    super.key,
+    required this.groupNameController,
+    required this.isFormValid,
+    required this.onGroupNameChanged,
+    required this.selectedColor,
+    required this.onColorSelected,
+    required this.onSaveGroup,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: SizedBox(
-        width: double.infinity,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 60),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 40),
-              Image.asset('assets/image/persons.png', width: 165, height: 105),
-              SizedBox(height: 20),
-              Text(
-                '선수를 저장하려면 먼저\n그룹을 생성해주세요',
-                style: TST.mediumTextBold,
-                textAlign: TextAlign.center,
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+
+                  // 간단한 설명
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4, bottom: 16),
+                    child: Text(
+                      '그룹 정보를 입력해주세요',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                    ),
+                  ),
+
+                  // 그룹명 입력 섹션 (순서 변경)
+                  FormCard(
+                    icon: Icons.group,
+                    title: '그룹명',
+                    content: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextField(
+                          controller: groupNameController,
+                          onChanged: onGroupNameChanged,
+                          decoration: InputDecoration(
+                            hintText: '그룹명을 입력해주세요',
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 16,
+                            ),
+                          ),
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 14,
+                              color: Colors.grey[600],
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '최대 20자까지 입력 가능합니다',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // 그룹 색상 선택 섹션
+                  FormCard(
+                    icon: Icons.style,
+                    title: '그룹 색상',
+                    subtitle: '그룹을 대표할 색상을 선택하세요',
+                    content: ColorPickerGrid(
+                      selectedColor: selectedColor,
+                      onColorSelected: onColorSelected,
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // 버튼 섹션
+                  ActionButtonRow(
+                    cancelText: '생성 취소',
+                    confirmText: '그룹 생성하기',
+                    onCancel: () => context.pop(),
+                    onConfirm: onSaveGroup,
+                    isConfirmEnabled: isFormValid,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
               ),
-              SizedBox(height: 20),
-              DefaultTextField(hintText: '그룹명을 입력해주세요'),
-              SizedBox(height: 30),
-              Text(
-                '그룹을 대표하는\n사진 또는 색상을 선택해주세요',
-                style: TST.mediumTextBold,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              GroupAvatarPicker(onTap: () {}),
-              SizedBox(height: 40),
-              DefaultButton(
-                text: '그룹 생성하기',
-                onTap: () {
-                  context.go('${RoutePaths.savePlayer}${RoutePaths.groupList}');
-                },
-              ),
-            ],
+            ),
           ),
         ),
       ),

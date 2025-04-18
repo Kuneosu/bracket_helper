@@ -1,6 +1,7 @@
 import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:bracket_helper/data/database/app_database.dart';
 import 'package:bracket_helper/data/dao/team_dao.dart';
+import 'package:bracket_helper/domain/model/group_model.dart';
 import 'package:bracket_helper/domain/use_case/group/add_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/add_player_to_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/player/add_player_use_case.dart';
@@ -36,7 +37,7 @@ class _DbTestScreenState extends State<DbTestScreen>
 
   // 상태 변수
   List<Player> _players = [];
-  List<Group> _groups = [];
+  List<GroupModel> _groups = [];
   List<TeamWithPlayers> _teams = [];
   List<TournamentModel> _tournaments = [];
   String _statusMessage = '';
@@ -395,7 +396,8 @@ class _DbTestScreenState extends State<DbTestScreen>
 
                     try {
                       final result = await addGroupUseCase.execute(
-                        nameController.text,
+                        groupName: nameController.text,
+                        colorValue: Colors.blue.value,
                       );
 
                       // 디버깅 정보
@@ -1196,7 +1198,7 @@ class _DbTestScreenState extends State<DbTestScreen>
   }
 
   // 그룹 삭제 다이얼로그
-  Future<void> _confirmDeleteGroup(Group group) async {
+  Future<void> _confirmDeleteGroup(GroupModel group) async {
     await showDialog(
       context: context,
       builder:

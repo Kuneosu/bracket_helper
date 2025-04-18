@@ -50,6 +50,7 @@ final router = GoRouter(
           },
         );
       },
+      restorationScopeId: 'mainShell',
       branches: [
         StatefulShellBranch(
           routes: [
@@ -60,6 +61,7 @@ final router = GoRouter(
           ],
         ),
         StatefulShellBranch(
+          restorationScopeId: 'savePlayer',
           routes: [
             GoRoute(
               path: RoutePaths.savePlayer,

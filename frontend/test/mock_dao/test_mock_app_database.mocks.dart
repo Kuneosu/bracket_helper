@@ -5,13 +5,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i10;
 
-import 'package:bracket_helper/data/dao/group_dao.dart' as _i5;
-import 'package:bracket_helper/data/dao/match_dao.dart' as _i6;
-import 'package:bracket_helper/data/dao/player_dao.dart' as _i4;
-import 'package:bracket_helper/data/dao/team_dao.dart' as _i7;
-import 'package:bracket_helper/data/dao/tournament_dao.dart' as _i3;
-import 'package:bracket_helper/data/database/app_database.dart' as _i2;
-import 'package:drift/drift.dart' as _i8;
+import 'package:bracket_helper/data/dao/group_dao.dart' as _i6;
+import 'package:bracket_helper/data/dao/match_dao.dart' as _i7;
+import 'package:bracket_helper/data/dao/player_dao.dart' as _i5;
+import 'package:bracket_helper/data/dao/team_dao.dart' as _i8;
+import 'package:bracket_helper/data/dao/tournament_dao.dart' as _i4;
+import 'package:bracket_helper/data/database/app_database.dart' as _i3;
+import 'package:drift/drift.dart' as _i2;
 import 'package:drift/src/runtime/executor/stream_queries.dart' as _i9;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i11;
@@ -30,106 +30,106 @@ import 'package:mockito/src/dummies.dart' as _i11;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _Fake$TournamentsTable_0 extends _i1.SmartFake
-    implements _i2.$TournamentsTable {
-  _Fake$TournamentsTable_0(Object parent, Invocation parentInvocation)
+class _FakeMigrationStrategy_0 extends _i1.SmartFake
+    implements _i2.MigrationStrategy {
+  _FakeMigrationStrategy_0(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _Fake$GroupsTable_1 extends _i1.SmartFake implements _i2.$GroupsTable {
-  _Fake$GroupsTable_1(Object parent, Invocation parentInvocation)
+class _Fake$TournamentsTable_1 extends _i1.SmartFake
+    implements _i3.$TournamentsTable {
+  _Fake$TournamentsTable_1(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _Fake$PlayersTable_2 extends _i1.SmartFake implements _i2.$PlayersTable {
-  _Fake$PlayersTable_2(Object parent, Invocation parentInvocation)
+class _Fake$GroupsTable_2 extends _i1.SmartFake implements _i3.$GroupsTable {
+  _Fake$GroupsTable_2(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _Fake$PlayerGroupsTable_3 extends _i1.SmartFake
-    implements _i2.$PlayerGroupsTable {
-  _Fake$PlayerGroupsTable_3(Object parent, Invocation parentInvocation)
+class _Fake$PlayersTable_3 extends _i1.SmartFake implements _i3.$PlayersTable {
+  _Fake$PlayersTable_3(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _Fake$ParticipantsTable_4 extends _i1.SmartFake
-    implements _i2.$ParticipantsTable {
-  _Fake$ParticipantsTable_4(Object parent, Invocation parentInvocation)
+class _Fake$PlayerGroupsTable_4 extends _i1.SmartFake
+    implements _i3.$PlayerGroupsTable {
+  _Fake$PlayerGroupsTable_4(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _Fake$TeamsTable_5 extends _i1.SmartFake implements _i2.$TeamsTable {
-  _Fake$TeamsTable_5(Object parent, Invocation parentInvocation)
+class _Fake$ParticipantsTable_5 extends _i1.SmartFake
+    implements _i3.$ParticipantsTable {
+  _Fake$ParticipantsTable_5(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _Fake$MatchesTable_6 extends _i1.SmartFake implements _i2.$MatchesTable {
-  _Fake$MatchesTable_6(Object parent, Invocation parentInvocation)
+class _Fake$TeamsTable_6 extends _i1.SmartFake implements _i3.$TeamsTable {
+  _Fake$TeamsTable_6(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeTournamentDao_7 extends _i1.SmartFake implements _i3.TournamentDao {
-  _FakeTournamentDao_7(Object parent, Invocation parentInvocation)
+class _Fake$MatchesTable_7 extends _i1.SmartFake implements _i3.$MatchesTable {
+  _Fake$MatchesTable_7(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakePlayerDao_8 extends _i1.SmartFake implements _i4.PlayerDao {
-  _FakePlayerDao_8(Object parent, Invocation parentInvocation)
+class _FakeTournamentDao_8 extends _i1.SmartFake implements _i4.TournamentDao {
+  _FakeTournamentDao_8(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeGroupDao_9 extends _i1.SmartFake implements _i5.GroupDao {
-  _FakeGroupDao_9(Object parent, Invocation parentInvocation)
+class _FakePlayerDao_9 extends _i1.SmartFake implements _i5.PlayerDao {
+  _FakePlayerDao_9(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeMatchDao_10 extends _i1.SmartFake implements _i6.MatchDao {
-  _FakeMatchDao_10(Object parent, Invocation parentInvocation)
+class _FakeGroupDao_10 extends _i1.SmartFake implements _i6.GroupDao {
+  _FakeGroupDao_10(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeTeamDao_11 extends _i1.SmartFake implements _i7.TeamDao {
-  _FakeTeamDao_11(Object parent, Invocation parentInvocation)
+class _FakeMatchDao_11 extends _i1.SmartFake implements _i7.MatchDao {
+  _FakeMatchDao_11(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _Fake$AppDatabaseManager_12 extends _i1.SmartFake
-    implements _i2.$AppDatabaseManager {
-  _Fake$AppDatabaseManager_12(Object parent, Invocation parentInvocation)
+class _FakeTeamDao_12 extends _i1.SmartFake implements _i8.TeamDao {
+  _FakeTeamDao_12(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeGeneratedDatabase_13 extends _i1.SmartFake
-    implements _i8.GeneratedDatabase {
-  _FakeGeneratedDatabase_13(Object parent, Invocation parentInvocation)
+class _Fake$AppDatabaseManager_13 extends _i1.SmartFake
+    implements _i3.$AppDatabaseManager {
+  _Fake$AppDatabaseManager_13(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeDriftDatabaseOptions_14 extends _i1.SmartFake
-    implements _i8.DriftDatabaseOptions {
-  _FakeDriftDatabaseOptions_14(Object parent, Invocation parentInvocation)
+class _FakeGeneratedDatabase_14 extends _i1.SmartFake
+    implements _i2.GeneratedDatabase {
+  _FakeGeneratedDatabase_14(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeMigrationStrategy_15 extends _i1.SmartFake
-    implements _i8.MigrationStrategy {
-  _FakeMigrationStrategy_15(Object parent, Invocation parentInvocation)
+class _FakeDriftDatabaseOptions_15 extends _i1.SmartFake
+    implements _i2.DriftDatabaseOptions {
+  _FakeDriftDatabaseOptions_15(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
 class _FakeStreamQueryUpdateRules_16 extends _i1.SmartFake
-    implements _i8.StreamQueryUpdateRules {
+    implements _i2.StreamQueryUpdateRules {
   _FakeStreamQueryUpdateRules_16(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
 class _FakeDatabaseConnection_17 extends _i1.SmartFake
-    implements _i8.DatabaseConnection {
+    implements _i2.DatabaseConnection {
   _FakeDatabaseConnection_17(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeQueryExecutor_18 extends _i1.SmartFake implements _i8.QueryExecutor {
+class _FakeQueryExecutor_18 extends _i1.SmartFake implements _i2.QueryExecutor {
   _FakeQueryExecutor_18(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
@@ -141,12 +141,12 @@ class _FakeStreamQueryStore_19 extends _i1.SmartFake
 }
 
 class _FakeDatabaseConnectionUser_20 extends _i1.SmartFake
-    implements _i8.DatabaseConnectionUser {
+    implements _i2.DatabaseConnectionUser {
   _FakeDatabaseConnectionUser_20(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeMigrator_21 extends _i1.SmartFake implements _i8.Migrator {
+class _FakeMigrator_21 extends _i1.SmartFake implements _i2.Migrator {
   _FakeMigrator_21(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
@@ -156,51 +156,51 @@ class _FakeFuture_22<T1> extends _i1.SmartFake implements _i10.Future<T1> {
     : super(parent, parentInvocation);
 }
 
-class _FakeInsertStatement_23<T1 extends _i8.Table, D1> extends _i1.SmartFake
-    implements _i8.InsertStatement<T1, D1> {
+class _FakeInsertStatement_23<T1 extends _i2.Table, D1> extends _i1.SmartFake
+    implements _i2.InsertStatement<T1, D1> {
   _FakeInsertStatement_23(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeUpdateStatement_24<T extends _i8.Table, D> extends _i1.SmartFake
-    implements _i8.UpdateStatement<T, D> {
+class _FakeUpdateStatement_24<T extends _i2.Table, D> extends _i1.SmartFake
+    implements _i2.UpdateStatement<T, D> {
   _FakeUpdateStatement_24(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeSimpleSelectStatement_25<T1 extends _i8.HasResultSet, D>
+class _FakeSimpleSelectStatement_25<T1 extends _i2.HasResultSet, D>
     extends _i1.SmartFake
-    implements _i8.SimpleSelectStatement<T1, D> {
+    implements _i2.SimpleSelectStatement<T1, D> {
   _FakeSimpleSelectStatement_25(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeJoinedSelectStatement_26<FirstT extends _i8.HasResultSet, FirstD>
+class _FakeJoinedSelectStatement_26<FirstT extends _i2.HasResultSet, FirstD>
     extends _i1.SmartFake
-    implements _i8.JoinedSelectStatement<FirstT, FirstD> {
+    implements _i2.JoinedSelectStatement<FirstT, FirstD> {
   _FakeJoinedSelectStatement_26(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
 class _FakeBaseSelectStatement_27<Row> extends _i1.SmartFake
-    implements _i8.BaseSelectStatement<Row> {
+    implements _i2.BaseSelectStatement<Row> {
   _FakeBaseSelectStatement_27(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeDeleteStatement_28<T1 extends _i8.Table, D1> extends _i1.SmartFake
-    implements _i8.DeleteStatement<T1, D1> {
+class _FakeDeleteStatement_28<T1 extends _i2.Table, D1> extends _i1.SmartFake
+    implements _i2.DeleteStatement<T1, D1> {
   _FakeDeleteStatement_28(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeSelectable_29<T> extends _i1.SmartFake implements _i8.Selectable<T> {
+class _FakeSelectable_29<T> extends _i1.SmartFake implements _i2.Selectable<T> {
   _FakeSelectable_29(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
 class _FakeGenerationContext_30 extends _i1.SmartFake
-    implements _i8.GenerationContext {
+    implements _i2.GenerationContext {
   _FakeGenerationContext_30(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
@@ -208,7 +208,7 @@ class _FakeGenerationContext_30 extends _i1.SmartFake
 /// A class which mocks [AppDatabase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
+class MockAppDatabase extends _i1.Mock implements _i3.AppDatabase {
   MockAppDatabase() {
     _i1.throwOnMissingStub(this);
   }
@@ -219,181 +219,181 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
           as int);
 
   @override
-  _i2.$TournamentsTable get tournaments =>
-      (super.noSuchMethod(
-            Invocation.getter(#tournaments),
-            returnValue: _Fake$TournamentsTable_0(
-              this,
-              Invocation.getter(#tournaments),
-            ),
-          )
-          as _i2.$TournamentsTable);
-
-  @override
-  _i2.$GroupsTable get groups =>
-      (super.noSuchMethod(
-            Invocation.getter(#groups),
-            returnValue: _Fake$GroupsTable_1(this, Invocation.getter(#groups)),
-          )
-          as _i2.$GroupsTable);
-
-  @override
-  _i2.$PlayersTable get players =>
-      (super.noSuchMethod(
-            Invocation.getter(#players),
-            returnValue: _Fake$PlayersTable_2(
-              this,
-              Invocation.getter(#players),
-            ),
-          )
-          as _i2.$PlayersTable);
-
-  @override
-  _i2.$PlayerGroupsTable get playerGroups =>
-      (super.noSuchMethod(
-            Invocation.getter(#playerGroups),
-            returnValue: _Fake$PlayerGroupsTable_3(
-              this,
-              Invocation.getter(#playerGroups),
-            ),
-          )
-          as _i2.$PlayerGroupsTable);
-
-  @override
-  _i2.$ParticipantsTable get participants =>
-      (super.noSuchMethod(
-            Invocation.getter(#participants),
-            returnValue: _Fake$ParticipantsTable_4(
-              this,
-              Invocation.getter(#participants),
-            ),
-          )
-          as _i2.$ParticipantsTable);
-
-  @override
-  _i2.$TeamsTable get teams =>
-      (super.noSuchMethod(
-            Invocation.getter(#teams),
-            returnValue: _Fake$TeamsTable_5(this, Invocation.getter(#teams)),
-          )
-          as _i2.$TeamsTable);
-
-  @override
-  _i2.$MatchesTable get matches =>
-      (super.noSuchMethod(
-            Invocation.getter(#matches),
-            returnValue: _Fake$MatchesTable_6(
-              this,
-              Invocation.getter(#matches),
-            ),
-          )
-          as _i2.$MatchesTable);
-
-  @override
-  _i3.TournamentDao get tournamentDao =>
-      (super.noSuchMethod(
-            Invocation.getter(#tournamentDao),
-            returnValue: _FakeTournamentDao_7(
-              this,
-              Invocation.getter(#tournamentDao),
-            ),
-          )
-          as _i3.TournamentDao);
-
-  @override
-  _i4.PlayerDao get playerDao =>
-      (super.noSuchMethod(
-            Invocation.getter(#playerDao),
-            returnValue: _FakePlayerDao_8(this, Invocation.getter(#playerDao)),
-          )
-          as _i4.PlayerDao);
-
-  @override
-  _i5.GroupDao get groupDao =>
-      (super.noSuchMethod(
-            Invocation.getter(#groupDao),
-            returnValue: _FakeGroupDao_9(this, Invocation.getter(#groupDao)),
-          )
-          as _i5.GroupDao);
-
-  @override
-  _i6.MatchDao get matchDao =>
-      (super.noSuchMethod(
-            Invocation.getter(#matchDao),
-            returnValue: _FakeMatchDao_10(this, Invocation.getter(#matchDao)),
-          )
-          as _i6.MatchDao);
-
-  @override
-  _i7.TeamDao get teamDao =>
-      (super.noSuchMethod(
-            Invocation.getter(#teamDao),
-            returnValue: _FakeTeamDao_11(this, Invocation.getter(#teamDao)),
-          )
-          as _i7.TeamDao);
-
-  @override
-  _i2.$AppDatabaseManager get managers =>
-      (super.noSuchMethod(
-            Invocation.getter(#managers),
-            returnValue: _Fake$AppDatabaseManager_12(
-              this,
-              Invocation.getter(#managers),
-            ),
-          )
-          as _i2.$AppDatabaseManager);
-
-  @override
-  Iterable<_i8.TableInfo<_i8.Table, Object?>> get allTables =>
-      (super.noSuchMethod(
-            Invocation.getter(#allTables),
-            returnValue: <_i8.TableInfo<_i8.Table, Object?>>[],
-          )
-          as Iterable<_i8.TableInfo<_i8.Table, Object?>>);
-
-  @override
-  List<_i8.DatabaseSchemaEntity> get allSchemaEntities =>
-      (super.noSuchMethod(
-            Invocation.getter(#allSchemaEntities),
-            returnValue: <_i8.DatabaseSchemaEntity>[],
-          )
-          as List<_i8.DatabaseSchemaEntity>);
-
-  @override
-  _i8.GeneratedDatabase get attachedDatabase =>
-      (super.noSuchMethod(
-            Invocation.getter(#attachedDatabase),
-            returnValue: _FakeGeneratedDatabase_13(
-              this,
-              Invocation.getter(#attachedDatabase),
-            ),
-          )
-          as _i8.GeneratedDatabase);
-
-  @override
-  _i8.DriftDatabaseOptions get options =>
-      (super.noSuchMethod(
-            Invocation.getter(#options),
-            returnValue: _FakeDriftDatabaseOptions_14(
-              this,
-              Invocation.getter(#options),
-            ),
-          )
-          as _i8.DriftDatabaseOptions);
-
-  @override
-  _i8.MigrationStrategy get migration =>
+  _i2.MigrationStrategy get migration =>
       (super.noSuchMethod(
             Invocation.getter(#migration),
-            returnValue: _FakeMigrationStrategy_15(
+            returnValue: _FakeMigrationStrategy_0(
               this,
               Invocation.getter(#migration),
             ),
           )
-          as _i8.MigrationStrategy);
+          as _i2.MigrationStrategy);
 
   @override
-  _i8.StreamQueryUpdateRules get streamUpdateRules =>
+  _i3.$TournamentsTable get tournaments =>
+      (super.noSuchMethod(
+            Invocation.getter(#tournaments),
+            returnValue: _Fake$TournamentsTable_1(
+              this,
+              Invocation.getter(#tournaments),
+            ),
+          )
+          as _i3.$TournamentsTable);
+
+  @override
+  _i3.$GroupsTable get groups =>
+      (super.noSuchMethod(
+            Invocation.getter(#groups),
+            returnValue: _Fake$GroupsTable_2(this, Invocation.getter(#groups)),
+          )
+          as _i3.$GroupsTable);
+
+  @override
+  _i3.$PlayersTable get players =>
+      (super.noSuchMethod(
+            Invocation.getter(#players),
+            returnValue: _Fake$PlayersTable_3(
+              this,
+              Invocation.getter(#players),
+            ),
+          )
+          as _i3.$PlayersTable);
+
+  @override
+  _i3.$PlayerGroupsTable get playerGroups =>
+      (super.noSuchMethod(
+            Invocation.getter(#playerGroups),
+            returnValue: _Fake$PlayerGroupsTable_4(
+              this,
+              Invocation.getter(#playerGroups),
+            ),
+          )
+          as _i3.$PlayerGroupsTable);
+
+  @override
+  _i3.$ParticipantsTable get participants =>
+      (super.noSuchMethod(
+            Invocation.getter(#participants),
+            returnValue: _Fake$ParticipantsTable_5(
+              this,
+              Invocation.getter(#participants),
+            ),
+          )
+          as _i3.$ParticipantsTable);
+
+  @override
+  _i3.$TeamsTable get teams =>
+      (super.noSuchMethod(
+            Invocation.getter(#teams),
+            returnValue: _Fake$TeamsTable_6(this, Invocation.getter(#teams)),
+          )
+          as _i3.$TeamsTable);
+
+  @override
+  _i3.$MatchesTable get matches =>
+      (super.noSuchMethod(
+            Invocation.getter(#matches),
+            returnValue: _Fake$MatchesTable_7(
+              this,
+              Invocation.getter(#matches),
+            ),
+          )
+          as _i3.$MatchesTable);
+
+  @override
+  _i4.TournamentDao get tournamentDao =>
+      (super.noSuchMethod(
+            Invocation.getter(#tournamentDao),
+            returnValue: _FakeTournamentDao_8(
+              this,
+              Invocation.getter(#tournamentDao),
+            ),
+          )
+          as _i4.TournamentDao);
+
+  @override
+  _i5.PlayerDao get playerDao =>
+      (super.noSuchMethod(
+            Invocation.getter(#playerDao),
+            returnValue: _FakePlayerDao_9(this, Invocation.getter(#playerDao)),
+          )
+          as _i5.PlayerDao);
+
+  @override
+  _i6.GroupDao get groupDao =>
+      (super.noSuchMethod(
+            Invocation.getter(#groupDao),
+            returnValue: _FakeGroupDao_10(this, Invocation.getter(#groupDao)),
+          )
+          as _i6.GroupDao);
+
+  @override
+  _i7.MatchDao get matchDao =>
+      (super.noSuchMethod(
+            Invocation.getter(#matchDao),
+            returnValue: _FakeMatchDao_11(this, Invocation.getter(#matchDao)),
+          )
+          as _i7.MatchDao);
+
+  @override
+  _i8.TeamDao get teamDao =>
+      (super.noSuchMethod(
+            Invocation.getter(#teamDao),
+            returnValue: _FakeTeamDao_12(this, Invocation.getter(#teamDao)),
+          )
+          as _i8.TeamDao);
+
+  @override
+  _i3.$AppDatabaseManager get managers =>
+      (super.noSuchMethod(
+            Invocation.getter(#managers),
+            returnValue: _Fake$AppDatabaseManager_13(
+              this,
+              Invocation.getter(#managers),
+            ),
+          )
+          as _i3.$AppDatabaseManager);
+
+  @override
+  Iterable<_i2.TableInfo<_i2.Table, Object?>> get allTables =>
+      (super.noSuchMethod(
+            Invocation.getter(#allTables),
+            returnValue: <_i2.TableInfo<_i2.Table, Object?>>[],
+          )
+          as Iterable<_i2.TableInfo<_i2.Table, Object?>>);
+
+  @override
+  List<_i2.DatabaseSchemaEntity> get allSchemaEntities =>
+      (super.noSuchMethod(
+            Invocation.getter(#allSchemaEntities),
+            returnValue: <_i2.DatabaseSchemaEntity>[],
+          )
+          as List<_i2.DatabaseSchemaEntity>);
+
+  @override
+  _i2.GeneratedDatabase get attachedDatabase =>
+      (super.noSuchMethod(
+            Invocation.getter(#attachedDatabase),
+            returnValue: _FakeGeneratedDatabase_14(
+              this,
+              Invocation.getter(#attachedDatabase),
+            ),
+          )
+          as _i2.GeneratedDatabase);
+
+  @override
+  _i2.DriftDatabaseOptions get options =>
+      (super.noSuchMethod(
+            Invocation.getter(#options),
+            returnValue: _FakeDriftDatabaseOptions_15(
+              this,
+              Invocation.getter(#options),
+            ),
+          )
+          as _i2.DriftDatabaseOptions);
+
+  @override
+  _i2.StreamQueryUpdateRules get streamUpdateRules =>
       (super.noSuchMethod(
             Invocation.getter(#streamUpdateRules),
             returnValue: _FakeStreamQueryUpdateRules_16(
@@ -401,10 +401,10 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               Invocation.getter(#streamUpdateRules),
             ),
           )
-          as _i8.StreamQueryUpdateRules);
+          as _i2.StreamQueryUpdateRules);
 
   @override
-  _i8.DatabaseConnection get connection =>
+  _i2.DatabaseConnection get connection =>
       (super.noSuchMethod(
             Invocation.getter(#connection),
             returnValue: _FakeDatabaseConnection_17(
@@ -412,21 +412,21 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               Invocation.getter(#connection),
             ),
           )
-          as _i8.DatabaseConnection);
+          as _i2.DatabaseConnection);
 
   @override
-  _i8.SqlTypes get typeMapping =>
+  _i2.SqlTypes get typeMapping =>
       (super.noSuchMethod(
             Invocation.getter(#typeMapping),
-            returnValue: _i11.dummyValue<_i8.SqlTypes>(
+            returnValue: _i11.dummyValue<_i2.SqlTypes>(
               this,
               Invocation.getter(#typeMapping),
             ),
           )
-          as _i8.SqlTypes);
+          as _i2.SqlTypes);
 
   @override
-  _i8.QueryExecutor get executor =>
+  _i2.QueryExecutor get executor =>
       (super.noSuchMethod(
             Invocation.getter(#executor),
             returnValue: _FakeQueryExecutor_18(
@@ -434,7 +434,7 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               Invocation.getter(#executor),
             ),
           )
-          as _i8.QueryExecutor);
+          as _i2.QueryExecutor);
 
   @override
   _i9.StreamQueryStore get streamQueries =>
@@ -448,7 +448,7 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
           as _i9.StreamQueryStore);
 
   @override
-  _i8.DatabaseConnectionUser get resolvedEngine =>
+  _i2.DatabaseConnectionUser get resolvedEngine =>
       (super.noSuchMethod(
             Invocation.getter(#resolvedEngine),
             returnValue: _FakeDatabaseConnectionUser_20(
@@ -456,10 +456,10 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               Invocation.getter(#resolvedEngine),
             ),
           )
-          as _i8.DatabaseConnectionUser);
+          as _i2.DatabaseConnectionUser);
 
   @override
-  _i8.Migrator createMigrator() =>
+  _i2.Migrator createMigrator() =>
       (super.noSuchMethod(
             Invocation.method(#createMigrator, []),
             returnValue: _FakeMigrator_21(
@@ -467,12 +467,12 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               Invocation.method(#createMigrator, []),
             ),
           )
-          as _i8.Migrator);
+          as _i2.Migrator);
 
   @override
   _i10.Future<void> beforeOpen(
-    _i8.QueryExecutor? executor,
-    _i8.OpeningDetails? details,
+    _i2.QueryExecutor? executor,
+    _i2.OpeningDetails? details,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#beforeOpen, [executor, details]),
@@ -501,7 +501,7 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
           as _i10.Stream<T>);
 
   @override
-  T alias<T, D>(_i8.ResultSetImplementation<T, D>? table, String? alias) =>
+  T alias<T, D>(_i2.ResultSetImplementation<T, D>? table, String? alias) =>
       (super.noSuchMethod(
             Invocation.method(#alias, [table, alias]),
             returnValue: _i11.dummyValue<T>(
@@ -512,31 +512,31 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
           as T);
 
   @override
-  void markTablesUpdated(Iterable<_i8.TableInfo<_i8.Table, dynamic>>? tables) =>
+  void markTablesUpdated(Iterable<_i2.TableInfo<_i2.Table, dynamic>>? tables) =>
       super.noSuchMethod(
         Invocation.method(#markTablesUpdated, [tables]),
         returnValueForMissingStub: null,
       );
 
   @override
-  void notifyUpdates(Set<_i8.TableUpdate>? updates) => super.noSuchMethod(
+  void notifyUpdates(Set<_i2.TableUpdate>? updates) => super.noSuchMethod(
     Invocation.method(#notifyUpdates, [updates]),
     returnValueForMissingStub: null,
   );
 
   @override
-  _i10.Stream<Set<_i8.TableUpdate>> tableUpdates([
-    _i8.TableUpdateQuery? query = const _i8.TableUpdateQuery.any(),
+  _i10.Stream<Set<_i2.TableUpdate>> tableUpdates([
+    _i2.TableUpdateQuery? query = const _i2.TableUpdateQuery.any(),
   ]) =>
       (super.noSuchMethod(
             Invocation.method(#tableUpdates, [query]),
-            returnValue: _i10.Stream<Set<_i8.TableUpdate>>.empty(),
+            returnValue: _i10.Stream<Set<_i2.TableUpdate>>.empty(),
           )
-          as _i10.Stream<Set<_i8.TableUpdate>>);
+          as _i10.Stream<Set<_i2.TableUpdate>>);
 
   @override
   _i10.Future<T> doWhenOpened<T>(
-    _i10.FutureOr<T> Function(_i8.QueryExecutor)? fn,
+    _i10.FutureOr<T> Function(_i2.QueryExecutor)? fn,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#doWhenOpened, [fn]),
@@ -553,8 +553,8 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
           as _i10.Future<T>);
 
   @override
-  _i8.InsertStatement<T, D> into<T extends _i8.Table, D>(
-    _i8.TableInfo<T, D>? table,
+  _i2.InsertStatement<T, D> into<T extends _i2.Table, D>(
+    _i2.TableInfo<T, D>? table,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#into, [table]),
@@ -563,11 +563,11 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               Invocation.method(#into, [table]),
             ),
           )
-          as _i8.InsertStatement<T, D>);
+          as _i2.InsertStatement<T, D>);
 
   @override
-  _i8.UpdateStatement<Tbl, R> update<Tbl extends _i8.Table, R>(
-    _i8.TableInfo<Tbl, R>? table,
+  _i2.UpdateStatement<Tbl, R> update<Tbl extends _i2.Table, R>(
+    _i2.TableInfo<Tbl, R>? table,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#update, [table]),
@@ -576,11 +576,11 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               Invocation.method(#update, [table]),
             ),
           )
-          as _i8.UpdateStatement<Tbl, R>);
+          as _i2.UpdateStatement<Tbl, R>);
 
   @override
-  _i8.SimpleSelectStatement<T, R> select<T extends _i8.HasResultSet, R>(
-    _i8.ResultSetImplementation<T, R>? table, {
+  _i2.SimpleSelectStatement<T, R> select<T extends _i2.HasResultSet, R>(
+    _i2.ResultSetImplementation<T, R>? table, {
     bool? distinct = false,
   }) =>
       (super.noSuchMethod(
@@ -590,11 +590,11 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               Invocation.method(#select, [table], {#distinct: distinct}),
             ),
           )
-          as _i8.SimpleSelectStatement<T, R>);
+          as _i2.SimpleSelectStatement<T, R>);
 
   @override
-  _i8.JoinedSelectStatement<T, R> selectOnly<T extends _i8.HasResultSet, R>(
-    _i8.ResultSetImplementation<T, R>? table, {
+  _i2.JoinedSelectStatement<T, R> selectOnly<T extends _i2.HasResultSet, R>(
+    _i2.ResultSetImplementation<T, R>? table, {
     bool? distinct = false,
   }) =>
       (super.noSuchMethod(
@@ -604,24 +604,24 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               Invocation.method(#selectOnly, [table], {#distinct: distinct}),
             ),
           )
-          as _i8.JoinedSelectStatement<T, R>);
+          as _i2.JoinedSelectStatement<T, R>);
 
   @override
-  _i8.BaseSelectStatement<_i8.TypedResult> selectExpressions(
-    Iterable<_i8.Expression<Object>>? columns,
+  _i2.BaseSelectStatement<_i2.TypedResult> selectExpressions(
+    Iterable<_i2.Expression<Object>>? columns,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#selectExpressions, [columns]),
-            returnValue: _FakeBaseSelectStatement_27<_i8.TypedResult>(
+            returnValue: _FakeBaseSelectStatement_27<_i2.TypedResult>(
               this,
               Invocation.method(#selectExpressions, [columns]),
             ),
           )
-          as _i8.BaseSelectStatement<_i8.TypedResult>);
+          as _i2.BaseSelectStatement<_i2.TypedResult>);
 
   @override
-  _i8.DeleteStatement<T, D> delete<T extends _i8.Table, D>(
-    _i8.TableInfo<T, D>? table,
+  _i2.DeleteStatement<T, D> delete<T extends _i2.Table, D>(
+    _i2.TableInfo<T, D>? table,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#delete, [table]),
@@ -630,14 +630,14 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               Invocation.method(#delete, [table]),
             ),
           )
-          as _i8.DeleteStatement<T, D>);
+          as _i2.DeleteStatement<T, D>);
 
   @override
   _i10.Future<int> customUpdate(
     String? query, {
-    List<_i8.Variable<Object>>? variables = const [],
-    Set<_i8.ResultSetImplementation<dynamic, dynamic>>? updates,
-    _i8.UpdateKind? updateKind,
+    List<_i2.Variable<Object>>? variables = const [],
+    Set<_i2.ResultSetImplementation<dynamic, dynamic>>? updates,
+    _i2.UpdateKind? updateKind,
   }) =>
       (super.noSuchMethod(
             Invocation.method(
@@ -656,8 +656,8 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
   @override
   _i10.Future<int> customInsert(
     String? query, {
-    List<_i8.Variable<Object>>? variables = const [],
-    Set<_i8.ResultSetImplementation<dynamic, dynamic>>? updates,
+    List<_i2.Variable<Object>>? variables = const [],
+    Set<_i2.ResultSetImplementation<dynamic, dynamic>>? updates,
   }) =>
       (super.noSuchMethod(
             Invocation.method(
@@ -670,11 +670,11 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
           as _i10.Future<int>);
 
   @override
-  _i10.Future<List<_i8.QueryRow>> customWriteReturning(
+  _i10.Future<List<_i2.QueryRow>> customWriteReturning(
     String? query, {
-    List<_i8.Variable<Object>>? variables = const [],
-    Set<_i8.ResultSetImplementation<dynamic, dynamic>>? updates,
-    _i8.UpdateKind? updateKind,
+    List<_i2.Variable<Object>>? variables = const [],
+    Set<_i2.ResultSetImplementation<dynamic, dynamic>>? updates,
+    _i2.UpdateKind? updateKind,
   }) =>
       (super.noSuchMethod(
             Invocation.method(
@@ -686,17 +686,17 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
                 #updateKind: updateKind,
               },
             ),
-            returnValue: _i10.Future<List<_i8.QueryRow>>.value(
-              <_i8.QueryRow>[],
+            returnValue: _i10.Future<List<_i2.QueryRow>>.value(
+              <_i2.QueryRow>[],
             ),
           )
-          as _i10.Future<List<_i8.QueryRow>>);
+          as _i10.Future<List<_i2.QueryRow>>);
 
   @override
-  _i8.Selectable<_i8.QueryRow> customSelect(
+  _i2.Selectable<_i2.QueryRow> customSelect(
     String? query, {
-    List<_i8.Variable<Object>>? variables = const [],
-    Set<_i8.ResultSetImplementation<dynamic, dynamic>>? readsFrom = const {},
+    List<_i2.Variable<Object>>? variables = const [],
+    Set<_i2.ResultSetImplementation<dynamic, dynamic>>? readsFrom = const {},
   }) =>
       (super.noSuchMethod(
             Invocation.method(
@@ -704,7 +704,7 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               [query],
               {#variables: variables, #readsFrom: readsFrom},
             ),
-            returnValue: _FakeSelectable_29<_i8.QueryRow>(
+            returnValue: _FakeSelectable_29<_i2.QueryRow>(
               this,
               Invocation.method(
                 #customSelect,
@@ -713,13 +713,13 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               ),
             ),
           )
-          as _i8.Selectable<_i8.QueryRow>);
+          as _i2.Selectable<_i2.QueryRow>);
 
   @override
-  _i8.Selectable<_i8.QueryRow> customSelectQuery(
+  _i2.Selectable<_i2.QueryRow> customSelectQuery(
     String? query, {
-    List<_i8.Variable<Object>>? variables = const [],
-    Set<_i8.ResultSetImplementation<dynamic, dynamic>>? readsFrom = const {},
+    List<_i2.Variable<Object>>? variables = const [],
+    Set<_i2.ResultSetImplementation<dynamic, dynamic>>? readsFrom = const {},
   }) =>
       (super.noSuchMethod(
             Invocation.method(
@@ -727,7 +727,7 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               [query],
               {#variables: variables, #readsFrom: readsFrom},
             ),
-            returnValue: _FakeSelectable_29<_i8.QueryRow>(
+            returnValue: _FakeSelectable_29<_i2.QueryRow>(
               this,
               Invocation.method(
                 #customSelectQuery,
@@ -736,7 +736,7 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               ),
             ),
           )
-          as _i8.Selectable<_i8.QueryRow>);
+          as _i2.Selectable<_i2.QueryRow>);
 
   @override
   _i10.Future<void> customStatement(String? statement, [List<dynamic>? args]) =>
@@ -802,7 +802,7 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
 
   @override
   _i10.Future<void> batch(
-    _i10.FutureOr<void> Function(_i8.Batch)? runInBatch,
+    _i10.FutureOr<void> Function(_i2.Batch)? runInBatch,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#batch, [runInBatch]),
@@ -814,7 +814,7 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
   @override
   _i10.Future<T> runWithInterceptor<T>(
     _i10.Future<T> Function()? action, {
-    required _i8.QueryInterceptor? interceptor,
+    required _i2.QueryInterceptor? interceptor,
   }) =>
       (super.noSuchMethod(
             Invocation.method(
@@ -846,8 +846,8 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
           as _i10.Future<T>);
 
   @override
-  _i8.GenerationContext $write(
-    _i8.Component? component, {
+  _i2.GenerationContext $write(
+    _i2.Component? component, {
     bool? hasMultipleTables,
     int? startIndex,
   }) =>
@@ -869,12 +869,12 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               ),
             ),
           )
-          as _i8.GenerationContext);
+          as _i2.GenerationContext);
 
   @override
-  _i8.GenerationContext $writeInsertable(
-    _i8.TableInfo<_i8.Table, dynamic>? table,
-    _i8.Insertable<dynamic>? insertable, {
+  _i2.GenerationContext $writeInsertable(
+    _i2.TableInfo<_i2.Table, dynamic>? table,
+    _i2.Insertable<dynamic>? insertable, {
     int? startIndex,
   }) =>
       (super.noSuchMethod(
@@ -892,7 +892,7 @@ class MockAppDatabase extends _i1.Mock implements _i2.AppDatabase {
               ),
             ),
           )
-          as _i8.GenerationContext);
+          as _i2.GenerationContext);
 
   @override
   String $expandVar(int? start, int? amount) =>

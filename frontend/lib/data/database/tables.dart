@@ -16,6 +16,7 @@ class Tournaments extends Table {
 class Groups extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()(); // 그룹 이름
+  IntColumn get color => integer().nullable()(); // 그룹 대표 색상 (ARGB 값)
 }
 
 /* ──────────────── 3) 선수 ──────────────── */
