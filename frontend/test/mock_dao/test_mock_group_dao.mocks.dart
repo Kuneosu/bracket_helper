@@ -303,6 +303,17 @@ class MockGroupDao extends _i1.Mock implements _i6.GroupDao {
           as _i5.Future<int>);
 
   @override
+  _i5.Future<bool> updateGroup(
+    int? groupId,
+    _i2.GroupsCompanion? updatedGroup,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateGroup, [groupId, updatedGroup]),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+
+  @override
   _i5.Stream<T> createStream<T extends Object>(
     _i4.QueryStreamFetcher<T>? stmt,
   ) =>

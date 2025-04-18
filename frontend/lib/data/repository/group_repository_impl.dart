@@ -4,6 +4,7 @@ import 'package:bracket_helper/domain/error/app_error.dart';
 import 'package:bracket_helper/domain/error/result.dart';
 import 'package:bracket_helper/domain/repository/group_repository.dart';
 import 'package:flutter/foundation.dart';
+import 'package:drift/drift.dart';
 
 class GroupRepositoryImpl implements GroupRepository {
   final GroupDao _groupDao;
@@ -93,6 +94,30 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<Result<int>> countPlayersInGroup(int groupId) async {
+    try {
+      if (kDebugMode) {
+        print('Repository: 그룹(ID: $groupId) 내 선수 수 조회 시도');
+      }
+      final count = await _groupDao.countPlayersInGroup(groupId);
+      if (kDebugMode) {
+        print('Repository: 그룹(ID: $groupId) 내 선수 수: $count');
+      }
+      return Result.success(count);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Repository: 그룹 내 선수 수 조회 중 예외 발생 - $e');
+      }
+      return Result.failure(
+        DatabaseError(
+          message: '그룹 내 선수 수를 조회하는데 실패했습니다.',
+          cause: e,
+        ),
+      );
+    }
+  }
+
+  @override
   Future<Result<int>> deleteGroup(int groupId) async {
     try {
       final result = await _groupDao.deleteGroup(groupId);
@@ -124,6 +149,63 @@ class GroupRepositoryImpl implements GroupRepository {
       return Result.failure(
         DatabaseError(
           message: '그룹에서 선수를 제거하는데 실패했습니다.',
+          cause: e,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<bool>> updateGroup(int groupId, String newName, int? newColor) async {
+    try {
+      if (kDebugMode) {
+        print('Repository: 그룹(ID: $groupId) 업데이트 시도 - 이름: "$newName", 색상: $newColor');
+      }
+      
+      // 업데이트할 필드만 포함하는 GroupsCompanion 생성
+      GroupsCompanion updatedGroup = GroupsCompanion();
+      
+      // 이름 업데이트가 필요한 경우
+      if (newName.isNotEmpty) {
+        updatedGroup = updatedGroup.copyWith(name: Value(newName));
+      }
+      
+      // 색상 업데이트가 필요한 경우
+      if (newColor != null) {
+        updatedGroup = updatedGroup.copyWith(color: Value(newColor));
+      }
+      
+      // 업데이트할 필드가 없는 경우
+      if (newName.isEmpty && newColor == null) {
+        if (kDebugMode) {
+          print('Repository: 업데이트할 내용이 없음');
+        }
+        return Result.success(true);
+      }
+      
+      final success = await _groupDao.updateGroup(groupId, updatedGroup);
+      
+      if (kDebugMode) {
+        print('Repository: 그룹 업데이트 결과 - $success');
+      }
+      
+      if (!success) {
+        return Result.failure(
+          GroupError(
+            message: '그룹을 찾을 수 없거나 업데이트할 수 없습니다.',
+          ),
+        );
+      }
+      
+      return Result.success(success);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Repository: 그룹 업데이트 중 예외 발생 - $e');
+      }
+      
+      return Result.failure(
+        DatabaseError(
+          message: '그룹을 업데이트하는데 실패했습니다.',
           cause: e,
         ),
       );

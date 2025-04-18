@@ -37,19 +37,12 @@ class SavePlayerRoot extends StatelessWidget {
           onAction: (action) => viewModel.onAction(action),
         );
 
-        if (viewModel.state.groups.isEmpty) {
-          title = '그룹 생성';
-          body = createGroupRoot;
-          showBackButton = false;
-        } else {
-          title = '그룹 목록';
-          body = const GroupListRoot();
-          showBackButton = false;
-        }
-
         if (location.endsWith(RoutePaths.groupList)) {
           title = '그룹 목록';
-          body = const GroupListRoot();
+          body = GroupListRoot(
+            groups: viewModel.state.groups,
+            viewModel: viewModel,
+          );
           showBackButton = false;
         } else if (location.endsWith(RoutePaths.groupDetail)) {
           title = '그룹 상세';
@@ -59,6 +52,14 @@ class SavePlayerRoot extends StatelessWidget {
           title = '그룹 생성';
           body = createGroupRoot;
           showBackButton = true;
+        } else {
+          // 기본 화면 (그룹 목록)
+          title = '그룹 목록';
+          body = GroupListRoot(
+            groups: viewModel.state.groups,
+            viewModel: viewModel,
+          );
+          showBackButton = false;
         }
 
         return SavePlayerScreen(

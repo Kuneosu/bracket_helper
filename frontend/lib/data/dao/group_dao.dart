@@ -87,4 +87,22 @@ class GroupDao extends DatabaseAccessor<AppDatabase> with _$GroupDaoMixin {
       ..where((tbl) => tbl.playerId.equals(playerId) & tbl.groupId.equals(groupId)))
       .go();
   }
+  
+  /* 그룹 정보 업데이트 */
+  Future<bool> updateGroup(int groupId, GroupsCompanion updatedGroup) async {
+    if (kDebugMode) {
+      print('DAO: 그룹(ID: $groupId) 정보 업데이트 시도');
+    }
+    
+    return transaction(() async {
+      final rowsAffected = await (update(groups)..where((tbl) => tbl.id.equals(groupId)))
+        .write(updatedGroup);
+      
+      if (kDebugMode) {
+        print('DAO: 그룹 업데이트 - $rowsAffected 행이 영향받음');
+      }
+      
+      return rowsAffected > 0;
+    });
+  }
 }

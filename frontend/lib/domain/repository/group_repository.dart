@@ -15,9 +15,15 @@ abstract class GroupRepository {
   /// 그룹에 속한 선수 목록 조회
   Future<Result<List<Player>>> fetchPlayersInGroup(int groupId);
   
+  /// 그룹에 속한 선수 수 조회
+  Future<Result<int>> countPlayersInGroup(int groupId);
+  
   /// 그룹 삭제
   Future<Result<int>> deleteGroup(int groupId);
   
   /// 그룹에서 선수 제거
   Future<Result<int>> removePlayerFromGroup(int playerId, int groupId);
+  
+  /// 그룹 정보 업데이트
+  Future<Result<bool>> updateGroup(int groupId, String newName, int? newColor);
 } 
