@@ -10,6 +10,7 @@ class Tournaments extends Table {
   IntColumn get losePoint => integer().withDefault(const Constant(0))();
   IntColumn get gamesPerPlayer => integer().withDefault(const Constant(4))();
   BoolColumn get isDoubles => boolean().withDefault(const Constant(true))();
+  IntColumn get process => integer().withDefault(const Constant(0))();
 }
 
 /* ──────────────── 2) 그룹(폴더) ──────────────── */

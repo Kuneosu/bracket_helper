@@ -27,6 +27,7 @@ class TournamentRepositoryImpl implements TournamentRepository {
       losePoint: dbTournament.losePoint,
       gamesPerPlayer: dbTournament.gamesPerPlayer,
       isDoubles: dbTournament.isDoubles,
+      process: dbTournament.process,
     );
   }
 

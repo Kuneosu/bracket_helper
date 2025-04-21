@@ -20,12 +20,14 @@ class CreateTournamentScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         scrolledUnderElevation: 0,
       ),
-      body: SizedBox(
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [_buildProcessHeader(), body],
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildProcessHeader(),
+          Expanded(
+            child: body,
+          ),
+        ],
       ),
     );
   }
@@ -42,7 +44,8 @@ class CreateTournamentScreen extends StatelessWidget {
 
     return Container(
       color: CST.primary100,
-      height: 70,
+      height: 90,
+      padding: EdgeInsets.only(top: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,

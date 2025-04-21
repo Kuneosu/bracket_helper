@@ -34,7 +34,6 @@ import 'package:bracket_helper/domain/use_case/match/get_matches_in_tournament_u
 import 'package:bracket_helper/domain/use_case/group/remove_player_from_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/update_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/player/update_player_use_case.dart';
-import 'package:bracket_helper/presentation/create_tournament/create_tournament_view_model.dart';
 import 'package:bracket_helper/presentation/home/home_view_model.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_view_model.dart';
 import 'package:get_it/get_it.dart';
@@ -165,8 +164,5 @@ Future<void> setupDependencies() async {
       deletePlayerUseCase: getIt<DeletePlayerUseCase>(),
       updatePlayerUseCase: getIt<UpdatePlayerUseCase>(),
     ),
-  );
-  getIt.registerFactory<CreateTournamentViewModel>(
-    () => CreateTournamentViewModel(),
   );
 }

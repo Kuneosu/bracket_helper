@@ -16,6 +16,7 @@ class TournamentModel with _$TournamentModel {
   final int losePoint;
   final int gamesPerPlayer;
   final bool isDoubles;
+  final int process;
 
   const TournamentModel({
     required this.id,
@@ -26,6 +27,7 @@ class TournamentModel with _$TournamentModel {
     this.losePoint = 0,
     this.gamesPerPlayer = 4,
     this.isDoubles = true,
+    this.process = 0,
   });
 
   factory TournamentModel.fromJson(Map<String, dynamic> json) =>

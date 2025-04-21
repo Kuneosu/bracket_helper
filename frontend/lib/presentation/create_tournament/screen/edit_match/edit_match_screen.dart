@@ -1,29 +1,50 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
+import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
+import 'package:bracket_helper/domain/model/tournament_model.dart';
+import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class EditMatchScreen extends StatelessWidget {
-  const EditMatchScreen({super.key});
+  final TournamentModel tournament;
+  final List<PlayerModel> players;
+  final List<MatchModel> matches;
+  final Function(CreateTournamentAction) onAction;
+  
+  const EditMatchScreen({
+    super.key,
+    required this.tournament,
+    required this.players,
+    required this.matches,
+    required this.onAction,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final playerCount = 4;
-    final matchCount = 3;
-    final List<MatchModel> matchList = [
-      MatchModel(id: 1, teamAId: 1, teamBId: 2, scoreA: 1, scoreB: 2),
-      MatchModel(id: 2, teamAId: 3, teamBId: 4, scoreA: 3, scoreB: 4),
-      MatchModel(id: 3, teamAId: 1, teamBId: 3, scoreA: 1, scoreB: 3),
-    ];
-    final List<PlayerModel> mockPlayerList = [
-      PlayerModel(id: 1, name: "홍길동"),
-      PlayerModel(id: 2, name: "이순신"),
-      PlayerModel(id: 3, name: "김유신"),
-      PlayerModel(id: 4, name: "오쌤"),
-    ];
+    final playerCount = players.isEmpty ? 4 : players.length;
+    final matchCount = matches.isEmpty ? 3 : matches.length;
+    
+    final List<MatchModel> displayMatches = matches.isEmpty 
+        ? [
+            MatchModel(id: 1, teamAId: 1, teamBId: 2, scoreA: 1, scoreB: 2),
+            MatchModel(id: 2, teamAId: 3, teamBId: 4, scoreA: 3, scoreB: 4),
+            MatchModel(id: 3, teamAId: 1, teamBId: 3, scoreA: 1, scoreB: 3),
+          ] 
+        : matches;
+        
+    final List<PlayerModel> displayPlayers = players.isEmpty 
+        ? [
+            PlayerModel(id: 1, name: "홍길동"),
+            PlayerModel(id: 2, name: "이순신"),
+            PlayerModel(id: 3, name: "김유신"),
+            PlayerModel(id: 4, name: "오쌤"),
+          ] 
+        : players;
+        
     return Expanded(
       child: Column(
         children: [
@@ -31,9 +52,9 @@ class EditMatchScreen extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               physics: const ClampingScrollPhysics(),
-              itemCount: matchList.length + 1,
+              itemCount: displayMatches.length + 1,
               itemBuilder: (context, index) {
-                if (index == matchList.length) {
+                if (index == displayMatches.length) {
                   return Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
@@ -53,7 +74,7 @@ class EditMatchScreen extends StatelessWidget {
                     ),
                   );
                 } else {
-                  return _buildMatchList(index, mockPlayerList);
+                  return _buildMatchList(index, displayPlayers);
                 }
               },
             ),
@@ -75,7 +96,16 @@ class EditMatchScreen extends StatelessWidget {
                   width: 70,
                 ),
                 Spacer(),
-                DefaultButton(text: "다음", onTap: () {}, width: 70),
+                DefaultButton(
+                  text: "다음",
+                  onTap: () {
+                    // 프로세스 진행 상태 업데이트
+                    onAction(CreateTournamentAction.updateProcess(3));
+                    
+                    context.go(RoutePaths.match);
+                  },
+                  width: 70,
+                ),
               ],
             ),
           ),

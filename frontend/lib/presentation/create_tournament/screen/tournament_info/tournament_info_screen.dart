@@ -3,107 +3,167 @@ import 'package:bracket_helper/core/presentation/components/default_text_field.d
 import 'package:bracket_helper/core/presentation/components/default_date_picker.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
+import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class TournamentInfoScreen extends StatelessWidget {
+class TournamentInfoScreen extends StatefulWidget {
   final TournamentModel tournament;
-  const TournamentInfoScreen({super.key, required this.tournament});
+  final Function(CreateTournamentAction) onAction;
+  const TournamentInfoScreen({
+    super.key,
+    required this.tournament,
+    required this.onAction,
+  });
+
+  @override
+  State<TournamentInfoScreen> createState() => _TournamentInfoScreenState();
+}
+
+class _TournamentInfoScreenState extends State<TournamentInfoScreen>
+    with SingleTickerProviderStateMixin {
+  late TextEditingController _titleController;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.tournament.title);
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void didUpdateWidget(TournamentInfoScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.tournament.title != widget.tournament.title) {
+      _titleController.text = widget.tournament.title;
+    }
+
+    if (oldWidget.tournament.date != widget.tournament.date) {
+      debugPrint('날짜 변경됨: ${widget.tournament.date}');
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: Column(
+    debugPrint('TournamentInfoScreen rebuild: ${widget.tournament.date}');
+
+    return FadeTransition(
+      opacity: _animation,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: CST.primary20,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "대회 정보 입력",
+                  style: TST.headerTextBold.copyWith(color: CST.primary100),
+                ),
+                SizedBox(height: 20),
+                _buildTitleSection(),
+                SizedBox(height: 16),
+                _buildDateSection(),
+                SizedBox(height: 16),
+                _buildScoreSection(),
+                SizedBox(height: 16),
+                _buildGameSettingsSection(),
+                SizedBox(height: 40),
+                _buildButtons(),
+                SizedBox(height: 40), // 하단 여백 추가
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSection({required String title, required Widget content}) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TST.largeTextBold.copyWith(color: CST.primary100),
+            ),
+            SizedBox(height: 12),
+            content,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitleSection() {
+    return _buildSection(
+      title: "대회명",
+      content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("대회명", style: TST.largeTextBold),
-          SizedBox(height: 10),
-          DefaultTextField(hintText: '대회명을 입력해주세요'),
-          SizedBox(height: 10),
-          Row(children: [_buildRecommendTitle()]),
-          SizedBox(height: 20),
-          Text("대회 날짜", style: TST.largeTextBold),
-          SizedBox(height: 10),
-          DefaultDatePicker(),
-          SizedBox(height: 20),
-          Text("승점 입력", style: TST.largeTextBold),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Row(
-                children: [
-                  Text("승", style: TST.largeTextRegular),
-                  SizedBox(width: 10),
-                  SizedBox(
-                    width: 50,
-                    child: DefaultTextField(
-                      hintText: '1',
-                      textAlign: TextAlign.center,
-                      initialValue: '1',
-                    ),
-                  ),
-                ],
+          TextField(
+            controller: _titleController,
+            decoration: InputDecoration(
+              hintText: '대회명을 입력해주세요',
+              hintStyle: TST.mediumTextRegular.copyWith(color: CST.gray3),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: CST.gray3),
+                borderRadius: BorderRadius.circular(8),
               ),
-              Row(
-                children: [
-                  Text("무", style: TST.largeTextRegular),
-                  SizedBox(width: 10),
-                  SizedBox(
-                    width: 50,
-                    child: DefaultTextField(
-                      hintText: '0',
-                      textAlign: TextAlign.center,
-                      initialValue: '0',
-                    ),
-                  ),
-                ],
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: CST.gray3),
+                borderRadius: BorderRadius.circular(8),
               ),
-              Row(
-                children: [
-                  Text("패", style: TST.largeTextRegular),
-                  SizedBox(width: 10),
-                  SizedBox(
-                    width: 50,
-                    child: DefaultTextField(
-                      hintText: '0',
-                      textAlign: TextAlign.center,
-                      initialValue: '0',
-                    ),
-                  ),
-                ],
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: CST.primary100, width: 2),
+                borderRadius: BorderRadius.circular(8),
               ),
-            ],
+              prefixIcon: Icon(Icons.emoji_events, color: CST.primary100),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            onChanged: (value) {
+              widget.onAction(CreateTournamentAction.onTitleChanged(value));
+            },
           ),
-          SizedBox(height: 20),
-          Text("1인당 게임수", style: TST.largeTextBold),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [_buildMatchPerPlayer(), _buildMatchTypeToggle()],
-          ),
-          SizedBox(height: 40),
+          SizedBox(height: 12),
           Row(
             children: [
-              DefaultButton(
-                text: '종료',
-                onTap: () {
-                  context.pop();
-                },
-                width: 70,
-              ),
-              Spacer(),
-              DefaultButton(
-                text: '다음',
-                onTap: () {
-                  context.push(
-                    '${RoutePaths.createTournament}${RoutePaths.addPlayer}',
-                  );
-                },
-                width: 70,
+              Icon(Icons.info_outline, size: 16, color: CST.gray2),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  "대회명을 입력하지 않으면 '[날짜] 대회'로 자동 설정됩니다.",
+                  style: TST.smallerTextRegular.copyWith(color: CST.gray2),
+                ),
               ),
             ],
           ),
@@ -112,46 +172,47 @@ class TournamentInfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMatchTypeToggle() {
-    // UI만 구현하고 상태 변경 없이 복식이 선택된 상태로 표시
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: CST.primary100),
-        borderRadius: BorderRadius.circular(4),
+  Widget _buildDateSection() {
+    return _buildSection(
+      title: "대회 날짜",
+      content: DefaultDatePicker(
+        initialDate: widget.tournament.date,
+        onDateSelected: (date) {
+          debugPrint('날짜 선택됨: $date');
+          widget.onAction(CreateTournamentAction.onDateChanged(date));
+        },
       ),
-      height: 46,
-      child: Row(
+    );
+  }
+
+  Widget _buildScoreSection() {
+    return _buildSection(
+      title: "승점 입력",
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // 복식 버튼 (선택된 상태)
-          Container(
-            width: 60,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: CST.primary100, // 복식이 선택된 상태
-              borderRadius: BorderRadius.horizontal(
-                left: Radius.circular(3),
-                right: Radius.zero,
-              ),
-            ),
-            child: Text(
-              "복식",
-              style: TST.largeTextRegular.copyWith(color: Colors.white),
+          _buildScoreInput(
+            "승",
+            CST.success,
+            widget.tournament.winPoint.toString(),
+            (value) => widget.onAction(
+              CreateTournamentAction.onScoreChanged(value, '승'),
             ),
           ),
-          // 단식 버튼 (선택되지 않은 상태)
-          Container(
-            width: 60,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.horizontal(
-                left: Radius.zero,
-                right: Radius.circular(3),
-              ),
+          _buildScoreInput(
+            "무",
+            CST.gray2,
+            widget.tournament.drawPoint.toString(),
+            (value) => widget.onAction(
+              CreateTournamentAction.onScoreChanged(value, '무'),
             ),
-            child: Text(
-              "단식",
-              style: TST.largeTextRegular.copyWith(color: CST.primary100),
+          ),
+          _buildScoreInput(
+            "패",
+            CST.error,
+            widget.tournament.losePoint.toString(),
+            (value) => widget.onAction(
+              CreateTournamentAction.onScoreChanged(value, '패'),
             ),
           ),
         ],
@@ -159,61 +220,288 @@ class TournamentInfoScreen extends StatelessWidget {
     );
   }
 
-  Row _buildMatchPerPlayer() {
-    final border = BorderSide(color: CST.primary100, width: 1);
-
-    return Row(
+  Widget _buildScoreInput(
+    String label,
+    Color color,
+    String initialValue,
+    Function(String) onChanged,
+  ) {
+    return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          width: 60,
+          height: 30,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
-            border: Border(top: border, bottom: border, left: border),
+            color: color,
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(4),
-              bottomLeft: Radius.circular(4),
+              topLeft: Radius.circular(8),
+              topRight: Radius.circular(8),
             ),
           ),
           child: Text(
-            "-",
-            style: TST.largeTextRegular.copyWith(color: CST.primary100),
+            label,
+            style: TST.largeTextRegular.copyWith(color: Colors.white),
           ),
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          width: 60,
+          height: 50,
           decoration: BoxDecoration(
-            border: Border.all(color: CST.primary100, width: 1),
-          ),
-          child: Text(
-            "4",
-            style: TST.largeTextBold.copyWith(color: CST.primary100),
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border(right: border, top: border, bottom: border),
+            border: Border.all(color: color),
             borderRadius: BorderRadius.only(
-              topRight: Radius.circular(4),
-              bottomRight: Radius.circular(4),
+              bottomLeft: Radius.circular(8),
+              bottomRight: Radius.circular(8),
             ),
           ),
-          child: Text(
-            "+",
-            style: TST.largeTextRegular.copyWith(color: CST.primary100),
+          child: DefaultTextField(
+            hintText: '0',
+            textAlign: TextAlign.center,
+            initialValue: initialValue,
+            onChanged: onChanged,
           ),
         ),
       ],
     );
   }
 
-  Container _buildRecommendTitle() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: CST.gray4,
-        borderRadius: BorderRadius.circular(10),
+  Widget _buildGameSettingsSection() {
+    return _buildSection(
+      title: "경기 설정",
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("1인당 게임수", style: TST.normalTextBold.copyWith(color: CST.gray1)),
+          SizedBox(height: 8),
+          _buildMatchPerPlayer(),
+          SizedBox(height: 16),
+          Text("경기 형식", style: TST.normalTextBold.copyWith(color: CST.gray1)),
+          SizedBox(height: 8),
+          _buildMatchTypeToggle(),
+        ],
       ),
-      child: Text('2025-04-14(월)', style: TST.smallTextRegular),
+    );
+  }
+
+  Widget _buildButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: DefaultButton(
+            text: '종료',
+            onTap: () {
+              // 홈 화면으로 이동
+              context.go(RoutePaths.home);
+            },
+            color: CST.gray3,
+          ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: DefaultButton(
+            text: '다음',
+            onTap: () {
+              // 프로세스 진행 상태만 업데이트
+              widget.onAction(CreateTournamentAction.updateProcess(1));
+              context.push(
+                '${RoutePaths.createTournament}${RoutePaths.addPlayer}',
+              );
+            },
+            color: CST.primary100,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMatchTypeToggle() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: CST.primary100),
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      height: 46,
+      child: Row(
+        children: [
+          // 복식 버튼
+          Expanded(
+            child: InkWell(
+              onTap: () {
+                widget.onAction(
+                  CreateTournamentAction.onIsDoublesChanged(true),
+                );
+              },
+              child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color:
+                      widget.tournament.isDoubles
+                          ? CST.primary100
+                          : Colors.white,
+                  borderRadius: BorderRadius.horizontal(
+                    left: Radius.circular(7),
+                    right: Radius.zero,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.people,
+                      size: 18,
+                      color:
+                          widget.tournament.isDoubles
+                              ? Colors.white
+                              : CST.primary100,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      "복식",
+                      style: TST.normalTextBold.copyWith(
+                        color:
+                            widget.tournament.isDoubles
+                                ? Colors.white
+                                : CST.primary100,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // 단식 버튼
+          Expanded(
+            child: InkWell(
+              onTap: () {
+                widget.onAction(
+                  CreateTournamentAction.onIsDoublesChanged(false),
+                );
+              },
+              child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color:
+                      !widget.tournament.isDoubles
+                          ? CST.primary100
+                          : Colors.white,
+                  borderRadius: BorderRadius.horizontal(
+                    left: Radius.zero,
+                    right: Radius.circular(7),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.person,
+                      size: 18,
+                      color:
+                          !widget.tournament.isDoubles
+                              ? Colors.white
+                              : CST.primary100,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      "단식",
+                      style: TST.normalTextBold.copyWith(
+                        color:
+                            !widget.tournament.isDoubles
+                                ? Colors.white
+                                : CST.primary100,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMatchPerPlayer() {
+    return Container(
+      height: 46,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildCounterButton(
+            icon: Icons.remove,
+            onTap: () {
+              if (widget.tournament.gamesPerPlayer > 1) {
+                widget.onAction(
+                  CreateTournamentAction.onGamesPerPlayerChanged(
+                    (widget.tournament.gamesPerPlayer - 1).toString(),
+                  ),
+                );
+              }
+            },
+            isLeft: true,
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: CST.primary100, width: 1),
+            ),
+            child: Text(
+              "${widget.tournament.gamesPerPlayer}",
+              style: TST.largeTextBold.copyWith(color: CST.primary100),
+            ),
+          ),
+          _buildCounterButton(
+            icon: Icons.add,
+            onTap: () {
+              widget.onAction(
+                CreateTournamentAction.onGamesPerPlayerChanged(
+                  (widget.tournament.gamesPerPlayer + 1).toString(),
+                ),
+              );
+            },
+            isLeft: false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCounterButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    required bool isLeft,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
+          color: CST.primary100,
+          borderRadius: BorderRadius.horizontal(
+            left: isLeft ? Radius.circular(8) : Radius.zero,
+            right: !isLeft ? Radius.circular(8) : Radius.zero,
+          ),
+        ),
+        child: Icon(icon, color: Colors.white, size: 20),
+      ),
     );
   }
 }
