@@ -11,10 +11,15 @@ class AddPlayerRoot extends StatelessWidget {
     return ListenableBuilder(
       listenable: viewModel,
       builder: (context, _) {
+        debugPrint('AddPlayerRoot - 화면 빌드: 선수 ${viewModel.state.players.length}명');
+        if (viewModel.state.players.isNotEmpty) {
+          debugPrint('AddPlayerRoot - 선수 목록: ${viewModel.state.players.map((p) => "${p.id}:${p.name}").join(', ')}');
+        }
         return AddPlayerScreen(
           tournament: viewModel.state.tournament,
           players: viewModel.state.players,
           onAction: (action) {
+            debugPrint('AddPlayerRoot - 액션 전달: $action');
             viewModel.onAction(action);
           },
         );

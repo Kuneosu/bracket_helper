@@ -41,17 +41,21 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
       curve: Curves.easeInOut,
     );
     _animationController.forward();
+    debugPrint('TournamentInfoScreen - initState 호출');
   }
 
   @override
   void didUpdateWidget(TournamentInfoScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    debugPrint('TournamentInfoScreen - didUpdateWidget 호출');
+    
     if (oldWidget.tournament.title != widget.tournament.title) {
       _titleController.text = widget.tournament.title;
+      debugPrint('TournamentInfoScreen - 타이틀 변경됨: ${widget.tournament.title}');
     }
 
     if (oldWidget.tournament.date != widget.tournament.date) {
-      debugPrint('날짜 변경됨: ${widget.tournament.date}');
+      debugPrint('TournamentInfoScreen - 날짜 변경됨: ${widget.tournament.date}');
     }
   }
 
@@ -59,12 +63,13 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
   void dispose() {
     _titleController.dispose();
     _animationController.dispose();
+    debugPrint('TournamentInfoScreen - dispose 호출');
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('TournamentInfoScreen rebuild: ${widget.tournament.date}');
+    debugPrint('TournamentInfoScreen - build 호출: 날짜 ${widget.tournament.date}');
 
     return FadeTransition(
       opacity: _animation,
@@ -302,8 +307,9 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
             text: '다음',
             onTap: () {
               // 프로세스 진행 상태만 업데이트
+              debugPrint('TournamentInfoScreen - 다음 버튼 클릭');
               widget.onAction(CreateTournamentAction.updateProcess(1));
-              context.push(
+              context.go(
                 '${RoutePaths.createTournament}${RoutePaths.addPlayer}',
               );
             },

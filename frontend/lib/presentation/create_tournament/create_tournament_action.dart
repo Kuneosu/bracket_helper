@@ -1,3 +1,4 @@
+import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'create_tournament_action.freezed.dart';
 
@@ -11,4 +12,9 @@ sealed class CreateTournamentAction with _$CreateTournamentAction {
   const factory CreateTournamentAction.onRecommendTitle() = OnRecommendTitle;
   const factory CreateTournamentAction.saveTournament() = SaveTournament;
   const factory CreateTournamentAction.updateProcess(int process) = UpdateProcess;
+  
+  // 플레이어 관련 액션
+  const factory CreateTournamentAction.addPlayer(String name) = AddPlayer;
+  const factory CreateTournamentAction.updatePlayer(PlayerModel player) = UpdatePlayer;
+  const factory CreateTournamentAction.removePlayer(int playerId) = RemovePlayer;
 }
