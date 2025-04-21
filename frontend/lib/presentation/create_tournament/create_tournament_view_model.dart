@@ -41,137 +41,140 @@ class CreateTournamentViewModel with ChangeNotifier {
   void onAction(CreateTournamentAction action) {
     debugPrint('액션 실행: $action');
 
-    if (action is OnDateChanged) {
-      debugPrint('날짜 변경: ${action.date}');
-      _state = _state.copyWith(
-        tournament: _state.tournament.copyWith(date: action.date),
-      );
-      _notifyChanges();
-    } else if (action is OnScoreChanged) {
-      try {
-        if (action.score.isEmpty) return; // 빈 값인 경우 처리하지 않음
-        final score = int.parse(action.score);
-
-        if (action.type == '승') {
-          _state = _state.copyWith(
-            tournament: _state.tournament.copyWith(winPoint: score),
-          );
-        } else if (action.type == '무') {
-          _state = _state.copyWith(
-            tournament: _state.tournament.copyWith(drawPoint: score),
-          );
-        } else if (action.type == '패') {
-          _state = _state.copyWith(
-            tournament: _state.tournament.copyWith(losePoint: score),
-          );
-        }
+    switch (action) {
+      case OnDateChanged():
+        debugPrint('날짜 변경: ${action.date}');
+        _state = _state.copyWith(
+          tournament: _state.tournament.copyWith(date: action.date),
+        );
         _notifyChanges();
-      } catch (e) {
-        debugPrint('점수 변환 오류: $e');
-        // 오류 발생 시 기존 값 유지
-      }
-    } else if (action is OnTitleChanged) {
-      _state = _state.copyWith(
-        tournament: _state.tournament.copyWith(title: action.title),
-      );
-      _notifyChanges();
-    } else if (action is OnGamesPerPlayerChanged) {
-      try {
-        if (action.gamesPerPlayer.isEmpty) return; // 빈 값인 경우 처리하지 않음
-        final gamesPerPlayer = int.parse(action.gamesPerPlayer);
+      case OnScoreChanged():
+        try {
+          if (action.score.isEmpty) return; // 빈 값인 경우 처리하지 않음
+          final score = int.parse(action.score);
 
-        if (gamesPerPlayer < 1) return; // 1보다 작은 값은 처리하지 않음
+          if (action.type == '승') {
+            _state = _state.copyWith(
+              tournament: _state.tournament.copyWith(winPoint: score),
+            );
+          } else if (action.type == '무') {
+            _state = _state.copyWith(
+              tournament: _state.tournament.copyWith(drawPoint: score),
+            );
+          } else if (action.type == '패') {
+            _state = _state.copyWith(
+              tournament: _state.tournament.copyWith(losePoint: score),
+            );
+          }
+          _notifyChanges();
+        } catch (e) {
+          debugPrint('점수 변환 오류: $e');
+          // 오류 발생 시 기존 값 유지
+        }
+      case OnTitleChanged():
+        _state = _state.copyWith(
+          tournament: _state.tournament.copyWith(title: action.title),
+        );
+        _notifyChanges();
+      case OnGamesPerPlayerChanged():
+        try {
+          if (action.gamesPerPlayer.isEmpty) return; // 빈 값인 경우 처리하지 않음
+          final gamesPerPlayer = int.parse(action.gamesPerPlayer);
 
+          if (gamesPerPlayer < 1) return; // 1보다 작은 값은 처리하지 않음
+
+          _state = _state.copyWith(
+            tournament: _state.tournament.copyWith(
+              gamesPerPlayer: gamesPerPlayer,
+            ),
+          );
+          _notifyChanges();
+        } catch (e) {
+          debugPrint('게임 수 변환 오류: $e');
+          // 오류 발생 시 기존 값 유지
+        }
+      case OnIsDoublesChanged():
+        _state = _state.copyWith(
+          tournament: _state.tournament.copyWith(isDoubles: action.isDoubles),
+        );
+        _notifyChanges();
+      case OnRecommendTitle():
         _state = _state.copyWith(
           tournament: _state.tournament.copyWith(
-            gamesPerPlayer: gamesPerPlayer,
+            title:
+                '${DateFormatter.formatToYYYYMMDD(_state.tournament.date)} 대회',
           ),
         );
         _notifyChanges();
-      } catch (e) {
-        debugPrint('게임 수 변환 오류: $e');
-        // 오류 발생 시 기존 값 유지
-      }
-    } else if (action is OnIsDoublesChanged) {
-      _state = _state.copyWith(
-        tournament: _state.tournament.copyWith(isDoubles: action.isDoubles),
-      );
-      _notifyChanges();
-    } else if (action is OnRecommendTitle) {
-      _state = _state.copyWith(
-        tournament: _state.tournament.copyWith(
-          title: '${DateFormatter.formatToYYYYMMDD(_state.tournament.date)} 대회',
-        ),
-      );
-      _notifyChanges();
-    } else if (action is SaveTournament) {
-      _saveTournament();
-    } else if (action is UpdateProcess) {
-      debugPrint('프로세스 업데이트: ${action.process}');
-      final updatedTournament = _state.tournament.copyWith(
-        process: action.process,
-      );
-      _state = _state.copyWith(tournament: updatedTournament);
-      debugPrint('새 프로세스 값: ${_state.tournament.process}');
-      _notifyChanges();
+      case SaveTournament():
+        _saveTournament();
+      case UpdateProcess():
+        debugPrint('프로세스 업데이트: ${action.process}');
+        final updatedTournament = _state.tournament.copyWith(
+          process: action.process,
+        );
+        _state = _state.copyWith(tournament: updatedTournament);
+        debugPrint('새 프로세스 값: ${_state.tournament.process}');
+        _notifyChanges();
+      case AddPlayer():
+        debugPrint(
+          '플레이어 추가 시작: ${action.name} (현재 선수 수: ${_state.players.length})',
+        );
+        if (action.name.trim().isEmpty) return; // 빈 이름은 처리하지 않음
 
-      // 플레이어 관련 액션
-    } else if (action is AddPlayer) {
-      debugPrint(
-        '플레이어 추가 시작: ${action.name} (현재 선수 수: ${_state.players.length})',
-      );
-      if (action.name.trim().isEmpty) return; // 빈 이름은 처리하지 않음
+        // 임시 ID 생성 (실제 앱에서는 DB 또는 UUID 등으로 대체)
+        final newId =
+            _state.players.isEmpty
+                ? 1
+                : _state.players
+                        .map((p) => p.id)
+                        .reduce((max, id) => id > max ? id : max) +
+                    1;
 
-      // 임시 ID 생성 (실제 앱에서는 DB 또는 UUID 등으로 대체)
-      final newId =
-          _state.players.isEmpty
-              ? 1
-              : _state.players
-                      .map((p) => p.id)
-                      .reduce((max, id) => id > max ? id : max) +
-                  1;
+        final newPlayer = PlayerModel(id: newId, name: action.name.trim());
+        _state = _state.copyWith(players: [..._state.players, newPlayer]);
+        debugPrint(
+          '플레이어 추가 완료: ID ${newPlayer.id}, 이름 ${newPlayer.name} (추가 후 선수 수: ${_state.players.length})',
+        );
+        _notifyChanges();
+      case UpdatePlayer():
+        debugPrint(
+          '플레이어 수정 시작: ${action.player.id} - ${action.player.name} (현재 선수 수: ${_state.players.length})',
+        );
+        final updatedPlayers =
+            _state.players.map((player) {
+              if (player.id == action.player.id) {
+                return action.player;
+              }
+              return player;
+            }).toList();
 
-      final newPlayer = PlayerModel(id: newId, name: action.name.trim());
-      _state = _state.copyWith(players: [..._state.players, newPlayer]);
-      debugPrint(
-        '플레이어 추가 완료: ID ${newPlayer.id}, 이름 ${newPlayer.name} (추가 후 선수 수: ${_state.players.length})',
-      );
-      _notifyChanges();
-    } else if (action is UpdatePlayer) {
-      debugPrint(
-        '플레이어 수정 시작: ${action.player.id} - ${action.player.name} (현재 선수 수: ${_state.players.length})',
-      );
-      final updatedPlayers =
-          _state.players.map((player) {
-            if (player.id == action.player.id) {
-              return action.player;
-            }
-            return player;
-          }).toList();
-
-      _state = _state.copyWith(players: updatedPlayers);
-      debugPrint('플레이어 수정 완료 (수정 후 선수 수: ${_state.players.length})');
-      _notifyChanges();
-    } else if (action is RemovePlayer) {
-      debugPrint(
-        '플레이어 삭제 시작: ${action.playerId} (현재 선수 수: ${_state.players.length})',
-      );
-      _state = _state.copyWith(
-        players:
-            _state.players
-                .where((player) => player.id != action.playerId)
-                .toList(),
-      );
-      debugPrint('플레이어 삭제 완료 (삭제 후 선수 수: ${_state.players.length})');
-      _notifyChanges();
-
-      // 그룹 관련 액션
-    } else if (action is FetchAllGroups) {
-      fetchAllGroups();
-    } else if (action is LoadPlayersFromGroup) {
-      loadPlayersFromGroup(action.groupId);
-    } else if (action is SelectPlayerFromGroup) {
-      selectPlayerFromGroup(action.player);
+        _state = _state.copyWith(players: updatedPlayers);
+        debugPrint('플레이어 수정 완료 (수정 후 선수 수: ${_state.players.length})');
+        _notifyChanges();
+      case RemovePlayer():
+        debugPrint(
+          '플레이어 삭제 시작: ${action.playerId} (현재 선수 수: ${_state.players.length})',
+        );
+        _state = _state.copyWith(
+          players:
+              _state.players
+                  .where((player) => player.id != action.playerId)
+                  .toList(),
+        );
+        debugPrint('플레이어 삭제 완료 (삭제 후 선수 수: ${_state.players.length})');
+        _notifyChanges();
+      case FetchAllGroups():
+        fetchAllGroups();
+      case LoadPlayersFromGroup():
+        loadPlayersFromGroup(action.groupId);
+      case SelectPlayerFromGroup():
+        selectPlayerFromGroup(action.player);
+      case OnDiscard():
+        _state = _state.copyWith(
+          tournament: TournamentModel(id: 0, title: '', date: DateTime.now()),
+        );
+        _notifyChanges();
     }
   }
 

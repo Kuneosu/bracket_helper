@@ -109,19 +109,9 @@ class _AddPlayerBottomSheetState extends State<AddPlayerBottomSheet>
 
     // 피드백 메시지 표시
     if (names.length > 1) {
-      // 바텀시트를 닫기 전에 스낵바 표시를 위해 컨텍스트 저장
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
-
       Navigator.pop(context); // 바텀시트 닫기
 
       // 추가된 선수 수 표시
-      scaffoldMessenger.showSnackBar(
-        SnackBar(
-          content: Text('${names.length}명의 선수가 추가되었습니다.'),
-          backgroundColor: CST.black,
-          duration: const Duration(seconds: 1),
-        ),
-      );
     } else {
       Navigator.pop(context); // 바텀시트 닫기
     }
@@ -243,21 +233,7 @@ class _AddPlayerBottomSheetState extends State<AddPlayerBottomSheet>
         widget.onAction(CreateTournamentAction.selectPlayerFromGroup(player));
       }
     }
-
-    // 피드백 메시지를 위해 컨텍스트 저장
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    final selectedCount = _selectedPlayers.length;
-
     Navigator.pop(context);
-
-    // 추가된 선수 수 표시
-    scaffoldMessenger.showSnackBar(
-      SnackBar(
-        content: Text('$selectedCount명의 선수가 추가되었습니다.'),
-        backgroundColor: CST.primary100,
-        duration: const Duration(seconds: 2),
-      ),
-    );
   }
 
   @override
