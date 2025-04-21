@@ -20,7 +20,7 @@ import 'package:bracket_helper/domain/use_case/tournament/get_all_tournaments_us
 import 'package:bracket_helper/domain/use_case/group/get_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/get_matches_in_tournament_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/remove_player_from_group_use_case.dart';
-import 'package:bracket_helper/domain/model/match.dart' as domain;
+import 'package:bracket_helper/domain/model/match_model.dart' as domain;
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:flutter/material.dart';
 
@@ -48,7 +48,7 @@ class _DbTestScreenState extends State<DbTestScreen>
 
   // 선택한 토너먼트의 매치
   int? _selectedTournamentId;
-  List<domain.Match> _matchesInSelectedTournament = [];
+  List<domain.MatchModel> _matchesInSelectedTournament = [];
 
   // 탭 컨트롤러
   late TabController _tabController;
@@ -1630,7 +1630,7 @@ class _DbTestScreenState extends State<DbTestScreen>
   }
 
   // 매치 삭제 다이얼로그
-  Future<void> _confirmDeleteMatch(domain.Match match) async {
+  Future<void> _confirmDeleteMatch(domain.MatchModel match) async {
     final String teamAName = match.teamAName ?? '팀 A';
     final String teamBName = match.teamBName ?? '팀 B';
 

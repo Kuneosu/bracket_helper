@@ -2,10 +2,10 @@ import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
 
-class CreateMatchScreen extends StatelessWidget {
+class CreateTournamentScreen extends StatelessWidget {
   final Widget body;
   final int currentPageIndex;
-  const CreateMatchScreen({
+  const CreateTournamentScreen({
     super.key,
     required this.body,
     required this.currentPageIndex,

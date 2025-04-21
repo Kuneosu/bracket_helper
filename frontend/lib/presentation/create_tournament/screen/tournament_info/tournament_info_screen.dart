@@ -2,13 +2,15 @@ import 'package:bracket_helper/core/presentation/components/default_button.dart'
 import 'package:bracket_helper/core/presentation/components/default_text_field.dart';
 import 'package:bracket_helper/core/presentation/components/default_date_picker.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
+import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class MatchInfoScreen extends StatelessWidget {
-  const MatchInfoScreen({super.key});
+class TournamentInfoScreen extends StatelessWidget {
+  final TournamentModel tournament;
+  const TournamentInfoScreen({super.key, required this.tournament});
 
   @override
   Widget build(BuildContext context) {

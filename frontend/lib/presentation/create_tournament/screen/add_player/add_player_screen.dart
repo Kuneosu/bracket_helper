@@ -1,7 +1,7 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/data/database/app_database.dart';
-import 'package:bracket_helper/presentation/create_match/widgets/add_player_bottom_sheet.dart';
+import 'package:bracket_helper/presentation/create_tournament/widgets/add_player_bottom_sheet.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +88,7 @@ class AddPlayerScreen extends StatelessWidget {
                   text: '다음',
                   onTap: () {
                     context.push(
-                      '${RoutePaths.createTournament}${RoutePaths.matchInfo}',
+                      '${RoutePaths.createTournament}${RoutePaths.editMatch}',
                     );
                   },
                   width: 70,

@@ -1,7 +1,7 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/core/presentation/components/default_text_field.dart';
 import 'package:bracket_helper/data/database/app_database.dart';
-import 'package:bracket_helper/domain/model/match.dart';
+import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -18,15 +18,15 @@ class MatchScreen extends StatelessWidget {
       Player(id: 3, name: '임꺽정'),
       Player(id: 4, name: '김유신'),
     ];
-    final List<Match> matchList = [
-      Match(id: 1),
-      Match(id: 2),
-      Match(id: 3),
-      Match(id: 4),
-      Match(id: 5),
-      Match(id: 6),
-      Match(id: 7),
-      Match(id: 8),
+    final List<MatchModel> matchList = [
+      MatchModel(id: 1),
+      MatchModel(id: 2),
+      MatchModel(id: 3),
+      MatchModel(id: 4),
+      MatchModel(id: 5),
+      MatchModel(id: 6),
+      MatchModel(id: 7),
+      MatchModel(id: 8),
     ];
 
     return DefaultTabController(
@@ -199,7 +199,7 @@ class MatchScreen extends StatelessWidget {
   // 대진표 탭 내용을 구성하는 위젯
   Widget _buildBracketTab(
     BuildContext context,
-    List<Match> matchList,
+    List<MatchModel> matchList,
     List<Player> players,
   ) {
     return Column(

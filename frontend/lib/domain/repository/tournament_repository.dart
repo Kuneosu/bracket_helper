@@ -1,6 +1,6 @@
 import 'package:bracket_helper/data/database/app_database.dart';
 import 'package:bracket_helper/domain/error/result.dart';
-import 'package:bracket_helper/domain/model/match.dart' as domain;
+import 'package:bracket_helper/domain/model/match_model.dart' as domain;
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 
 abstract class TournamentRepository {
@@ -13,7 +13,7 @@ abstract class TournamentRepository {
   /// 토너먼트와 매치 함께 추가하기
   Future<Result<int>> addTournamentWithMatches(
     TournamentsCompanion tournament,
-    List<domain.Match> matches,
+    List<domain.MatchModel> matches,
   );
 
   /// 토너먼트 정보 가져오기
@@ -26,5 +26,5 @@ abstract class TournamentRepository {
   Future<Result<void>> updateTournament(TournamentsCompanion tournament);
 
   /// 토너먼트 내 매치 가져오기
-  Future<Result<List<domain.Match>>> fetchMatchesByTournament(int tournamentId);
+  Future<Result<List<domain.MatchModel>>> fetchMatchesByTournament(int tournamentId);
 }

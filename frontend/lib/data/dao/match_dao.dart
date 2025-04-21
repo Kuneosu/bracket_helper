@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import '../database/tables.dart';
 import '../database/app_database.dart';
-import 'package:bracket_helper/domain/model/match.dart' as domain;
+import 'package:bracket_helper/domain/model/match_model.dart' as domain;
 import 'package:flutter/foundation.dart';
 
 part 'match_dao.g.dart';
@@ -47,11 +47,11 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
   }
 
   // 도메인 모델로 변환하는 메서드
-  Future<List<domain.Match>> fetchMatchesByTournament(int tournamentId) async {
+  Future<List<domain.MatchModel>> fetchMatchesByTournament(int tournamentId) async {
     try {
       // 1. 매치 정보 가져오기
       final dbMatches = await getMatchesByTournament(tournamentId);
-      final result = <domain.Match>[];
+      final result = <domain.MatchModel>[];
 
       // 2. 각 매치에 대해 도메인 모델 생성
       for (final dbMatch in dbMatches) {
@@ -116,7 +116,7 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
         }
 
         // 3. 매치 도메인 모델 생성
-        final domainMatch = domain.Match(
+        final domainMatch = domain.MatchModel(
           id: dbMatch.id,
           tournamentId: dbMatch.tournamentId,
           teamAId: dbMatch.teamAId,

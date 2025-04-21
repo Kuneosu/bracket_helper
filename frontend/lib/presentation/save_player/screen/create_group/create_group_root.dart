@@ -53,27 +53,26 @@ class _CreateGroupRootState extends State<CreateGroupRoot> {
     return CreateGroupScreen(
       groupNameController: _controller,
       isFormValid: widget.isGroupNameValid,
-      // TextField의 onChanged 이벤트에서도 직접 액션 호출하도록 설정
-      onGroupNameChanged: (text) {
-        debugPrint('직접 호출된 onGroupNameChanged: $text');
-        widget.onAction(SavePlayerAction.onGroupNameChanged(text));
-      },
       selectedColor: widget.selectedColor,
-      onColorSelected: (color) {
-        widget.onAction(SavePlayerAction.onGroupColorSelected(color));
-      },
-      onSaveGroup: () {
-        // 액션을 통해 그룹 저장 요청
-        widget.onAction(
-          SavePlayerAction.onSaveGroup(
-            _controller.text.trim(),
-            widget.selectedColor,
-          ),
-        );
-
-        // 그룹 목록 화면으로 이동
-        context.go('${RoutePaths.savePlayer}${RoutePaths.groupList}');
-      },
+      onAction: _handleAction,
     );
+  }
+  
+  // 액션 처리 메서드
+  void _handleAction(SavePlayerAction action) {
+    debugPrint('CreateGroupRoot - 액션 수신: $action');
+    
+    // SaveGroup 액션은 네비게이션 처리 후 상위로 전달
+    if (action is OnSaveGroup) {
+      // 액션 전달
+      widget.onAction(action);
+      
+      // 그룹 목록 화면으로 이동
+      context.go('${RoutePaths.savePlayer}${RoutePaths.groupList}');
+      return;
+    }
+    
+    // 그 외 액션은 상위 컴포넌트로 전달
+    widget.onAction(action);
   }
 }

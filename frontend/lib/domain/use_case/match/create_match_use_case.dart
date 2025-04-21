@@ -1,6 +1,6 @@
 import 'package:bracket_helper/domain/error/app_error.dart';
 import 'package:bracket_helper/domain/error/result.dart';
-import 'package:bracket_helper/domain/model/match.dart';
+import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/repository/match_repository.dart';
 import 'package:bracket_helper/domain/repository/team_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -43,7 +43,7 @@ class CreateMatchUseCase {
   ///
   /// 성공 시 생성된 매치 정보를 포함한 [Result<Match>]를 반환합니다.
   /// 실패 시 에러 정보를 포함한 [Result<Match>]를 반환합니다.
-  Future<Result<Match>> execute(CreateMatchParams params) async {
+  Future<Result<MatchModel>> execute(CreateMatchParams params) async {
     // 디버깅용 로그
     debugPrint(
       'CreateMatchUseCase: 매치 생성 요청 - '

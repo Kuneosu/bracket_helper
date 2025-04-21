@@ -1,5 +1,5 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
-import 'package:bracket_helper/domain/model/match.dart';
+import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
@@ -13,10 +13,10 @@ class EditMatchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final playerCount = 4;
     final matchCount = 3;
-    final List<Match> matchList = [
-      Match(id: 1, teamAId: 1, teamBId: 2, scoreA: 1, scoreB: 2),
-      Match(id: 2, teamAId: 3, teamBId: 4, scoreA: 3, scoreB: 4),
-      Match(id: 3, teamAId: 1, teamBId: 3, scoreA: 1, scoreB: 3),
+    final List<MatchModel> matchList = [
+      MatchModel(id: 1, teamAId: 1, teamBId: 2, scoreA: 1, scoreB: 2),
+      MatchModel(id: 2, teamAId: 3, teamBId: 4, scoreA: 3, scoreB: 4),
+      MatchModel(id: 3, teamAId: 1, teamBId: 3, scoreA: 1, scoreB: 3),
     ];
     final List<PlayerModel> mockPlayerList = [
       PlayerModel(id: 1, name: "홍길동"),

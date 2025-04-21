@@ -2,7 +2,7 @@ import 'package:bracket_helper/data/database/app_database.dart';
 import 'package:bracket_helper/data/repository/match_repository_impl.dart';
 import 'package:bracket_helper/domain/error/result.dart';
 import 'package:bracket_helper/domain/error/app_error.dart';
-import 'package:bracket_helper/domain/model/match.dart' as domain;
+import 'package:bracket_helper/domain/model/match_model.dart' as domain;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -39,7 +39,7 @@ void main() {
       );
 
       // then
-      expect(result, isA<Result<domain.Match>>());
+      expect(result, isA<Result<domain.MatchModel>>());
       expect(result.isSuccess, isTrue);
       expect(result.isFailure, isFalse);
       expect(result.value.tournamentId, tournamentId);
@@ -63,7 +63,7 @@ void main() {
       );
 
       // then
-      expect(result, isA<Result<domain.Match>>());
+      expect(result, isA<Result<domain.MatchModel>>());
       expect(result.isSuccess, isFalse);
       expect(result.isFailure, isTrue);
       expect(result.error, isA<ValidationError>());
@@ -88,7 +88,7 @@ void main() {
       );
 
       // then
-      expect(result, isA<Result<domain.Match>>());
+      expect(result, isA<Result<domain.MatchModel>>());
       expect(result.isSuccess, isFalse);
       expect(result.isFailure, isTrue);
       expect(result.error, isA<DatabaseError>());
@@ -126,7 +126,7 @@ void main() {
       final result = await repository.createMatches(matchesData);
 
       // then
-      expect(result, isA<Result<List<domain.Match>>>());
+      expect(result, isA<Result<List<domain.MatchModel>>>());
       expect(result.isSuccess, isTrue);
       expect(result.isFailure, isFalse);
       expect(result.value.length, matchesData.length);
@@ -150,7 +150,7 @@ void main() {
       final result = await repository.createMatches(matchesData);
 
       // then
-      expect(result, isA<Result<List<domain.Match>>>());
+      expect(result, isA<Result<List<domain.MatchModel>>>());
       expect(result.isSuccess, isFalse);
       expect(result.isFailure, isTrue);
       expect(result.error, isA<DatabaseError>());
@@ -172,7 +172,7 @@ void main() {
       final result = await repository.createMatches(matchesData);
 
       // then
-      expect(result, isA<Result<List<domain.Match>>>());
+      expect(result, isA<Result<List<domain.MatchModel>>>());
       expect(result.isSuccess, isFalse);
       expect(result.isFailure, isTrue);
       expect(result.error, isA<DatabaseError>());
@@ -186,7 +186,7 @@ void main() {
       // given
       final tournamentId = 1;
       final matches = [
-        domain.Match(
+        domain.MatchModel(
           id: 1,
           tournamentId: tournamentId,
           teamAId: 1,
@@ -205,7 +205,7 @@ void main() {
       final result = await repository.fetchMatchesByTournament(tournamentId);
 
       // then
-      expect(result, isA<Result<List<domain.Match>>>());
+      expect(result, isA<Result<List<domain.MatchModel>>>());
       expect(result.isSuccess, isTrue);
       expect(result.isFailure, isFalse);
       expect(result.value, matches);
@@ -226,7 +226,7 @@ void main() {
       final result = await repository.fetchMatchesByTournament(tournamentId);
 
       // then
-      expect(result, isA<Result<List<domain.Match>>>());
+      expect(result, isA<Result<List<domain.MatchModel>>>());
       expect(result.isSuccess, isFalse);
       expect(result.isFailure, isTrue);
       expect(result.error, isA<DatabaseError>());
@@ -269,7 +269,7 @@ void main() {
       );
 
       // then
-      expect(result, isA<Result<domain.Match>>());
+      expect(result, isA<Result<domain.MatchModel>>());
       expect(result.isSuccess, isTrue);
       expect(result.isFailure, isFalse);
       expect(result.value.id, matchId);
@@ -310,7 +310,7 @@ void main() {
       );
 
       // then
-      expect(result, isA<Result<domain.Match>>());
+      expect(result, isA<Result<domain.MatchModel>>());
       expect(result.isSuccess, isFalse);
       expect(result.isFailure, isTrue);
       expect(result.error, isA<DatabaseError>());
@@ -348,7 +348,7 @@ void main() {
       );
 
       // then
-      expect(result, isA<Result<domain.Match>>());
+      expect(result, isA<Result<domain.MatchModel>>());
       expect(result.isSuccess, isFalse);
       expect(result.isFailure, isTrue);
       expect(result.error, isA<DatabaseError>());

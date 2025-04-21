@@ -7,7 +7,7 @@ import 'dart:async' as _i5;
 
 import 'package:bracket_helper/data/dao/match_dao.dart' as _i6;
 import 'package:bracket_helper/data/database/app_database.dart' as _i2;
-import 'package:bracket_helper/domain/model/match.dart' as _i8;
+import 'package:bracket_helper/domain/model/match_model.dart' as _i8;
 import 'package:drift/drift.dart' as _i3;
 import 'package:drift/src/runtime/executor/stream_queries.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
@@ -287,12 +287,16 @@ class MockMatchDao extends _i1.Mock implements _i6.MatchDao {
           as _i5.Future<_i2.Matche?>);
 
   @override
-  _i5.Future<List<_i8.Match>> fetchMatchesByTournament(int? tournamentId) =>
+  _i5.Future<List<_i8.MatchModel>> fetchMatchesByTournament(
+    int? tournamentId,
+  ) =>
       (super.noSuchMethod(
             Invocation.method(#fetchMatchesByTournament, [tournamentId]),
-            returnValue: _i5.Future<List<_i8.Match>>.value(<_i8.Match>[]),
+            returnValue: _i5.Future<List<_i8.MatchModel>>.value(
+              <_i8.MatchModel>[],
+            ),
           )
-          as _i5.Future<List<_i8.Match>>);
+          as _i5.Future<List<_i8.MatchModel>>);
 
   @override
   _i5.Future<void> updateScore({

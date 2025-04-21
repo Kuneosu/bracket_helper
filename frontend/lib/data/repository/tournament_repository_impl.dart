@@ -3,7 +3,7 @@ import 'package:bracket_helper/data/dao/match_dao.dart';
 import 'package:bracket_helper/data/dao/tournament_dao.dart';
 import 'package:bracket_helper/domain/error/app_error.dart';
 import 'package:bracket_helper/domain/error/result.dart';
-import 'package:bracket_helper/domain/model/match.dart' as domain;
+import 'package:bracket_helper/domain/model/match_model.dart' as domain;
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/repository/tournament_repository.dart';
 import 'package:drift/drift.dart';
@@ -65,7 +65,7 @@ class TournamentRepositoryImpl implements TournamentRepository {
   @override
   Future<Result<int>> addTournamentWithMatches(
     TournamentsCompanion tournament,
-    List<domain.Match> matches,
+    List<domain.MatchModel> matches,
   ) async {
     try {
       final matchesCompanions =
@@ -149,7 +149,7 @@ class TournamentRepositoryImpl implements TournamentRepository {
   }
 
   @override
-  Future<Result<List<domain.Match>>> fetchMatchesByTournament(
+  Future<Result<List<domain.MatchModel>>> fetchMatchesByTournament(
     int tournamentId,
   ) async {
     try {
