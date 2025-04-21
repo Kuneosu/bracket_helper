@@ -1,5 +1,6 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
+import 'package:bracket_helper/domain/model/group_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
@@ -14,49 +15,39 @@ import 'package:go_router/go_router.dart';
 class AddPlayerScreen extends StatelessWidget {
   final TournamentModel tournament;
   final List<PlayerModel> players;
+  final List<GroupModel> groups;
   final Function(CreateTournamentAction) onAction;
+  final List<PlayerModel> Function(int) getPlayersInGroup;
 
   const AddPlayerScreen({
     super.key,
     required this.tournament,
     required this.players,
+    required this.groups,
     required this.onAction,
+    required this.getPlayersInGroup,
   });
 
   @override
   Widget build(BuildContext context) {
-    // 실제 PlayerModel 리스트 사용
-    final displayPlayers = players.isEmpty ? [] : players;
+    // 플레이어 목록
+    final displayPlayers = players;
 
-    debugPrint('AddPlayerScreen - build: 받은 선수 목록 ${players.length}명');
-    if (players.isNotEmpty) {
-      debugPrint(
-        'AddPlayerScreen - 선수 목록: ${players.map((p) => "${p.id}:${p.name}").join(', ')}',
-      );
-    }
-
-    // Expanded를 제거하고 일반 Column 사용
     return Column(
+      mainAxisSize: MainAxisSize.max,
       children: [
-        // 상단 헤더
+        // 헤더 (플레이어 수 + 추가 버튼)
         _buildHeader(context, displayPlayers.length),
 
-        // 목록 부분은 고정 높이의 Container로 변경하고 키보드 대응
+        // 플레이어 목록
         Expanded(
-          child: ListView.builder(
-            // 오버스크롤 동작 제어를 위한 physics 설정
-            physics: const ClampingScrollPhysics(),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            itemCount: displayPlayers.length + 1,
-            itemBuilder: (context, index) {
-              if (index == displayPlayers.length) {
-                return _buildAddPlayerItem(context);
-              } else {
-                return _buildPlayerItem(displayPlayers[index], index + 1);
-              }
-            },
-          ),
+          child:
+              displayPlayers.isEmpty
+                  ? _buildEmptyState(context)
+                  : _buildPlayerList(displayPlayers),
         ),
+
+        // 아래 여백
         Padding(
           padding: const EdgeInsets.only(
             left: 20,
@@ -131,6 +122,46 @@ class AddPlayerScreen extends StatelessWidget {
     );
   }
 
+  // 선수 없을 때 표시할 위젯
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.person_outline, size: 72, color: CST.gray3),
+          const SizedBox(height: 16),
+          Text(
+            '참가 선수를 추가해주세요',
+            style: TST.mediumTextBold.copyWith(color: CST.gray3),
+          ),
+          const SizedBox(height: 24),
+          DefaultButton(
+            text: '선수 추가하기',
+            onTap: () {
+              _showAddPlayerBottomSheet(context);
+            },
+            width: 150,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 선수 목록 위젯
+  Widget _buildPlayerList(List<PlayerModel> playerList) {
+    return ListView.builder(
+      itemCount: playerList.length + 1, // +1은 '선수 추가하기' 항목을 위한 것
+      itemBuilder: (context, index) {
+        if (index == playerList.length) {
+          // 마지막 항목은 '선수 추가하기' 버튼
+          return _buildAddPlayerItem(context);
+        }
+        // 선수 항목
+        return _buildPlayerItem(playerList[index], index + 1);
+      },
+    );
+  }
+
   // 선수 추가 아이템
   Widget _buildAddPlayerItem(BuildContext context) {
     return InkWell(
@@ -161,6 +192,8 @@ class AddPlayerScreen extends StatelessWidget {
   // 선수 추가 바텀시트 표시 메서드
   void _showAddPlayerBottomSheet(BuildContext context) {
     debugPrint('AddPlayerScreen - 선수 추가 바텀시트 표시: 현재 선수 수 ${players.length}명');
+    debugPrint('AddPlayerScreen - 저장된 그룹 수: ${groups.length}개');
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // 키보드가 올라올 때 바텀시트가 위로 올라가도록 설정
@@ -170,7 +203,12 @@ class AddPlayerScreen extends StatelessWidget {
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
-            child: AddPlayerBottomSheet(onAction: onAction),
+            child: AddPlayerBottomSheet(
+              onAction: onAction,
+              groups: groups,
+              players: players,
+              getPlayersInGroup: getPlayersInGroup,
+            ),
           ),
     );
   }

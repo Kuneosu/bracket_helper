@@ -1,5 +1,7 @@
 import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
+import 'package:bracket_helper/domain/use_case/group/get_all_groups_use_case.dart';
+import 'package:bracket_helper/domain/use_case/group/get_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/tournament/create_tournament_use_case.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_view_model.dart';
 import 'package:bracket_helper/presentation/create_tournament/screen/add_player/add_player_root.dart';
@@ -35,7 +37,11 @@ class _CreateTournamentRootState extends State<CreateTournamentRoot> {
       debugPrint(
         'CreateTournamentRoot - initState: 새로운 CreateTournamentViewModel 생성',
       );
-      viewModel = CreateTournamentViewModel(getIt<CreateTournamentUseCase>());
+      viewModel = CreateTournamentViewModel(
+        getIt<CreateTournamentUseCase>(),
+        getIt<GetAllGroupsUseCase>(),
+        getIt<GetGroupUseCase>(),
+      );
       getIt.registerSingleton<CreateTournamentViewModel>(viewModel);
       debugPrint(
         'CreateTournamentRoot - initState: 새로운 CreateTournamentViewModel 등록됨',
@@ -50,7 +56,9 @@ class _CreateTournamentRootState extends State<CreateTournamentRoot> {
     try {
       // 이 시점에서는 context가 유효하므로 현재 경로를 안전하게 저장
       currentLocation = GoRouterState.of(context).matchedLocation;
-      debugPrint('CreateTournamentRoot - didChangeDependencies: 현재 경로 $currentLocation');
+      debugPrint(
+        'CreateTournamentRoot - didChangeDependencies: 현재 경로 $currentLocation',
+      );
     } catch (e) {
       debugPrint('CreateTournamentRoot - didChangeDependencies 오류: $e');
     }
@@ -61,17 +69,15 @@ class _CreateTournamentRootState extends State<CreateTournamentRoot> {
     // 뷰모델은 앱 종료 시나 다른 화면으로 완전히 벗어날 때만 제거하도록 수정
     // 안전하게 뷰모델 정보 출력
     if (getIt.isRegistered<CreateTournamentViewModel>()) {
-      debugPrint(
-        'CreateTournamentRoot - dispose: 뷰모델 정보 출력',
-      );
+      debugPrint('CreateTournamentRoot - dispose: 뷰모델 정보 출력');
       debugPrint('선수 목록 수: ${viewModel.state.players.length}');
       if (viewModel.state.players.isNotEmpty) {
         debugPrint(
           '선수 목록: ${viewModel.state.players.map((p) => "${p.id}:${p.name}").join(', ')}',
         );
       }
-      
-      // 완전히 앱이 종료될 때 getIt 싱글톤만 제거 
+
+      // 완전히 앱이 종료될 때 getIt 싱글톤만 제거
       // GoRouterState에 접근하지 않음
       debugPrint('CreateTournamentRoot - dispose: 화면 종료, 뷰모델 유지');
     }

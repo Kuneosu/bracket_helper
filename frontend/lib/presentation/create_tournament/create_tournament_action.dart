@@ -17,4 +17,9 @@ sealed class CreateTournamentAction with _$CreateTournamentAction {
   const factory CreateTournamentAction.addPlayer(String name) = AddPlayer;
   const factory CreateTournamentAction.updatePlayer(PlayerModel player) = UpdatePlayer;
   const factory CreateTournamentAction.removePlayer(int playerId) = RemovePlayer;
+  
+  // 그룹 관련 액션
+  const factory CreateTournamentAction.fetchAllGroups() = FetchAllGroups;
+  const factory CreateTournamentAction.loadPlayersFromGroup(int groupId) = LoadPlayersFromGroup;
+  const factory CreateTournamentAction.selectPlayerFromGroup(PlayerModel player) = SelectPlayerFromGroup;
 }
