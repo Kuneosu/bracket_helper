@@ -142,6 +142,8 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
 
     // 이미 처리된 선수 ID 목록
     Set<int> processedPlayerIds = {};
+    // 추가에 성공한 선수 수
+    int successCount = 0;
 
     // 모든 그룹에서 선택된 선수들을 찾아 추가
     final allGroupsPlayers = widget.getPlayersInGroup(ALL_GROUPS);
@@ -158,9 +160,20 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
       );
 
       if (player.id != -1) {
-        widget.onAction(CreateTournamentAction.selectPlayerFromGroup(player));
+        // 이미 추가된 선수인지 확인 (이름만으로 비교)
+        final isAlreadyAdded = widget.players.any(
+          (p) => p.name == player.name,
+        );
+
+        if (!isAlreadyAdded) {
+          // 아직 추가되지 않은 선수만 추가 실행
+          widget.onAction(CreateTournamentAction.selectPlayerFromGroup(player));
+          successCount++;
+        }
+        
+        // 처리 완료 표시
         processedPlayerIds.add(player.id);
-        debugPrint('선수 추가: ID ${player.id}, 이름 ${player.name}');
+        debugPrint('선수 추가: ID ${player.id}, 이름 ${player.name}, 이미 추가됨: $isAlreadyAdded');
       }
     }
 
@@ -170,7 +183,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
     });
 
     // 디버깅 정보
-    debugPrint('총 ${processedPlayerIds.length}명의 선수가 추가되었습니다.');
+    debugPrint('총 ${processedPlayerIds.length}명의 선수가 처리되었습니다. 실제 추가된 선수: $successCount명');
   }
 
   // 현재 선택된 그룹의 선수 목록을 가져오는 헬퍼 메서드
@@ -214,6 +227,14 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
 
   @override
   Widget build(BuildContext context) {
+    // 선수 수 제한 조건 확인 (4~32명)
+    final playerCount = widget.players.length;
+    final bool isValidPlayerCount = playerCount >= 4 && playerCount <= 32;
+    final String playerCountWarning =
+        !isValidPlayerCount
+            ? (playerCount < 4 ? "최소 4명의 선수가 필요합니다." : "최대 32명까지 등록 가능합니다.")
+            : "";
+
     return Column(
       children: [
         // 탭바 추가
@@ -263,6 +284,44 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
           ),
         ),
 
+        // 선수 수 관련 안내 메시지
+        if (!isValidPlayerCount)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: CST.primary20,
+            child: Row(
+              children: [
+                Icon(
+                  playerCount < 4
+                      ? Icons.error_outline
+                      : Icons.warning_amber_outlined,
+                  color: playerCount < 4 ? Colors.red : Colors.orange,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    playerCountWarning,
+                    style: TST.smallTextBold.copyWith(
+                      color: playerCount < 4 ? Colors.red : Colors.orange,
+                    ),
+                  ),
+                ),
+                Text(
+                  "$playerCount/32명",
+                  style: TST.smallTextBold.copyWith(
+                    color:
+                        playerCount < 4
+                            ? Colors.red
+                            : playerCount > 32
+                            ? Colors.orange
+                            : CST.primary100,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
         // 하단 이전/다음 버튼
         NavigationButtonsWidget(
           onPrevious: () {
@@ -275,18 +334,26 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
             );
           },
           onNext: () {
+            if (!isValidPlayerCount) {
+              // 선수 수가 유효하지 않을 때 스낵바로 안내
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("선수는 4~32명으로 구성해야 합니다"),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+              return;
+            }
+
             debugPrint(
               'AddPlayerScreen - 다음 버튼 클릭: 현재 선수 수 ${widget.players.length}명',
             );
-            widget.onAction(
-              CreateTournamentAction.updateProcess(2),
-            );
+            widget.onAction(CreateTournamentAction.updateProcess(2));
 
-            context.go(
-              '${RoutePaths.createTournament}${RoutePaths.editMatch}',
-            );
+            context.go('${RoutePaths.createTournament}${RoutePaths.editMatch}');
           },
-          isNextDisabled: widget.players.isEmpty,
+          isNextDisabled: widget.players.isEmpty || !isValidPlayerCount,
         ),
       ],
     );
@@ -320,18 +387,19 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
 
         // 선수 목록
         Expanded(
-          child: widget.players.isEmpty
-              ? EmptyPlayerListWidget()
-              : ListView.builder(
-                  itemCount: widget.players.length,
-                  itemBuilder: (context, index) {
-                    return InlineEditablePlayerItem(
-                      player: widget.players[index],
-                      index: index + 1,
-                      onAction: widget.onAction,
-                    );
-                  },
-                ),
+          child:
+              widget.players.isEmpty
+                  ? EmptyPlayerListWidget()
+                  : ListView.builder(
+                    itemCount: widget.players.length,
+                    itemBuilder: (context, index) {
+                      return InlineEditablePlayerItem(
+                        player: widget.players[index],
+                        index: index + 1,
+                        onAction: widget.onAction,
+                      );
+                    },
+                  ),
         ),
       ],
     );

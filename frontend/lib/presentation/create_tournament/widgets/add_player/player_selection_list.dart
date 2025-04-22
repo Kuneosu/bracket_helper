@@ -53,17 +53,34 @@ class PlayerSelectionList extends StatelessWidget {
     return ListView.separated(
       padding: EdgeInsets.all(8),
       itemCount: players.length,
-      separatorBuilder: (context, index) => Divider(
-        height: 1,
-        thickness: 1,
-        color: CST.gray4.withValues(alpha: 0.5),
-      ),
+      separatorBuilder:
+          (context, index) => Divider(
+            height: 1,
+            thickness: 1,
+            color: CST.gray4.withValues(alpha: 0.5),
+          ),
       itemBuilder: (context, index) {
         final player = players[index];
         final isSelected = selectedPlayers.containsKey(player.id);
 
-        // 이미 대회에 추가된 선수인지 확인
-        final isAlreadyAdded = tournamentPlayers.any((p) => p.id == player.id);
+        // 오직 이름으로만 비교
+        final isAlreadyAdded = tournamentPlayers.any((p) => p.name == player.name);
+
+        // 디버깅용 로그
+        if (index < 5) {
+          debugPrint(
+            'PlayerSelectionList - 선수[$index]: ${player.name}, ID: ${player.id}, 이미 추가됨: $isAlreadyAdded',
+          );
+          if (isAlreadyAdded) {
+            final matchedPlayer = tournamentPlayers.firstWhere(
+              (p) => p.name == player.name,
+              orElse: () => PlayerModel(id: -1, name: ''),
+            );
+            if (matchedPlayer.id != -1) {
+              debugPrint('  이름이 일치하는 선수: ${matchedPlayer.name}, ID: ${matchedPlayer.id}');
+            }
+          }
+        }
 
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(
@@ -84,7 +101,8 @@ class PlayerSelectionList extends StatelessWidget {
               shape: BoxShape.circle,
               color: isSelected ? CST.primary100 : Colors.transparent,
               border: Border.all(
-                color: isAlreadyAdded
+                color:
+                    isAlreadyAdded
                     ? CST.gray3
                     : isSelected
                         ? CST.primary100
@@ -92,12 +110,14 @@ class PlayerSelectionList extends StatelessWidget {
                 width: 2,
               ),
             ),
-            child: isSelected
+            child:
+                isSelected
                 ? Icon(Icons.check, color: Colors.white, size: 16)
                 : null,
           ),
           enabled: !isAlreadyAdded,
-          subtitle: isAlreadyAdded
+          subtitle:
+              isAlreadyAdded
               ? Row(
                   children: [
                     Icon(Icons.info_outline, size: 12, color: CST.gray3),
@@ -116,4 +136,4 @@ class PlayerSelectionList extends StatelessWidget {
       },
     );
   }
-} 
+}

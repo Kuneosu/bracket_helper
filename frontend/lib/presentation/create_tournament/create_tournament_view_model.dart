@@ -59,12 +59,12 @@ class CreateTournamentViewModel with ChangeNotifier {
       case GenerateMatches():
         debugPrint('GenerateMatches 액션 감지 - 기본 코트 수로 매치 생성');
         _createMatchesDirectly(null);
-      
+
       case GenerateMatchesWithCourts():
         final courts = action.courts;
         debugPrint('GenerateMatchesWithCourts 액션 감지 - 코트 수: $courts');
         _createMatchesDirectly(courts);
-        
+
       case OnDateChanged():
         debugPrint('날짜 변경: ${action.date}');
         _state = _state.copyWith(
@@ -151,7 +151,25 @@ class CreateTournamentViewModel with ChangeNotifier {
                         .reduce((max, id) => id > max ? id : max) +
                     1;
 
-        final newPlayer = PlayerModel(id: newId, name: action.name.trim());
+        // 이름 중복 확인 및 처리
+        final baseName = action.name.trim();
+        String uniqueName = baseName;
+
+        // 동일한 이름을 가진 선수들 찾기
+        final duplicateCount =
+            _state.players.where((p) {
+              // 정확히 같은 이름이거나, "이름(숫자)" 형태인 경우 모두 카운트
+              return p.name == baseName ||
+                  p.name.startsWith('$baseName(') && p.name.endsWith(')');
+            }).length;
+
+        // 중복 선수가 있는 경우
+        if (duplicateCount > 0) {
+          uniqueName = '$baseName(${duplicateCount + 1})';
+          debugPrint('중복된 이름 발견: $baseName → $uniqueName로 변경됨');
+        }
+
+        final newPlayer = PlayerModel(id: newId, name: uniqueName);
         _state = _state.copyWith(players: [..._state.players, newPlayer]);
         debugPrint(
           '플레이어 추가 완료: ID ${newPlayer.id}, 이름 ${newPlayer.name} (추가 후 선수 수: ${_state.players.length})',
@@ -409,8 +427,10 @@ class CreateTournamentViewModel with ChangeNotifier {
       'CreateTournamentViewModel - 그룹에서 선수 선택: ${player.id} - ${player.name}',
     );
 
-    // 이미 선택된 선수인지 확인
-    final isAlreadySelected = _state.players.any((p) => p.id == player.id);
+    // 이미 선택된 선수인지 확인 (이름으로만 비교)
+    final isAlreadySelected = _state.players.any(
+      (p) => p.name == player.name,
+    );
 
     if (isAlreadySelected) {
       debugPrint('CreateTournamentViewModel - 이미 선택된 선수입니다: ${player.name}');
@@ -446,7 +466,9 @@ class CreateTournamentViewModel with ChangeNotifier {
 
   // 직접 매치를 생성하는 함수
   void _createMatchesDirectly([int? customCourts]) {
-    debugPrint('_createMatchesDirectly 함수 호출됨${customCourts != null ? " (코트 수: $customCourts)" : ""}');
+    debugPrint(
+      '_createMatchesDirectly 함수 호출됨${customCourts != null ? " (코트 수: $customCourts)" : ""}',
+    );
 
     try {
       // 선수 목록 확인
@@ -471,7 +493,7 @@ class CreateTournamentViewModel with ChangeNotifier {
         // 코트 수가 지정되었으면 사용, 그렇지 않으면 기본값(players.length ~/ 4) 사용
         final courts = customCourts ?? players.length ~/ 4;
         debugPrint('사용할 코트 수: $courts');
-        
+
         newMatches = BracketScheduler.generate(
           players.shuffled(),
           gamesPer: gamesPerPlayer,
@@ -483,11 +505,11 @@ class CreateTournamentViewModel with ChangeNotifier {
         // 매치 ID와 순서를 설정
         for (int i = 0; i < newMatches.length; i++) {
           final match = newMatches[i];
-          
+
           // 선수 이름이 콤마(,)로 구분된 경우 처리
           String teamAName = match.teamAName ?? '';
           String teamBName = match.teamBName ?? '';
-          
+
           // 복식 토너먼트인 경우 포맷팅 변경
           if (isDoubles) {
             // A팀 처리
@@ -497,7 +519,7 @@ class CreateTournamentViewModel with ChangeNotifier {
                 teamAPlayers[1].isNotEmpty) {
               teamAName = '${teamAPlayers[0]} / ${teamAPlayers[1]}';
             }
-            
+
             // B팀 처리
             final teamBPlayers = teamBName.split(',');
             if (teamBPlayers.length >= 2 &&
@@ -509,20 +531,20 @@ class CreateTournamentViewModel with ChangeNotifier {
             // 단식 토너먼트인 경우, 콤마로 구분된 문자열을 각각 하나의 매치로 분리해야 함
             final teamAPlayers = teamAName.split(',');
             final teamBPlayers = teamBName.split(',');
-            
+
             // 각각 첫 번째 선수만 사용 (단식)
             if (teamAPlayers.isNotEmpty && teamAPlayers[0].isNotEmpty) {
               teamAName = teamAPlayers[0];
             }
-            
+
             if (teamBPlayers.isNotEmpty && teamBPlayers[0].isNotEmpty) {
               teamBName = teamBPlayers[0];
             }
           }
-          
+
           newMatches[i] = match.copyWith(
-            id: i + 1, 
-            scoreA: 0, 
+            id: i + 1,
+            scoreA: 0,
             scoreB: 0,
             teamAName: teamAName,
             teamBName: teamBName,
