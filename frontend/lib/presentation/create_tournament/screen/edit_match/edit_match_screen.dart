@@ -72,16 +72,12 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                       ? _buildEmptyMatchList()
                       : ListView.builder(
                         physics: const ClampingScrollPhysics(),
-                        itemCount: widget.matches.length + 1,
+                        itemCount: widget.matches.length,
                         itemBuilder: (context, index) {
-                          if (index == widget.matches.length) {
-                            return _buildAddMatchButton();
-                          } else {
-                            return _buildMatchItem(
-                              index,
-                              widget.matches[index],
-                            );
-                          }
+                          return _buildMatchItem(
+                            index,
+                            widget.matches[index],
+                          );
                         },
                       ),
             ),
@@ -400,49 +396,14 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
     widget.onAction(action);
   }
 
-  // 추가 버튼 위젯
-  Widget _buildAddMatchButton() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2),
-      decoration: BoxDecoration(
-        color: CST.primary40.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: CST.primary60.withValues(alpha: 0.5)),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            // TODO: 새 매치 추가 구현
-          },
-          borderRadius: BorderRadius.circular(8),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.add_circle_outline, color: CST.primary100, size: 18),
-                const SizedBox(width: 8),
-                Text(
-                  "새 경기 추가",
-                  style: TST.smallTextBold.copyWith(color: CST.primary100),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   // 매치 아이템 위젯
   Widget _buildMatchItem(int index, MatchModel match) {
     final isDoubles = widget.tournament.isDoubles;
-
+    
     // 커스텀 선수 이름 사용 (MatchModel에 저장된 teamName이 있으면 사용)
     final teamAName = match.teamAName ?? _getPlayerNameById(match.teamAId);
     final teamBName = match.teamBName ?? _getPlayerNameById(match.teamBId);
-
+    
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 2),
       decoration: BoxDecoration(
@@ -508,15 +469,6 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   ),
                 ],
               ),
-            ),
-            IconButton(
-              icon: Icon(Icons.edit_outlined, color: CST.primary100, size: 18),
-              onPressed: () {
-                // TODO: 매치 편집 구현
-              },
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              splashRadius: 20,
             ),
           ],
         ),
