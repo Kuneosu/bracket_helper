@@ -1,25 +1,22 @@
-import 'package:bracket_helper/core/presentation/components/default_button.dart';
+// ignore_for_file: constant_identifier_names
+
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/group_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
-import 'package:bracket_helper/presentation/create_tournament/widgets/add_player/add_player_item.dart';
-import 'package:bracket_helper/presentation/create_tournament/widgets/add_player/dismissible_player_item.dart';
-import 'package:bracket_helper/presentation/create_tournament/widgets/add_player/empty_player_list.dart';
-import 'package:bracket_helper/presentation/create_tournament/widgets/add_player/player_list_header.dart';
-import 'package:bracket_helper/presentation/create_tournament/widgets/add_player_bottom_sheet.dart';
+import 'package:bracket_helper/presentation/create_tournament/widgets/add_player/inline_editable_player_item.dart';
+import 'package:bracket_helper/presentation/create_tournament/widgets/index.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-// 로컬에서 간단하게 사용할 임시 선수 클래스
-
-class AddPlayerScreen extends StatelessWidget {
+class AddPlayerScreen extends StatefulWidget {
   final TournamentModel tournament;
   final List<PlayerModel> players;
   final List<GroupModel> groups;
+  final bool isLoading;
   final Function(CreateTournamentAction) onAction;
   final List<PlayerModel> Function(int) getPlayersInGroup;
 
@@ -28,308 +25,378 @@ class AddPlayerScreen extends StatelessWidget {
     required this.tournament,
     required this.players,
     required this.groups,
+    this.isLoading = false,
     required this.onAction,
     required this.getPlayersInGroup,
   });
 
   @override
+  State<AddPlayerScreen> createState() => _AddPlayerScreenState();
+}
+
+class _AddPlayerScreenState extends State<AddPlayerScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  // 저장된 선수 탭 관련 상태
+  int? _selectedGroupId;
+  final Map<int, bool> _selectedPlayers = {};
+  static const int ALL_GROUPS = -999; // 모든 그룹을 선택했을 때 사용할 상수
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+
+    // 기본 선택 그룹 설정 (전체 그룹)
+    _selectedGroupId = ALL_GROUPS;
+
+    debugPrint('AddPlayerScreen - 초기화: 저장된 그룹 수 ${widget.groups.length}개');
+    if (widget.groups.isNotEmpty) {
+      debugPrint(
+        'AddPlayerScreen - 그룹 목록: ${widget.groups.map((g) => "${g.id}:${g.name}").join(', ')}',
+      );
+
+      // 초기화 시 모든 그룹의 선수 목록 로드 요청
+      for (final group in widget.groups) {
+        widget.onAction(CreateTournamentAction.loadPlayersFromGroup(group.id));
+      }
+    }
+
+    // 모든 그룹에 대한 선수 목록 미리 로드 (지연 실행, 화면 빌드 후)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 전체 그룹 새로고침
+      widget.onAction(const CreateTournamentAction.fetchAllGroups());
+
+      // 선수 초기 로드
+      _loadAllGroupPlayers();
+    });
+
+    // 저장된 선수 탭으로 이동 시 그룹 데이터 새로고침
+    _tabController.addListener(() {
+      if (_tabController.index == 1) {
+        // 저장된 선수 탭으로 이동 시
+        debugPrint('AddPlayerScreen - 저장된 선수 탭으로 이동: 그룹 및 선수 데이터 새로고침');
+        // 모든 그룹 새로고침
+        widget.onAction(const CreateTournamentAction.fetchAllGroups());
+
+        // 모든 그룹의 선수 데이터도 새로고침
+        _loadAllGroupPlayers();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  // 특정 그룹을 선택하면 해당 그룹의 선수만 표시
+  void _selectGroup(int? groupId) {
+    if (groupId == null) return;
+
+    setState(() {
+      _selectedGroupId = groupId;
+    });
+
+    // 전체 그룹 선택 시 각 그룹의 선수 데이터를 한번 더 로드
+    if (groupId == ALL_GROUPS) {
+      debugPrint('AddPlayerScreen - 전체 그룹 선택: 모든 그룹의 선수 데이터 새로고침');
+      if (widget.groups.isNotEmpty) {
+        for (final group in widget.groups) {
+          widget.onAction(
+            CreateTournamentAction.loadPlayersFromGroup(group.id),
+          );
+        }
+
+        // 약간의 딜레이 후 상태 업데이트 (전체 그룹 선수 로드 후)
+        Future.delayed(Duration(milliseconds: 100), () {
+          if (mounted) {
+            setState(() {
+              // 상태 갱신하여 UI 다시 그리기
+            });
+          }
+        });
+      }
+    } else {
+      // 특정 그룹 선택 시 해당 그룹 데이터 강제 로드
+      widget.onAction(CreateTournamentAction.loadPlayersFromGroup(groupId));
+    }
+  }
+
+  // 선수 선택 상태를 토글합니다
+  void _togglePlayerSelection(PlayerModel player) {
+    setState(() {
+      if (_selectedPlayers.containsKey(player.id)) {
+        _selectedPlayers.remove(player.id);
+      } else {
+        _selectedPlayers[player.id] = true;
+      }
+    });
+  }
+
+  // 선택된 선수들을 추가합니다
+  void _addSelectedPlayers() {
+    if (_selectedPlayers.isEmpty) return;
+
+    // 이미 처리된 선수 ID 목록
+    Set<int> processedPlayerIds = {};
+
+    // 모든 그룹에서 선택된 선수들을 찾아 추가
+    final allGroupsPlayers = widget.getPlayersInGroup(ALL_GROUPS);
+
+    // 선택된 선수들만 추가
+    for (final playerId in _selectedPlayers.keys) {
+      // 이미 처리된 선수는 건너뛰기
+      if (processedPlayerIds.contains(playerId)) continue;
+
+      // 모든 그룹의 선수 목록에서 해당 ID를 가진 선수 찾기
+      final player = allGroupsPlayers.firstWhere(
+        (p) => p.id == playerId,
+        orElse: () => PlayerModel(id: -1, name: ''),
+      );
+
+      if (player.id != -1) {
+        widget.onAction(CreateTournamentAction.selectPlayerFromGroup(player));
+        processedPlayerIds.add(player.id);
+        debugPrint('선수 추가: ID ${player.id}, 이름 ${player.name}');
+      }
+    }
+
+    // 선택 초기화
+    setState(() {
+      _selectedPlayers.clear();
+    });
+
+    // 디버깅 정보
+    debugPrint('총 ${processedPlayerIds.length}명의 선수가 추가되었습니다.');
+  }
+
+  // 현재 선택된 그룹의 선수 목록을 가져오는 헬퍼 메서드
+  List<PlayerModel> _getPlayersInSelectedGroup() {
+    if (_selectedGroupId == null) return [];
+
+    // 전체 그룹 선택 시 모든 그룹의 선수 목록 병합하여 반환
+    if (_selectedGroupId == ALL_GROUPS) {
+      return widget.getPlayersInGroup(ALL_GROUPS);
+    }
+
+    // 특정 그룹 선택 시 해당 그룹의 선수 목록 반환
+    return widget.getPlayersInGroup(_selectedGroupId!);
+  }
+
+  // 모든 그룹의 선수 목록을 로드하는 헬퍼 메서드
+  void _loadAllGroupPlayers() {
+    if (widget.groups.isEmpty) return;
+
+    debugPrint('AddPlayerScreen - 모든 그룹의 선수 데이터 로드 시작');
+
+    // 각 그룹의 선수 목록 로드
+    for (final group in widget.groups) {
+      widget.onAction(CreateTournamentAction.loadPlayersFromGroup(group.id));
+    }
+
+    // 약간의 딜레이 후 UI 갱신
+    Future.delayed(Duration(milliseconds: 200), () {
+      if (mounted) {
+        setState(() {
+          // 상태 갱신을 통해 UI 다시 그리기
+          debugPrint('AddPlayerScreen - 모든 그룹 선수 로드 후 UI 갱신');
+        });
+
+        // 전체 그룹의 선수 목록 확인 (디버깅 용도)
+        final allPlayers = widget.getPlayersInGroup(ALL_GROUPS);
+        debugPrint('AddPlayerScreen - 전체 그룹 선수: ${allPlayers.length}명 로드됨');
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // 플레이어 목록
-    final displayPlayers = players;
-
     return Column(
-      mainAxisSize: MainAxisSize.max,
       children: [
-        // 헤더 (플레이어 수 + 추가 버튼)
-        PlayerListHeader(
-          playerCount: displayPlayers.length,
-          onAddPlayerTap: () => _showAddPlayerBottomSheet(context),
-        ),
-
-        // 플레이어 목록
-        Expanded(
-          child:
-              displayPlayers.isEmpty
-                  ? EmptyPlayerList(
-                    onAddPlayerTap: () => _showAddPlayerBottomSheet(context),
-                  )
-                  : _buildPlayerList(displayPlayers),
-        ),
-
-        // 아래 여백
-        Padding(
-          padding: const EdgeInsets.only(
-            left: 20,
-            right: 20,
-            bottom: 20,
-            top: 10,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              DefaultButton(
-                text: '이전',
-                onTap: () {
-                  // pop() 대신 go() 사용
-                  debugPrint(
-                    'AddPlayerScreen - 이전 버튼 클릭: 현재 선수 수 ${players.length}명',
-                  );
-                  context.go(
-                    '${RoutePaths.createTournament}${RoutePaths.tournamentInfo}',
-                  );
-                },
-                width: 70,
+        // 탭바 추가
+        Container(
+          color: CST.primary20,
+          child: TabBar(
+            controller: _tabController,
+            indicatorColor: CST.primary100,
+            labelColor: CST.primary100,
+            unselectedLabelColor: CST.gray2,
+            tabs: [
+              Tab(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.person, size: 18),
+                    SizedBox(width: 8),
+                    Text('선수 목록'),
+                  ],
+                ),
               ),
-              DefaultButton(
-                text: '다음',
-                onTap: () {
-                  // 프로세스 진행 상태 업데이트
-                  debugPrint(
-                    'AddPlayerScreen - 다음 버튼 클릭: 현재 선수 수 ${players.length}명',
-                  );
-                  onAction(CreateTournamentAction.updateProcess(2));
-
-                  context.go(
-                    '${RoutePaths.createTournament}${RoutePaths.editMatch}',
-                  );
-                },
-                width: 70,
-                // 선수가 없으면 버튼 비활성화
-                color: displayPlayers.isEmpty ? CST.gray3 : CST.primary100,
+              Tab(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.group, size: 18),
+                    SizedBox(width: 8),
+                    Text('저장된 선수'),
+                  ],
+                ),
               ),
             ],
           ),
+        ),
+
+        // 탭 내용
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              // 선수 목록 탭
+              _buildPlayerListTab(),
+
+              // 저장된 선수 탭
+              _buildSavedPlayersTab(),
+            ],
+          ),
+        ),
+
+        // 하단 이전/다음 버튼
+        NavigationButtonsWidget(
+          onPrevious: () {
+            debugPrint(
+              'AddPlayerScreen - 이전 버튼 클릭: 현재 선수 수 ${widget.players.length}명',
+            );
+            // 이전 화면으로 이동 (데이터 유지)
+            context.go(
+              '${RoutePaths.createTournament}${RoutePaths.tournamentInfo}',
+            );
+          },
+          onNext: () {
+            debugPrint(
+              'AddPlayerScreen - 다음 버튼 클릭: 현재 선수 수 ${widget.players.length}명',
+            );
+            widget.onAction(
+              CreateTournamentAction.updateProcess(2),
+            );
+
+            context.go(
+              '${RoutePaths.createTournament}${RoutePaths.editMatch}',
+            );
+          },
+          isNextDisabled: widget.players.isEmpty,
         ),
       ],
     );
   }
 
-  // 선수 목록 위젯
-  Widget _buildPlayerList(List<PlayerModel> playerList) {
-    return ListView.builder(
-      itemCount: playerList.length + 1, // +1은 '선수 추가하기' 항목을 위한 것
-      itemBuilder: (context, index) {
-        if (index == playerList.length) {
-          // 마지막 항목은 '선수 추가하기' 버튼
-          return AddPlayerItem(onTap: () => _showAddPlayerBottomSheet(context));
-        }
-        // 선수 항목
-        return DismissiblePlayerItem(
-          player: playerList[index],
-          index: index + 1,
-          onAction: onAction,
-        );
-      },
-    );
-  }
+  // 선수 목록 탭 빌드
+  Widget _buildPlayerListTab() {
+    return Column(
+      children: [
+        // 선수 추가 입력 필드
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: PlayerInputField(onAction: widget.onAction),
+        ),
 
-  // 선수 추가 바텀시트 표시 메서드
-  void _showAddPlayerBottomSheet(BuildContext context) {
-    debugPrint('AddPlayerScreen - 선수 추가 바텀시트 표시: 현재 선수 수 ${players.length}명');
-    debugPrint('AddPlayerScreen - 저장된 그룹 수: ${groups.length}개');
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // 키보드가 올라올 때 바텀시트가 위로 올라가도록 설정
-      backgroundColor: Colors.transparent, // 배경을 투명하게 설정하여 모서리 둥글게 보이도록
-      builder:
-          (context) => Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: AddPlayerBottomSheet(
-              onAction: onAction,
-              groups: groups,
-              players: players,
-              getPlayersInGroup: getPlayersInGroup,
-            ),
+        // 현재 선수 목록 라벨
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              Icon(Icons.people, size: 16, color: CST.primary100),
+              SizedBox(width: 8),
+              Text(
+                '현재 선수 목록 (${widget.players.length}명)',
+                style: TST.mediumTextBold.copyWith(color: CST.primary100),
+              ),
+            ],
           ),
+        ),
+        Divider(thickness: 1, color: CST.gray4),
+
+        // 선수 목록
+        Expanded(
+          child: widget.players.isEmpty
+              ? EmptyPlayerListWidget()
+              : ListView.builder(
+                  itemCount: widget.players.length,
+                  itemBuilder: (context, index) {
+                    return InlineEditablePlayerItem(
+                      player: widget.players[index],
+                      index: index + 1,
+                      onAction: widget.onAction,
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
-}
 
-// 인라인 편집 가능한 선수 아이템 위젯 (클래스 외부로 이동)
-class InlineEditablePlayerItem extends StatefulWidget {
-  final PlayerModel player;
-  final int index;
-  final Function(CreateTournamentAction) onAction;
+  // 저장된 선수 탭 빌드
+  Widget _buildSavedPlayersTab() {
+    final hasGroups = widget.groups.isNotEmpty;
 
-  const InlineEditablePlayerItem({
-    super.key,
-    required this.player,
-    required this.index,
-    required this.onAction,
-  });
-
-  @override
-  State<InlineEditablePlayerItem> createState() =>
-      _InlineEditablePlayerItemState();
-}
-
-class _InlineEditablePlayerItemState extends State<InlineEditablePlayerItem> {
-  bool _isEditing = false;
-  late TextEditingController _nameController;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController(text: widget.player.name);
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  // 편집 모드 토글
-  void _toggleEditMode() {
-    setState(() {
-      _isEditing = !_isEditing;
-      if (_isEditing) {
-        // 편집 모드 시작 시 현재 이름으로 컨트롤러 초기화
-        _nameController.text = widget.player.name;
-        // 키보드가 뜰 때 현재 항목이 가려지지 않도록 스크롤 위치 조정
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          // 에디터에 포커스가 들어간 후 스크롤 위치 조정
-          Scrollable.ensureVisible(
-            context,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            alignment: 0.5, // 화면 중앙에 위치하도록
-          );
-        });
-      }
-    });
-  }
-
-  // 이름 저장
-  void _saveName() {
-    final newName = _nameController.text.trim();
-    if (newName.isEmpty) {
-      // 빈 이름이면 무시하고 편집 모드 종료
-      setState(() {
-        _isEditing = false;
-        _nameController.text = widget.player.name; // 원래 이름으로 복원
-      });
-      return;
-    }
-
-    if (newName != widget.player.name) {
-      // 이름이 변경된 경우에만 업데이트 액션 호출
-      final updatedPlayer = PlayerModel(id: widget.player.id, name: newName);
-
-      widget.onAction(CreateTournamentAction.updatePlayer(updatedPlayer));
-
-      // 성공 메시지
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('선수 정보가 수정되었습니다.'),
-          backgroundColor: CST.primary100,
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-
-    // 편집 모드 종료
-    setState(() {
-      _isEditing = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _toggleEditMode,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(bottom: BorderSide(color: CST.gray3)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                color: CST.primary40,
-                shape: BoxShape.circle,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // 그룹 선택 영역
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              // 그룹 선택 드롭다운
+              GroupDropdown(
+                groups: widget.groups,
+                selectedGroupId: _selectedGroupId,
+                onGroupSelected: _selectGroup,
+                allGroupsConstant: ALL_GROUPS,
               ),
-              child: Center(
-                child: Text(
-                  "${widget.index}",
-                  style: TST.mediumTextBold.copyWith(color: CST.primary100),
-                ),
+
+              // 새로고침 버튼
+              const SizedBox(width: 10),
+              GroupRefreshButton(
+                onAction: widget.onAction,
+                onRefresh: _loadAllGroupPlayers,
               ),
+            ],
+          ),
+        ),
+
+        // 선수 선택 목록
+        Expanded(
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: CST.primary20,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: CST.gray4),
             ),
-            SizedBox(width: 16),
-
-            // 편집 모드에 따라 다른 위젯 표시
-            _isEditing
-                ? Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _nameController,
-                          autofocus: true,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 8,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: BorderSide(color: CST.primary100),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: BorderSide(
-                                color: CST.primary100,
-                                width: 2,
-                              ),
-                            ),
-                            // 키보드가 뜰 때 오버플로우 방지를 위한 설정
-                            isDense: true,
-                          ),
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => _saveName(),
-                          style: TST.mediumTextBold,
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.check, color: CST.primary100),
-                        onPressed: _saveName,
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.all(4),
-                        constraints: BoxConstraints(),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.close, color: CST.error),
-                        onPressed: () {
-                          setState(() {
-                            _isEditing = false;
-                            _nameController.text =
-                                widget.player.name; // 원래 이름으로 복원
-                          });
-                        },
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.all(4),
-                        constraints: BoxConstraints(),
-                      ),
-                    ],
-                  ),
-                )
-                : Expanded(
-                  child: Text(widget.player.name, style: TST.mediumTextBold),
-                ),
-
-            // 편집 모드가 아닐 때만 편집 아이콘 표시
-            if (!_isEditing) Icon(Icons.edit, size: 16, color: CST.primary100),
-          ],
+            child:
+                hasGroups
+                    ? PlayerSelectionList(
+                      players: _getPlayersInSelectedGroup(),
+                      tournamentPlayers: widget.players,
+                      selectedPlayers: _selectedPlayers,
+                      onToggleSelection: _togglePlayerSelection,
+                      selectedGroupId: _selectedGroupId,
+                    )
+                    : NoGroupsMessage(),
+          ),
         ),
-      ),
+
+        // 선택된 선수 추가 버튼
+        AddPlayerActionButton(
+          selectedCount: _selectedPlayers.length,
+          onTap: _addSelectedPlayers,
+        ),
+      ],
     );
   }
+
+  // 선수 선택 목록 구성
 }

@@ -25,7 +25,9 @@ class CreateTournamentViewModel with ChangeNotifier {
     this._createTournamentUseCase,
     this._getAllGroupsUseCase,
     this._getGroupUseCase,
-  );
+  ) {
+    fetchAllGroups();
+  }
 
   void _notifyChanges() {
     debugPrint('상태 변경: ${_state.tournament.date}');
@@ -35,7 +37,15 @@ class CreateTournamentViewModel with ChangeNotifier {
         '선수 목록: ${_state.players.map((p) => "${p.id}:${p.name}").join(', ')}',
       );
     }
-    notifyListeners();
+
+    // 안전하게 상태 변경 알림
+    try {
+      // 대부분의 프레임워크 락 이슈는 메인 스레드에서 발생하므로
+      // Future.microtask를 사용하여 다음 마이크로태스크 큐에서 실행
+      Future.microtask(() => notifyListeners());
+    } catch (e) {
+      debugPrint('notifyListeners 호출 오류: $e');
+    }
   }
 
   void onAction(CreateTournamentAction action) {
@@ -171,11 +181,19 @@ class CreateTournamentViewModel with ChangeNotifier {
       case SelectPlayerFromGroup():
         selectPlayerFromGroup(action.player);
       case OnDiscard():
-        _state = _state.copyWith(
-          tournament: TournamentModel(id: 0, title: '', date: DateTime.now()),
-        );
-        _notifyChanges();
+        _clear();
     }
+  }
+
+  void _clear() {
+    _state = _state.copyWith(
+      tournament: TournamentModel(id: 0, title: '', date: DateTime.now()),
+      players: [],
+      matches: [],
+      groups: [],
+    );
+    _playerListCache.clear(); // 캐시도 초기화
+    _notifyChanges();
   }
 
   Future<void> _saveTournament() async {
@@ -259,17 +277,55 @@ class CreateTournamentViewModel with ChangeNotifier {
 
     // 모든 작업 완료 후 한 번만 notifyListeners 호출
     debugPrint('CreateTournamentViewModel - 그룹 목록 조회 완료, UI 갱신 요청');
-    notifyListeners();
+    try {
+      // Future.microtask를 사용하여 안전하게 알림
+      Future.microtask(() => notifyListeners());
+    } catch (e) {
+      debugPrint('CreateTournamentViewModel - notifyListeners 호출 오류: $e');
+    }
   }
 
   // 특정 그룹의 선수 목록을 조회 (캐시 또는 빈 목록 반환, 비동기 로드는 별도로 호출)
   List<PlayerModel> getPlayersInGroupSync(int groupId) {
+    debugPrint('CreateTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 조회');
+
+    // ALL_GROUPS 상수 값이면 모든 그룹의 선수 목록 병합하여 반환
+    if (groupId == -999) {
+      // -999는 모든 그룹 선택을 의미
+      final allPlayers = <PlayerModel>[];
+      final seenPlayerIds = <int>{}; // 중복 제거용 집합
+
+      // 모든 그룹의 선수 목록 조회
+      for (final groupId in _playerListCache.keys) {
+        final players = _playerListCache[groupId] ?? [];
+
+        // 중복 선수 제거
+        for (final player in players) {
+          if (!seenPlayerIds.contains(player.id)) {
+            allPlayers.add(player);
+            seenPlayerIds.add(player.id);
+          }
+        }
+      }
+
+      debugPrint(
+        'CreateTournamentViewModel - 모든 그룹 선수 목록 반환: ${allPlayers.length}명',
+      );
+      return allPlayers;
+    }
+
+    // 특정 그룹 ID에 대한 처리
     // 캐시된 선수 목록이 있으면 바로 반환
     if (_playerListCache.containsKey(groupId)) {
-      return _playerListCache[groupId] ?? [];
+      final cachedPlayers = _playerListCache[groupId] ?? [];
+      debugPrint(
+        'CreateTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 있음 (${cachedPlayers.length}명)',
+      );
+      return cachedPlayers;
     }
 
     // 캐시에 없으면 빈 목록 반환
+    debugPrint('CreateTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 없음, 빈 목록 반환');
     return [];
   }
 
@@ -326,7 +382,12 @@ class CreateTournamentViewModel with ChangeNotifier {
     _state = _state.copyWith(isLoading: false);
 
     // 캐시 업데이트 후 UI에 알림 (필요한 경우만)
-    notifyListeners();
+    try {
+      // Future.microtask를 사용하여 안전하게 알림
+      Future.microtask(() => notifyListeners());
+    } catch (e) {
+      debugPrint('CreateTournamentViewModel - notifyListeners 호출 오류: $e');
+    }
   }
 
   // 그룹에서 선수 선택
@@ -349,6 +410,24 @@ class CreateTournamentViewModel with ChangeNotifier {
     debugPrint(
       'CreateTournamentViewModel - 선수 추가됨: ${player.name} (현재 ${_state.players.length}명)',
     );
-    notifyListeners();
+
+    // 안전하게 상태 변경 알림
+    try {
+      // Future.microtask를 사용하여 안전하게 알림
+      Future.microtask(() => notifyListeners());
+    } catch (e) {
+      debugPrint('CreateTournamentViewModel - notifyListeners 호출 오류: $e');
+    }
+  }
+
+  // 상태 강제 갱신 메서드 (UI 업데이트를 위한 용도)
+  void refreshState() {
+    debugPrint('CreateTournamentViewModel - 상태 강제 갱신');
+    try {
+      // Future.microtask를 사용하여 안전하게 알림
+      Future.microtask(() => notifyListeners());
+    } catch (e) {
+      debugPrint('CreateTournamentViewModel - 상태 갱신 중 오류: $e');
+    }
   }
 }

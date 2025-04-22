@@ -1,8 +1,9 @@
+import 'package:bracket_helper/domain/model/group_model.dart';
+import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_view_model.dart';
 import 'package:bracket_helper/presentation/create_tournament/screen/add_player/add_player_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class AddPlayerRoot extends StatefulWidget {
   final CreateTournamentViewModel viewModel;
@@ -13,26 +14,42 @@ class AddPlayerRoot extends StatefulWidget {
 }
 
 class _AddPlayerRootState extends State<AddPlayerRoot> {
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
-
-    // 화면 진입 시 바로 그룹 목록 미리 로드
-    _preloadGroupData();
+    // CreateTournamentViewModel 로딩 상태 확인
+    _checkLoadingState();
   }
 
-  // 그룹 목록과 관련 데이터 미리 로드
-  Future<void> _preloadGroupData() async {
-    debugPrint('AddPlayerRoot - 그룹 목록 미리 로드 시작');
-
-    // 모든 그룹 목록 로드 액션 실행
-    Future(() {
-      widget.viewModel.onAction(const CreateTournamentAction.fetchAllGroups());
+  // 로딩 상태 체크
+  void _checkLoadingState() {
+    setState(() {
+      _isLoading = widget.viewModel.state.isLoading;
     });
+    
+    // 로딩 중이라면 상태 업데이트를 위해 짧은 대기
+    if (_isLoading) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          setState(() {
+            _isLoading = widget.viewModel.state.isLoading;
+          });
+        }
+      });
+    }
+  }
 
-    // 그룹 데이터 로드 완료 확인을 위한 짧은 지연
-    await Future.delayed(const Duration(milliseconds: 300));
-    debugPrint('AddPlayerRoot - 그룹 목록 미리 로드 완료');
+  // 필요 시 선수 데이터 로드 (지연 로드 방식)
+  Future<void> _loadPlayersForGroup(int groupId) async {
+    try {
+      widget.viewModel.onAction(
+        CreateTournamentAction.loadPlayersFromGroup(groupId),
+      );
+    } catch (e) {
+      debugPrint('AddPlayerRoot - 그룹 $groupId 선수 로드 중 오류: $e');
+    }
   }
 
   @override
@@ -40,37 +57,54 @@ class _AddPlayerRootState extends State<AddPlayerRoot> {
     return ListenableBuilder(
       listenable: widget.viewModel,
       builder: (context, _) {
+        final currentGroups = List<GroupModel>.from(widget.viewModel.state.groups);
+        final currentPlayers = List<PlayerModel>.from(widget.viewModel.state.players);
+        
         debugPrint(
-          'AddPlayerRoot - 화면 빌드: 선수 ${widget.viewModel.state.players.length}명',
+          'AddPlayerRoot - 화면 빌드: 선수 ${currentPlayers.length}명, 그룹 ${currentGroups.length}개',
         );
-        if (widget.viewModel.state.players.isNotEmpty) {
-          debugPrint(
-            'AddPlayerRoot - 선수 목록: ${widget.viewModel.state.players.map((p) => "${p.id}:${p.name}").join(', ')}',
-          );
-        }
+
         return AddPlayerScreen(
           tournament: widget.viewModel.state.tournament,
-          players: widget.viewModel.state.players,
-          groups: widget.viewModel.state.groups,
+          players: currentPlayers,
+          groups: currentGroups,
+          isLoading: _isLoading || widget.viewModel.state.isLoading,
           onAction: (action) {
             debugPrint('AddPlayerRoot - 액션 전달: $action');
-
-            // 선수 목록 조회 액션의 경우 처리 방식 수정
-            if (action is LoadPlayersFromGroup) {
-              // 빌드 중 상태 변경을 방지하기 위해 Future로 래핑
-              Future(() {
-                widget.viewModel.onAction(action);
+            
+            // 그룹 목록 새로고침 액션인 경우 로딩 상태 표시
+            if (action is FetchAllGroups) {
+              setState(() {
+                _isLoading = true;
               });
-              // 액션 결과를 반환하지 않음
+              
+              // 액션 실행
+              widget.viewModel.onAction(action);
+              
+              // 잠시 후 로딩 상태 해제
+              Future.delayed(const Duration(milliseconds: 200), () {
+                if (mounted) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                }
+              });
               return;
-            } else {
-              // 다른 모든 액션은 그대로 전달
-              return widget.viewModel.onAction(action);
             }
+            
+            // 기타 모든 액션 직접 전달
+            return widget.viewModel.onAction(action);
           },
           getPlayersInGroup: (int groupId) {
-            // 뷰모델의 캐시된 데이터를 조회하는 메서드 전달
-            return widget.viewModel.getPlayersInGroupSync(groupId);
+            // 캐시된 데이터 사용
+            final players = widget.viewModel.getPlayersInGroupSync(groupId);
+            
+            // 데이터가 없으면 백그라운드로 로드 요청 (UI 블로킹 없음)
+            if (players.isEmpty && groupId != -999) {
+              Future.microtask(() => _loadPlayersForGroup(groupId));
+            }
+            
+            return players;
           },
         );
       },

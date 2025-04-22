@@ -73,17 +73,7 @@ class _InlineEditablePlayerItemState extends State<InlineEditablePlayerItem> {
     if (newName != widget.player.name) {
       // 이름이 변경된 경우에만 업데이트 액션 호출
       final updatedPlayer = PlayerModel(id: widget.player.id, name: newName);
-
       widget.onAction(CreateTournamentAction.updatePlayer(updatedPlayer));
-
-      // 성공 메시지
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('선수 정보가 수정되었습니다.'),
-          backgroundColor: CST.primary100,
-          duration: Duration(seconds: 2),
-        ),
-      );
     }
 
     // 편집 모드 종료
@@ -92,99 +82,190 @@ class _InlineEditablePlayerItemState extends State<InlineEditablePlayerItem> {
     });
   }
 
+  // 선수 삭제
+  void _deletePlayer() {
+    // 다이얼로그 없이 바로 삭제
+    widget.onAction(CreateTournamentAction.removePlayer(widget.player.id));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _toggleEditMode,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(bottom: BorderSide(color: CST.gray3)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                color: CST.primary40,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  "${widget.index}",
-                  style: TST.mediumTextBold.copyWith(color: CST.primary100),
-                ),
-              ),
-            ),
-            SizedBox(width: 16),
-
-            // 편집 모드에 따라 다른 위젯 표시
-            _isEditing
-                ? Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _nameController,
-                          autofocus: true,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 8,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: BorderSide(color: CST.primary100),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: BorderSide(
-                                color: CST.primary100,
-                                width: 2,
-                              ),
-                            ),
-                            // 키보드가 뜰 때 오버플로우 방지를 위한 설정
-                            isDense: true,
-                          ),
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => _saveName(),
-                          style: TST.mediumTextBold,
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.check, color: CST.primary100),
-                        onPressed: _saveName,
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.all(4),
-                        constraints: BoxConstraints(),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.close, color: CST.error),
-                        onPressed: () {
-                          setState(() {
-                            _isEditing = false;
-                            _nameController.text =
-                                widget.player.name; // 원래 이름으로 복원
-                          });
-                        },
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.all(4),
-                        constraints: BoxConstraints(),
-                      ),
-                    ],
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: CST.primary40, width: 1),
+      ),
+      child: InkWell(
+        onTap: _toggleEditMode,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              // 선수 번호 표시 (원형 배지)
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [CST.primary80, CST.primary100],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                )
-                : Expanded(
-                  child: Text(widget.player.name, style: TST.mediumTextBold),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: CST.primary60.withValues(alpha: 0.3),
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
+                child: Center(
+                  child: Text(
+                    "${widget.index}",
+                    style: TST.mediumTextBold.copyWith(color: Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(width: 16),
 
-            // 편집 모드가 아닐 때만 편집 아이콘 표시
-            if (!_isEditing) Icon(Icons.edit, size: 16, color: CST.primary100),
-          ],
+              // 편집 모드에 따라 다른 위젯 표시
+              _isEditing
+                  ? Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _nameController,
+                            autofocus: true,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: CST.primary100),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: CST.primary100,
+                                  width: 2,
+                                ),
+                              ),
+                              hintText: '선수 이름 입력',
+                              hintStyle: TextStyle(color: CST.gray3),
+                              filled: true,
+                              fillColor: Colors.white,
+                              isDense: true,
+                            ),
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: (_) => _saveName(),
+                            style: TST.mediumTextBold.copyWith(
+                              color: CST.gray1,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.check_circle,
+                            color: CST.primary100,
+                            size: 28,
+                          ),
+                          onPressed: _saveName,
+                          tooltip: '저장',
+                          padding: EdgeInsets.all(8),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.cancel, color: CST.error, size: 28),
+                          onPressed: () {
+                            setState(() {
+                              _isEditing = false;
+                              _nameController.text = widget.player.name;
+                            });
+                          },
+                          tooltip: '취소',
+                          padding: EdgeInsets.all(8),
+                        ),
+                      ],
+                    ),
+                  )
+                  : Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.player.name,
+                                style: TST.mediumTextBold.copyWith(
+                                  color: CST.gray1,
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                '탭하여 이름 수정',
+                                style: TST.smallTextRegular.copyWith(
+                                  color: CST.gray3,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // 편집 버튼
+                        Container(
+                          decoration: BoxDecoration(
+                            color: CST.primary20,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          margin: EdgeInsets.only(right: 8),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.edit_rounded,
+                              size: 20,
+                              color: CST.primary100,
+                            ),
+                            onPressed: _toggleEditMode,
+                            tooltip: '편집',
+                            constraints: BoxConstraints(
+                              minWidth: 40,
+                              minHeight: 40,
+                            ),
+                          ),
+                        ),
+                        // 삭제 버튼
+                        Container(
+                          decoration: BoxDecoration(
+                            color: CST.error.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.delete_outline,
+                              size: 20,
+                              color: CST.error,
+                            ),
+                            onPressed: _deletePlayer,
+                            tooltip: '삭제',
+                            constraints: BoxConstraints(
+                              minWidth: 40,
+                              minHeight: 40,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+            ],
+          ),
         ),
       ),
     );
   }
-} 
+}
