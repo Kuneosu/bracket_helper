@@ -9,10 +9,10 @@ abstract class MatchRepository {
   /// 새로운 매치 생성
   Future<Result<MatchModel>> createMatch({
     required int tournamentId,
-    int? teamAId,
-    int? teamBId,
-    String? teamAName,
-    String? teamBName,
+    String? playerA,
+    String? playerB,
+    String? playerC,
+    String? playerD,
   });
 
   /// 여러 매치 한번에 생성

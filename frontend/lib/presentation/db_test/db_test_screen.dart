@@ -1,7 +1,7 @@
 import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:bracket_helper/data/database/app_database.dart';
-import 'package:bracket_helper/data/dao/team_dao.dart';
 import 'package:bracket_helper/domain/model/group_model.dart';
+import 'package:bracket_helper/domain/model/team_model.dart';
 import 'package:bracket_helper/domain/use_case/group/add_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/add_player_to_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/player/add_player_use_case.dart';
@@ -20,7 +20,7 @@ import 'package:bracket_helper/domain/use_case/tournament/get_all_tournaments_us
 import 'package:bracket_helper/domain/use_case/group/get_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/get_matches_in_tournament_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/remove_player_from_group_use_case.dart';
-import 'package:bracket_helper/domain/model/match_model.dart' as domain;
+import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +38,7 @@ class _DbTestScreenState extends State<DbTestScreen>
   // 상태 변수
   List<Player> _players = [];
   List<GroupModel> _groups = [];
-  List<TeamWithPlayers> _teams = [];
+  List<TeamModel> _teams = [];
   List<TournamentModel> _tournaments = [];
   String _statusMessage = '';
 
@@ -48,7 +48,7 @@ class _DbTestScreenState extends State<DbTestScreen>
 
   // 선택한 토너먼트의 매치
   int? _selectedTournamentId;
-  List<domain.MatchModel> _matchesInSelectedTournament = [];
+  List<MatchModel> _matchesInSelectedTournament = [];
 
   // 탭 컨트롤러
   late TabController _tabController;
@@ -116,7 +116,7 @@ class _DbTestScreenState extends State<DbTestScreen>
       setState(() {
         _players = playersResult.value;
         _groups = groupsResult.value;
-        _teams = teamsResult.value as List<TeamWithPlayers>;
+        _teams = teamsResult.value as List<TeamModel>;
         _tournaments = tournamentsResult.value;
         _statusMessage = '데이터 로드 완료';
       });
@@ -857,118 +857,118 @@ class _DbTestScreenState extends State<DbTestScreen>
                       onPressed: () => Navigator.of(context).pop(),
                       child: const Text('취소'),
                     ),
-                    TextButton(
-                      onPressed: () async {
-                        if (selectedPlayer1Id != null) {
-                          final createTeamUseCase = getIt<CreateTeamUseCase>();
+                    // TextButton(
+                    //   onPressed: () async {
+                    //     if (selectedPlayer1Id != null) {
+                    //       final createTeamUseCase = getIt<CreateTeamUseCase>();
 
-                          // 디버깅 정보
-                          debugPrint('----- 팀 생성 시작 -----');
-                          debugPrint(
-                            'Screen: 팀 생성 기능 시작 - 선수1: $selectedPlayer1Id, 선수2: $selectedPlayer2Id',
-                          );
+                    //       // 디버깅 정보
+                    //       debugPrint('----- 팀 생성 시작 -----');
+                    //       debugPrint(
+                    //         'Screen: 팀 생성 기능 시작 - 선수1: $selectedPlayer1Id, 선수2: $selectedPlayer2Id',
+                    //       );
 
-                          try {
-                            final result = await createTeamUseCase.execute(
-                              CreateTeamParams(
-                                player1Id: selectedPlayer1Id!,
-                                player2Id: selectedPlayer2Id,
-                              ),
-                            );
+                    //       try {
+                    //         final result = await createTeamUseCase.execute(
+                    //           CreateTeamParams(
+                    //             player1Id: selectedPlayer1Id!,
+                    //             player2Id: selectedPlayer2Id,
+                    //           ),
+                    //         );
 
-                            // 디버깅 정보
-                            debugPrint('Screen: UseCase 실행 결과 - $result');
+                    //         // 디버깅 정보
+                    //         debugPrint('Screen: UseCase 실행 결과 - $result');
 
-                            // 항상 다이얼로그를 닫고
-                            if (context.mounted) {
-                              Navigator.of(context).pop();
-                            }
+                    //         // 항상 다이얼로그를 닫고
+                    //         if (context.mounted) {
+                    //           Navigator.of(context).pop();
+                    //         }
 
-                            if (result.isSuccess) {
-                              // 성공 처리 (result.value는 팀 ID)
-                              final teamId = result.value;
-                              final player1Name =
-                                  _players
-                                      .firstWhere(
-                                        (p) => p.id == selectedPlayer1Id,
-                                      )
-                                      .name;
-                              final player2Name =
-                                  selectedPlayer2Id != null
-                                      ? _players
-                                          .firstWhere(
-                                            (p) => p.id == selectedPlayer2Id,
-                                          )
-                                          .name
-                                      : null;
+                    //         if (result.isSuccess) {
+                    //           // 성공 처리 (result.value는 팀 ID)
+                    //           final teamId = result.value;
+                    //           final player1Name =
+                    //               _players
+                    //                   .firstWhere(
+                    //                     (p) => p.id == selectedPlayer1Id,
+                    //                   )
+                    //                   .name;
+                    //           final player2Name =
+                    //               selectedPlayer2Id != null
+                    //                   ? _players
+                    //                       .firstWhere(
+                    //                         (p) => p.id == selectedPlayer2Id,
+                    //                       )
+                    //                       .name
+                    //                   : null;
 
-                              final teamName =
-                                  player2Name != null
-                                      ? '$player1Name / $player2Name'
-                                      : player1Name;
+                    //           final teamName =
+                    //               player2Name != null
+                    //                   ? '$player1Name / $player2Name'
+                    //                   : player1Name;
 
-                              debugPrint(
-                                'Screen: 팀 생성 성공 - ID: $teamId, 팀명: $teamName',
-                              );
-                              setState(() {
-                                _statusMessage =
-                                    '팀 생성됨: $teamName (ID: $teamId)';
-                              });
-                              _loadData();
+                    //           debugPrint(
+                    //             'Screen: 팀 생성 성공 - ID: $teamId, 팀명: $teamName',
+                    //           );
+                    //           setState(() {
+                    //             _statusMessage =
+                    //                 '팀 생성됨: $teamName (ID: $teamId)';
+                    //           });
+                    //           _loadData();
 
-                              // 성공 메시지 표시
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('팀 [$teamName]이(가) 생성되었습니다.'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              }
-                            } else {
-                              // 에러 메시지 표시
-                              final error = result.error;
-                              debugPrint('Screen: 팀 생성 실패 - $error');
-                              setState(() {
-                                _statusMessage = error.message;
-                              });
+                    //           // 성공 메시지 표시
+                    //           if (context.mounted) {
+                    //             ScaffoldMessenger.of(context).showSnackBar(
+                    //               SnackBar(
+                    //                 content: Text('팀 [$teamName]이(가) 생성되었습니다.'),
+                    //                 backgroundColor: Colors.green,
+                    //               ),
+                    //             );
+                    //           }
+                    //         } else {
+                    //           // 에러 메시지 표시
+                    //           final error = result.error;
+                    //           debugPrint('Screen: 팀 생성 실패 - $error');
+                    //           setState(() {
+                    //             _statusMessage = error.message;
+                    //           });
 
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(error.message),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            }
-                          } catch (e) {
-                            // 예상치 못한 예외 처리
-                            debugPrint('Screen: 예상치 못한 예외 발생 - $e');
-                            // 다이얼로그 닫기
-                            if (context.mounted) {
-                              Navigator.of(context).pop();
-                            }
-                            // 상태 업데이트
-                            setState(() {
-                              _statusMessage = '예상치 못한 오류: $e';
-                            });
-                            // 오류 메시지 표시
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('예상치 못한 오류가 발생했습니다: $e'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          } finally {
-                            debugPrint('----- 팀 생성 종료 -----');
-                          }
-                        }
-                      },
-                      child: const Text('생성'),
-                    ),
+                    //           if (context.mounted) {
+                    //             ScaffoldMessenger.of(context).showSnackBar(
+                    //               SnackBar(
+                    //                 content: Text(error.message),
+                    //                 backgroundColor: Colors.red,
+                    //               ),
+                    //             );
+                    //           }
+                    //         }
+                    //       } catch (e) {
+                    //         // 예상치 못한 예외 처리
+                    //         debugPrint('Screen: 예상치 못한 예외 발생 - $e');
+                    //         // 다이얼로그 닫기
+                    //         if (context.mounted) {
+                    //           Navigator.of(context).pop();
+                    //         }
+                    //         // 상태 업데이트
+                    //         setState(() {
+                    //           _statusMessage = '예상치 못한 오류: $e';
+                    //         });
+                    //         // 오류 메시지 표시
+                    //         if (context.mounted) {
+                    //           ScaffoldMessenger.of(context).showSnackBar(
+                    //             SnackBar(
+                    //               content: Text('예상치 못한 오류가 발생했습니다: $e'),
+                    //               backgroundColor: Colors.red,
+                    //             ),
+                    //           );
+                    //         }
+                    //       } finally {
+                    //         debugPrint('----- 팀 생성 종료 -----');
+                    //       }
+                    //     }
+                    //   },
+                    //   child: const Text('생성'),
+                    // ),
                   ],
                 ),
           ),
@@ -1007,7 +1007,8 @@ class _DbTestScreenState extends State<DbTestScreen>
 
                     try {
                       final result = await createTournamentUseCase.execute(
-                        CreateTournamentParams(
+                        TournamentModel(
+                          id: 0,
                           title: titleController.text.trim(),
                           date: date,
                         ),
@@ -1305,7 +1306,7 @@ class _DbTestScreenState extends State<DbTestScreen>
   }
 
   // 팀 삭제 다이얼로그
-  Future<void> _confirmDeleteTeam(TeamWithPlayers team) async {
+  Future<void> _confirmDeleteTeam(TeamModel team) async {
     await showDialog(
       context: context,
       builder:
@@ -1324,13 +1325,11 @@ class _DbTestScreenState extends State<DbTestScreen>
                   // 디버깅 정보
                   debugPrint('----- 팀 삭제 시작 -----');
                   debugPrint(
-                    'Screen: 팀 삭제 기능 시작 - 팀 ID: ${team.team.id}, 이름: ${team.teamName}',
+                    'Screen: 팀 삭제 기능 시작 - 팀 ID: ${team.p1.id}, 이름: ${team.teamName}',
                   );
 
                   try {
-                    final result = await deleteTeamUseCase.execute(
-                      team.team.id,
-                    );
+                    final result = await deleteTeamUseCase.execute(team.p1.id);
 
                     // 디버깅 정보
                     debugPrint('Screen: UseCase 실행 결과 - $result');
@@ -1630,614 +1629,626 @@ class _DbTestScreenState extends State<DbTestScreen>
   }
 
   // 매치 삭제 다이얼로그
-  Future<void> _confirmDeleteMatch(domain.MatchModel match) async {
-    final String teamAName = match.teamAName ?? '팀 A';
-    final String teamBName = match.teamBName ?? '팀 B';
+  Future<void> _confirmDeleteMatch(MatchModel match) async {
+    // final String teamAName = match.teamAName ?? '팀 A';
+    // final String teamBName = match.teamBName ?? '팀 B';
 
-    await showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('매치 삭제'),
-            content: Text('$teamAName vs $teamBName 매치를 삭제하시겠습니까?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('취소'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  final deleteMatchUseCase = getIt<DeleteMatchUseCase>();
+    //   await showDialog(
+    //     context: context,
+    //     builder:
+    //         (context) => AlertDialog(
+    //           title: const Text('매치 삭제'),
+    //           content: Text('$teamAName vs $teamBName 매치를 삭제하시겠습니까?'),
+    //           actions: [
+    //             TextButton(
+    //               onPressed: () => Navigator.of(context).pop(),
+    //               child: const Text('취소'),
+    //             ),
+    //             TextButton(
+    //               onPressed: () async {
+    //                 final deleteMatchUseCase = getIt<DeleteMatchUseCase>();
 
-                  // 디버깅 정보
-                  debugPrint('----- 매치 삭제 시작 -----');
-                  debugPrint(
-                    'Screen: 매치 삭제 기능 시작 - 매치 ID: ${match.id}, 팀: $teamAName vs $teamBName',
-                  );
+    //                 // 디버깅 정보
+    //                 debugPrint('----- 매치 삭제 시작 -----');
+    //                 debugPrint(
+    //                   'Screen: 매치 삭제 기능 시작 - 매치 ID: ${match.id}, 팀: $teamAName vs $teamBName',
+    //                 );
 
-                  try {
-                    final result = await deleteMatchUseCase.execute(match.id);
+    //                 try {
+    //                   final result = await deleteMatchUseCase.execute(match.id);
 
-                    // 디버깅 정보
-                    debugPrint('Screen: UseCase 실행 결과 - $result');
+    //                   // 디버깅 정보
+    //                   debugPrint('Screen: UseCase 실행 결과 - $result');
 
-                    // 항상 다이얼로그를 닫고
-                    if (context.mounted) {
-                      Navigator.of(context).pop();
-                    }
+    //                   // 항상 다이얼로그를 닫고
+    //                   if (context.mounted) {
+    //                     Navigator.of(context).pop();
+    //                   }
 
-                    if (result.isSuccess) {
-                      // 성공 처리
-                      debugPrint('Screen: 매치 삭제 성공');
-                      setState(() {
-                        _statusMessage = '매치 삭제됨: $teamAName vs $teamBName';
-                      });
+    //                   if (result.isSuccess) {
+    //                     // 성공 처리
+    //                     debugPrint('Screen: 매치 삭제 성공');
+    //                     setState(() {
+    //                       _statusMessage = '매치 삭제됨: $teamAName vs $teamBName';
+    //                     });
 
-                      // 선택된 토너먼트의 매치 목록 갱신
-                      if (_selectedTournamentId != null) {
-                        _loadMatchesInTournament(_selectedTournamentId!);
-                      }
+    //                     // 선택된 토너먼트의 매치 목록 갱신
+    //                     if (_selectedTournamentId != null) {
+    //                       _loadMatchesInTournament(_selectedTournamentId!);
+    //                     }
 
-                      // 성공 메시지 표시
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '매치가 삭제되었습니다: $teamAName vs $teamBName',
-                            ),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
-                    } else {
-                      // 에러 메시지 표시
-                      final error = result.error;
-                      debugPrint('Screen: 매치 삭제 실패 - $error');
-                      setState(() {
-                        _statusMessage = error.message;
-                      });
+    //                     // 성공 메시지 표시
+    //                     if (context.mounted) {
+    //                       ScaffoldMessenger.of(context).showSnackBar(
+    //                         SnackBar(
+    //                           content: Text(
+    //                             '매치가 삭제되었습니다: $teamAName vs $teamBName',
+    //                           ),
+    //                           backgroundColor: Colors.green,
+    //                         ),
+    //                       );
+    //                     }
+    //                   } else {
+    //                     // 에러 메시지 표시
+    //                     final error = result.error;
+    //                     debugPrint('Screen: 매치 삭제 실패 - $error');
+    //                     setState(() {
+    //                       _statusMessage = error.message;
+    //                     });
 
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(error.message),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    }
-                  } catch (e) {
-                    // 예상치 못한 예외 처리
-                    debugPrint('Screen: 예상치 못한 예외 발생 - $e');
+    //                     if (context.mounted) {
+    //                       ScaffoldMessenger.of(context).showSnackBar(
+    //                         SnackBar(
+    //                           content: Text(error.message),
+    //                           backgroundColor: Colors.red,
+    //                         ),
+    //                       );
+    //                     }
+    //                   }
+    //                 } catch (e) {
+    //                   // 예상치 못한 예외 처리
+    //                   debugPrint('Screen: 예상치 못한 예외 발생 - $e');
 
-                    // 다이얼로그 닫기
-                    if (context.mounted) {
-                      Navigator.of(context).pop();
-                    }
+    //                   // 다이얼로그 닫기
+    //                   if (context.mounted) {
+    //                     Navigator.of(context).pop();
+    //                   }
 
-                    // 상태 업데이트
-                    setState(() {
-                      _statusMessage = '예상치 못한 오류: $e';
-                    });
+    //                   // 상태 업데이트
+    //                   setState(() {
+    //                     _statusMessage = '예상치 못한 오류: $e';
+    //                   });
 
-                    // 오류 메시지 표시
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('예상치 못한 오류가 발생했습니다: $e'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  } finally {
-                    debugPrint('----- 매치 삭제 종료 -----');
-                  }
-                },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('삭제'),
-              ),
-            ],
-          ),
-    );
-  }
+    //                   // 오류 메시지 표시
+    //                   if (context.mounted) {
+    //                     ScaffoldMessenger.of(context).showSnackBar(
+    //                       SnackBar(
+    //                         content: Text('예상치 못한 오류가 발생했습니다: $e'),
+    //                         backgroundColor: Colors.red,
+    //                       ),
+    //                     );
+    //                   }
+    //                 } finally {
+    //                   debugPrint('----- 매치 삭제 종료 -----');
+    //                 }
+    //               },
+    //               style: TextButton.styleFrom(foregroundColor: Colors.red),
+    //               child: const Text('삭제'),
+    //             ),
+    //           ],
+    //         ),
+    //   );
+    // }
 
-  // 매치 생성 함수 추가
-  Future<void> _createMatch() async {
-    if (_tournaments.isEmpty) {
-      setState(() {
-        _statusMessage = '토너먼트가 필요합니다';
-      });
-      return;
-    }
+    // 매치 생성 함수 추가
+    Future<void> _createMatch() async {
+      if (_tournaments.isEmpty) {
+        setState(() {
+          _statusMessage = '토너먼트가 필요합니다';
+        });
+        return;
+      }
 
-    if (_teams.length < 2) {
-      setState(() {
-        _statusMessage = '최소 두 개의 팀이 필요합니다';
-      });
-      return;
-    }
+      if (_teams.length < 2) {
+        setState(() {
+          _statusMessage = '최소 두 개의 팀이 필요합니다';
+        });
+        return;
+      }
 
-    int? selectedTournamentId;
-    int? selectedTeamAId;
-    int? selectedTeamBId;
+      int? selectedTournamentId;
+      int? selectedTeamAId;
+      int? selectedTeamBId;
 
-    await showDialog(
-      context: context,
-      builder:
-          (context) => StatefulBuilder(
-            builder:
-                (context, setDialogState) => AlertDialog(
-                  title: const Text('매치 생성'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // 토너먼트 선택 드롭다운
-                      DropdownButtonFormField<int>(
-                        value: selectedTournamentId,
-                        hint: const Text('토너먼트 선택'),
-                        items:
-                            _tournaments.map((tournament) {
-                              return DropdownMenuItem<int>(
-                                value: tournament.id,
-                                child: Text(tournament.title),
-                              );
-                            }).toList(),
-                        onChanged: (value) {
-                          setDialogState(() {
-                            selectedTournamentId = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      // 팀 A 선택 드롭다운
-                      DropdownButtonFormField<int>(
-                        value: selectedTeamAId,
-                        hint: const Text('팀 A 선택'),
-                        items:
-                            _teams.map((team) {
-                              return DropdownMenuItem<int>(
-                                value: team.team.id,
-                                child: Text(team.teamName),
-                              );
-                            }).toList(),
-                        onChanged: (value) {
-                          setDialogState(() {
-                            selectedTeamAId = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      // 팀 B 선택 드롭다운
-                      DropdownButtonFormField<int>(
-                        value: selectedTeamBId,
-                        hint: const Text('팀 B 선택'),
-                        items:
-                            _teams.map((team) {
-                              return DropdownMenuItem<int>(
-                                value: team.team.id,
-                                child: Text(team.teamName),
-                              );
-                            }).toList(),
-                        onChanged: (value) {
-                          setDialogState(() {
-                            selectedTeamBId = value;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('취소'),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        // 입력 검증
-                        if (selectedTournamentId == null ||
-                            selectedTeamAId == null ||
-                            selectedTeamBId == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('모든 필드를 선택해주세요.'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                          return;
-                        }
-
-                        if (selectedTeamAId == selectedTeamBId) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('같은 팀으로 매치를 구성할 수 없습니다.'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                          return;
-                        }
-
-                        // 팀 이름 가져오기
-                        final teamA = _teams.firstWhere(
-                          (t) => t.team.id == selectedTeamAId,
-                        );
-                        final teamB = _teams.firstWhere(
-                          (t) => t.team.id == selectedTeamBId,
-                        );
-
-                        final createMatchUseCase = getIt<CreateMatchUseCase>();
-
-                        // 디버깅 정보
-                        debugPrint('----- 매치 생성 시작 -----');
-                        debugPrint(
-                          'Screen: 매치 생성 기능 시작 - '
-                          '토너먼트: $selectedTournamentId, '
-                          '팀A: $selectedTeamAId(${teamA.teamName}), '
-                          '팀B: $selectedTeamBId(${teamB.teamName})',
-                        );
-
-                        try {
-                          final result = await createMatchUseCase.execute(
-                            CreateMatchParams(
-                              tournamentId: selectedTournamentId!,
-                              teamAId: selectedTeamAId!,
-                              teamBId: selectedTeamBId!,
-                              teamAName: teamA.teamName,
-                              teamBName: teamB.teamName,
-                            ),
-                          );
-
-                          // 디버깅 정보
-                          debugPrint('Screen: UseCase 실행 결과 - $result');
-
-                          // 다이얼로그 닫기
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                          }
-
-                          if (result.isSuccess) {
-                            // 성공 처리
-                            final match = result.value;
-                            debugPrint('Screen: 매치 생성 성공 - ID: ${match.id}');
-                            setState(() {
-                              _statusMessage =
-                                  '매치 생성됨: ${teamA.teamName} vs ${teamB.teamName}';
-                            });
-
-                            // 선택된 토너먼트의 매치 목록 갱신
-                            if (selectedTournamentId == _selectedTournamentId) {
-                              if (selectedTournamentId != null) {
-                                _loadMatchesInTournament(
-                                  selectedTournamentId as int,
+      await showDialog(
+        context: context,
+        builder:
+            (context) => StatefulBuilder(
+              builder:
+                  (context, setDialogState) => AlertDialog(
+                    title: const Text('매치 생성'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // 토너먼트 선택 드롭다운
+                        DropdownButtonFormField<int>(
+                          value: selectedTournamentId,
+                          hint: const Text('토너먼트 선택'),
+                          items:
+                              _tournaments.map((tournament) {
+                                return DropdownMenuItem<int>(
+                                  value: tournament.id,
+                                  child: Text(tournament.title),
                                 );
-                              }
-                            }
-
-                            // 성공 메시지 표시
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '매치가 생성되었습니다: ${teamA.teamName} vs ${teamB.teamName}',
-                                  ),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                            }
-                          } else {
-                            // 에러 처리
-                            final error = result.error;
-                            debugPrint('Screen: 매치 생성 실패 - $error');
-                            setState(() {
-                              _statusMessage = error.message;
+                              }).toList(),
+                          onChanged: (value) {
+                            setDialogState(() {
+                              selectedTournamentId = value;
                             });
-
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(error.message),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          }
-                        } catch (e) {
-                          // 예외 처리
-                          debugPrint('Screen: 예상치 못한 예외 발생 - $e');
-
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-
-                            setState(() {
-                              _statusMessage = '예상치 못한 오류: $e';
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        // 팀 A 선택 드롭다운
+                        DropdownButtonFormField<int>(
+                          value: selectedTeamAId,
+                          hint: const Text('팀 A 선택'),
+                          items:
+                              _teams.map((team) {
+                                return DropdownMenuItem<int>(
+                                  value: 1,
+                                  child: Text(team.teamName),
+                                );
+                              }).toList(),
+                          onChanged: (value) {
+                            setDialogState(() {
+                              selectedTeamAId = value;
                             });
-
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        // 팀 B 선택 드롭다운
+                        DropdownButtonFormField<int>(
+                          value: selectedTeamBId,
+                          hint: const Text('팀 B 선택'),
+                          items:
+                              _teams.map((team) {
+                                return DropdownMenuItem<int>(
+                                  value: 2,
+                                  child: Text(team.teamName),
+                                );
+                              }).toList(),
+                          onChanged: (value) {
+                            setDialogState(() {
+                              selectedTeamBId = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('취소'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          // 입력 검증
+                          if (selectedTournamentId == null ||
+                              selectedTeamAId == null ||
+                              selectedTeamBId == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('예상치 못한 오류가 발생했습니다: $e'),
+                              const SnackBar(
+                                content: Text('모든 필드를 선택해주세요.'),
                                 backgroundColor: Colors.red,
                               ),
                             );
+                            return;
                           }
-                        } finally {
-                          debugPrint('----- 매치 생성 종료 -----');
-                        }
-                      },
-                      child: const Text('생성'),
+
+                          if (selectedTeamAId == selectedTeamBId) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('같은 팀으로 매치를 구성할 수 없습니다.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+
+                          // 팀 이름 가져오기
+                          final teamA = _teams.firstWhere(
+                            (t) => t.p1.id == selectedTeamAId,
+                          );
+                          final teamB = _teams.firstWhere(
+                            (t) => t.p1.id == selectedTeamBId,
+                          );
+
+                          final createMatchUseCase =
+                              getIt<CreateMatchUseCase>();
+
+                          // 디버깅 정보
+                          debugPrint('----- 매치 생성 시작 -----');
+                          debugPrint(
+                            'Screen: 매치 생성 기능 시작 - '
+                            '토너먼트: $selectedTournamentId, '
+                            '팀A: $selectedTeamAId(${teamA.teamName}), '
+                            '팀B: $selectedTeamBId(${teamB.teamName})',
+                          );
+
+                          // try {
+                          //   final result = await createMatchUseCase.execute(
+                          //     CreateMatchParams(
+                          //       tournamentId: selectedTournamentId!,
+                          //       teamAId: selectedTeamAId!,
+                          //       teamBId: selectedTeamBId!,
+                          //       teamAName: teamA.teamName,
+                          //       teamBName: teamB.teamName,
+                          //     ),
+                          //   );
+
+                          //   // 디버깅 정보
+                          //   debugPrint('Screen: UseCase 실행 결과 - $result');
+
+                          //   // 다이얼로그 닫기
+                          //   if (context.mounted) {
+                          //     Navigator.of(context).pop();
+                          //   }
+
+                          //   if (result.isSuccess) {
+                          //     // 성공 처리
+                          //     final match = result.value;
+                          //     debugPrint('Screen: 매치 생성 성공 - ID: ${match.id}');
+                          //     setState(() {
+                          //       _statusMessage =
+                          //           '매치 생성됨: ${teamA.teamName} vs ${teamB.teamName}';
+                          //     });
+
+                          //     // 선택된 토너먼트의 매치 목록 갱신
+                          //     if (selectedTournamentId == _selectedTournamentId) {
+                          //       if (selectedTournamentId != null) {
+                          //         _loadMatchesInTournament(
+                          //           selectedTournamentId as int,
+                          //         );
+                          //       }
+                          //     }
+
+                          //     // 성공 메시지 표시
+                          //     if (context.mounted) {
+                          //       ScaffoldMessenger.of(context).showSnackBar(
+                          //         SnackBar(
+                          //           content: Text(
+                          //             '매치가 생성되었습니다: ${teamA.teamName} vs ${teamB.teamName}',
+                          //           ),
+                          //           backgroundColor: Colors.green,
+                          //         ),
+                          //       );
+                          //     }
+                          //   } else {
+                          //     // 에러 처리
+                          //     final error = result.error;
+                          //     debugPrint('Screen: 매치 생성 실패 - $error');
+                          //     setState(() {
+                          //       _statusMessage = error.message;
+                          //     });
+
+                          //     if (context.mounted) {
+                          //       ScaffoldMessenger.of(context).showSnackBar(
+                          //         SnackBar(
+                          //           content: Text(error.message),
+                          //           backgroundColor: Colors.red,
+                          //         ),
+                          //       );
+                          //     }
+                          //   }
+                          // } catch (e) {
+                          //   // 예외 처리
+                          //   debugPrint('Screen: 예상치 못한 예외 발생 - $e');
+
+                          //   if (context.mounted) {
+                          //     Navigator.of(context).pop();
+
+                          //     setState(() {
+                          //       _statusMessage = '예상치 못한 오류: $e';
+                          //     });
+
+                          //     ScaffoldMessenger.of(context).showSnackBar(
+                          //       SnackBar(
+                          //         content: Text('예상치 못한 오류가 발생했습니다: $e'),
+                          //         backgroundColor: Colors.red,
+                          //       ),
+                          //     );
+                          //   }
+                          // } finally {
+                          //   debugPrint('----- 매치 생성 종료 -----');
+                          // }
+                        },
+                        child: const Text('생성'),
+                      ),
+                    ],
+                  ),
+            ),
+      );
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('DB 테스트'),
+          actions: [
+            IconButton(icon: const Icon(Icons.refresh), onPressed: _loadData),
+          ],
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(text: '선수'),
+              Tab(text: '그룹'),
+              Tab(text: '팀'),
+              Tab(text: '토너먼트'),
+              Tab(text: '매치'), // 매치 탭 추가
+            ],
+          ),
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                '상태: $_statusMessage',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+
+            // 선택된 그룹이 있을 때 상세 정보 표시
+            if (_selectedGroupId != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '${_groups.firstWhere((g) => g.id == _selectedGroupId).name} 소속 선수',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(Icons.close, size: 20),
+                          onPressed: () {
+                            setState(() {
+                              _selectedGroupId = null;
+                              _playersInSelectedGroup = [];
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child:
+                          _playersInSelectedGroup.isEmpty
+                              ? const Center(child: Text('선수가 없습니다'))
+                              : ListView.builder(
+                                itemCount: _playersInSelectedGroup.length,
+                                itemBuilder: (context, index) {
+                                  final player = _playersInSelectedGroup[index];
+                                  return ListTile(
+                                    dense: true,
+                                    title: Text(player.name),
+                                    subtitle: Text('ID: ${player.id}'),
+                                    trailing: IconButton(
+                                      icon: const Icon(
+                                        Icons.remove_circle_outline,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed:
+                                          () => _confirmRemovePlayerFromGroup(
+                                            player,
+                                            _selectedGroupId!,
+                                          ),
+                                    ),
+                                  );
+                                },
+                              ),
                     ),
                   ],
                 ),
+              ),
+
+            // 선택된 토너먼트가 있을 때 매치 목록 표시
+            if (_selectedTournamentId != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '${_tournaments.firstWhere((t) => t.id == _selectedTournamentId).title} 매치 목록',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(Icons.close, size: 20),
+                          onPressed: () {
+                            setState(() {
+                              _selectedTournamentId = null;
+                              _matchesInSelectedTournament = [];
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child:
+                          _matchesInSelectedTournament.isEmpty
+                              ? const Center(child: Text('매치가 없습니다'))
+                              : ListView.builder(
+                                itemCount: _matchesInSelectedTournament.length,
+                                itemBuilder: (context, index) {
+                                  final match =
+                                      _matchesInSelectedTournament[index];
+                                  // final teamAName = match.teamAName ?? '팀 A';
+                                  // final teamBName = match.teamBName ?? '팀 B';
+                                  final scoreText =
+                                      (match.scoreA != null &&
+                                              match.scoreB != null)
+                                          ? '${match.scoreA} : ${match.scoreB}'
+                                          : '경기 전';
+
+                                  return ListTile(
+                                    dense: true,
+                                    // title: Text('$teamAName vs $teamBName'),
+                                    subtitle: Text(
+                                      '순서: ${match.order ?? "미지정"}, 점수: $scoreText',
+                                    ),
+                                    trailing: IconButton(
+                                      icon: const Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed:
+                                          () => _confirmDeleteMatch(match),
+                                    ),
+                                  );
+                                },
+                              ),
+                    ),
+                  ],
+                ),
+              ),
+
+            // 탭 내용
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  // 선수 탭
+                  ListView.builder(
+                    itemCount: _players.length,
+                    itemBuilder: (context, index) {
+                      final player = _players[index];
+                      return ListTile(
+                        title: Text(player.name),
+                        subtitle: Text('ID: ${player.id}'),
+                        onLongPress: () => _confirmDeletePlayer(player),
+                      );
+                    },
+                  ),
+
+                  // 그룹 탭
+                  ListView.builder(
+                    itemCount: _groups.length,
+                    itemBuilder: (context, index) {
+                      final group = _groups[index];
+                      return ListTile(
+                        title: Text(group.name),
+                        subtitle: Text('ID: ${group.id}'),
+                        onTap: () => _loadPlayersInGroup(group.id),
+                        onLongPress: () => _confirmDeleteGroup(group),
+                      );
+                    },
+                  ),
+
+                  // 팀 탭
+                  ListView.builder(
+                    itemCount: _teams.length,
+                    itemBuilder: (context, index) {
+                      final team = _teams[index];
+                      return ListTile(
+                        title: Text(team.teamName),
+                        subtitle: Text('ID: ${team.p1.id}'),
+                        onLongPress: () => _confirmDeleteTeam(team),
+                      );
+                    },
+                  ),
+
+                  // 토너먼트 탭
+                  ListView.builder(
+                    itemCount: _tournaments.length,
+                    itemBuilder: (context, index) {
+                      final tournament = _tournaments[index];
+                      return ListTile(
+                        title: Text(tournament.title),
+                        subtitle: Text(
+                          '날짜: ${tournament.date.toLocal().toString().split(' ')[0]}',
+                        ),
+                        onTap: () => _loadMatchesInTournament(tournament.id),
+                        onLongPress: () => _confirmDeleteTournament(tournament),
+                      );
+                    },
+                  ),
+
+                  // 매치 탭
+                  _matchesInSelectedTournament.isEmpty
+                      ? const Center(child: Text('토너먼트를 선택하여 매치를 확인하세요'))
+                      : ListView.builder(
+                        itemCount: _matchesInSelectedTournament.length,
+                        itemBuilder: (context, index) {
+                          final match = _matchesInSelectedTournament[index];
+                          // final teamAName = match.teamAName ?? '팀 A';
+                          // final teamBName = match.teamBName ?? '팀 B';
+                          final scoreText =
+                              (match.scoreA != null && match.scoreB != null)
+                                  ? '${match.scoreA} : ${match.scoreB}'
+                                  : '경기 전';
+
+                          return ListTile(
+                            // title: Text('$teamAName vs $teamBName'),
+                            subtitle: Text(
+                              '순서: ${match.order ?? "미지정"}, 점수: $scoreText',
+                            ),
+                            onLongPress: () => _confirmDeleteMatch(match),
+                          );
+                        },
+                      ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            spacing: 8.0,
+            children: [
+              ElevatedButton(onPressed: _addPlayer, child: const Text('선수 추가')),
+              ElevatedButton(onPressed: _addGroup, child: const Text('그룹 추가')),
+              ElevatedButton(
+                onPressed: _addPlayerToGroup,
+                child: const Text('선수→그룹'),
+              ),
+              ElevatedButton(onPressed: _createTeam, child: const Text('팀 생성')),
+              ElevatedButton(
+                onPressed: _createTournament,
+                child: const Text('토너먼트 생성'),
+              ),
+              ElevatedButton(
+                onPressed: _createMatch,
+                child: const Text('매치 생성'),
+              ),
+            ],
           ),
-    );
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('DB 테스트'),
-        actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadData),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: '선수'),
-            Tab(text: '그룹'),
-            Tab(text: '팀'),
-            Tab(text: '토너먼트'),
-            Tab(text: '매치'), // 매치 탭 추가
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              '상태: $_statusMessage',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-
-          // 선택된 그룹이 있을 때 상세 정보 표시
-          if (_selectedGroupId != null)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        '${_groups.firstWhere((g) => g.id == _selectedGroupId).name} 소속 선수',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.close, size: 20),
-                        onPressed: () {
-                          setState(() {
-                            _selectedGroupId = null;
-                            _playersInSelectedGroup = [];
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child:
-                        _playersInSelectedGroup.isEmpty
-                            ? const Center(child: Text('선수가 없습니다'))
-                            : ListView.builder(
-                              itemCount: _playersInSelectedGroup.length,
-                              itemBuilder: (context, index) {
-                                final player = _playersInSelectedGroup[index];
-                                return ListTile(
-                                  dense: true,
-                                  title: Text(player.name),
-                                  subtitle: Text('ID: ${player.id}'),
-                                  trailing: IconButton(
-                                    icon: const Icon(
-                                      Icons.remove_circle_outline,
-                                      color: Colors.red,
-                                    ),
-                                    onPressed:
-                                        () => _confirmRemovePlayerFromGroup(
-                                          player,
-                                          _selectedGroupId!,
-                                        ),
-                                  ),
-                                );
-                              },
-                            ),
-                  ),
-                ],
-              ),
-            ),
-
-          // 선택된 토너먼트가 있을 때 매치 목록 표시
-          if (_selectedTournamentId != null)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        '${_tournaments.firstWhere((t) => t.id == _selectedTournamentId).title} 매치 목록',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.close, size: 20),
-                        onPressed: () {
-                          setState(() {
-                            _selectedTournamentId = null;
-                            _matchesInSelectedTournament = [];
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child:
-                        _matchesInSelectedTournament.isEmpty
-                            ? const Center(child: Text('매치가 없습니다'))
-                            : ListView.builder(
-                              itemCount: _matchesInSelectedTournament.length,
-                              itemBuilder: (context, index) {
-                                final match =
-                                    _matchesInSelectedTournament[index];
-                                final teamAName = match.teamAName ?? '팀 A';
-                                final teamBName = match.teamBName ?? '팀 B';
-                                final scoreText =
-                                    (match.scoreA != null &&
-                                            match.scoreB != null)
-                                        ? '${match.scoreA} : ${match.scoreB}'
-                                        : '경기 전';
-
-                                return ListTile(
-                                  dense: true,
-                                  title: Text('$teamAName vs $teamBName'),
-                                  subtitle: Text(
-                                    '순서: ${match.order ?? "미지정"}, 점수: $scoreText',
-                                  ),
-                                  trailing: IconButton(
-                                    icon: const Icon(
-                                      Icons.delete_outline,
-                                      color: Colors.red,
-                                    ),
-                                    onPressed: () => _confirmDeleteMatch(match),
-                                  ),
-                                );
-                              },
-                            ),
-                  ),
-                ],
-              ),
-            ),
-
-          // 탭 내용
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                // 선수 탭
-                ListView.builder(
-                  itemCount: _players.length,
-                  itemBuilder: (context, index) {
-                    final player = _players[index];
-                    return ListTile(
-                      title: Text(player.name),
-                      subtitle: Text('ID: ${player.id}'),
-                      onLongPress: () => _confirmDeletePlayer(player),
-                    );
-                  },
-                ),
-
-                // 그룹 탭
-                ListView.builder(
-                  itemCount: _groups.length,
-                  itemBuilder: (context, index) {
-                    final group = _groups[index];
-                    return ListTile(
-                      title: Text(group.name),
-                      subtitle: Text('ID: ${group.id}'),
-                      onTap: () => _loadPlayersInGroup(group.id),
-                      onLongPress: () => _confirmDeleteGroup(group),
-                    );
-                  },
-                ),
-
-                // 팀 탭
-                ListView.builder(
-                  itemCount: _teams.length,
-                  itemBuilder: (context, index) {
-                    final team = _teams[index];
-                    return ListTile(
-                      title: Text(team.teamName),
-                      subtitle: Text('ID: ${team.team.id}'),
-                      onLongPress: () => _confirmDeleteTeam(team),
-                    );
-                  },
-                ),
-
-                // 토너먼트 탭
-                ListView.builder(
-                  itemCount: _tournaments.length,
-                  itemBuilder: (context, index) {
-                    final tournament = _tournaments[index];
-                    return ListTile(
-                      title: Text(tournament.title),
-                      subtitle: Text(
-                        '날짜: ${tournament.date.toLocal().toString().split(' ')[0]}',
-                      ),
-                      onTap: () => _loadMatchesInTournament(tournament.id),
-                      onLongPress: () => _confirmDeleteTournament(tournament),
-                    );
-                  },
-                ),
-
-                // 매치 탭
-                _matchesInSelectedTournament.isEmpty
-                    ? const Center(child: Text('토너먼트를 선택하여 매치를 확인하세요'))
-                    : ListView.builder(
-                      itemCount: _matchesInSelectedTournament.length,
-                      itemBuilder: (context, index) {
-                        final match = _matchesInSelectedTournament[index];
-                        final teamAName = match.teamAName ?? '팀 A';
-                        final teamBName = match.teamBName ?? '팀 B';
-                        final scoreText =
-                            (match.scoreA != null && match.scoreB != null)
-                                ? '${match.scoreA} : ${match.scoreB}'
-                                : '경기 전';
-
-                        return ListTile(
-                          title: Text('$teamAName vs $teamBName'),
-                          subtitle: Text(
-                            '순서: ${match.order ?? "미지정"}, 점수: $scoreText',
-                          ),
-                          onLongPress: () => _confirmDeleteMatch(match),
-                        );
-                      },
-                    ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Wrap(
-          alignment: WrapAlignment.spaceEvenly,
-          spacing: 8.0,
-          children: [
-            ElevatedButton(onPressed: _addPlayer, child: const Text('선수 추가')),
-            ElevatedButton(onPressed: _addGroup, child: const Text('그룹 추가')),
-            ElevatedButton(
-              onPressed: _addPlayerToGroup,
-              child: const Text('선수→그룹'),
-            ),
-            ElevatedButton(onPressed: _createTeam, child: const Text('팀 생성')),
-            ElevatedButton(
-              onPressed: _createTournament,
-              child: const Text('토너먼트 생성'),
-            ),
-            ElevatedButton(onPressed: _createMatch, child: const Text('매치 생성')),
-          ],
-        ),
-      ),
-    );
+    // TODO: implement build
+    throw UnimplementedError();
   }
 }

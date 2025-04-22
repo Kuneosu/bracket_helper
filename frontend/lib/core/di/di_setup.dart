@@ -93,7 +93,7 @@ Future<void> setupDependencies() async {
     () => CreateTeamUseCase(getIt<TeamRepository>(), getIt<PlayerRepository>()),
   );
   getIt.registerLazySingleton<CreateMatchUseCase>(
-    () => CreateMatchUseCase(getIt<MatchRepository>(), getIt<TeamRepository>()),
+    () => CreateMatchUseCase(getIt<MatchRepository>()),
   );
   getIt.registerLazySingleton<CreateTournamentUseCase>(
     () => CreateTournamentUseCase(getIt<TournamentRepository>()),

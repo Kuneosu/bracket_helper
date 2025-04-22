@@ -71,13 +71,12 @@ class TournamentRepositoryImpl implements TournamentRepository {
     try {
       final matchesCompanions =
           matches.map((match) {
-            final teamAId = match.teamAId ?? 0;
-            final teamBId = match.teamBId ?? 0;
-
             return MatchesCompanion(
               tournamentId: Value(0),
-              teamAId: Value(teamAId),
-              teamBId: Value(teamBId),
+              playerA: match.playerA != null ? Value(match.playerA!) : const Value.absent(),
+              playerB: match.playerB != null ? Value(match.playerB!) : const Value.absent(),
+              playerC: match.playerC != null ? Value(match.playerC!) : const Value.absent(),
+              playerD: match.playerD != null ? Value(match.playerD!) : const Value.absent(),
               order: match.order != null ? Value(match.order!) : const Value(0),
               scoreA:
                   match.scoreA != null

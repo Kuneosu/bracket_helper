@@ -5,6 +5,7 @@ import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/use_case/group/get_all_groups_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/get_group_use_case.dart';
+import 'package:bracket_helper/domain/use_case/match/create_match_use_case.dart';
 import 'package:bracket_helper/domain/use_case/tournament/create_tournament_use_case.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_state.dart';
@@ -15,6 +16,7 @@ class CreateTournamentViewModel with ChangeNotifier {
   final CreateTournamentUseCase _createTournamentUseCase;
   final GetAllGroupsUseCase _getAllGroupsUseCase;
   final GetGroupUseCase _getGroupUseCase;
+  final CreateMatchUseCase _createMatchUseCase;
 
   CreateTournamentState _state = CreateTournamentState(
     tournament: TournamentModel(id: 0, title: '', date: DateTime.now()),
@@ -28,6 +30,7 @@ class CreateTournamentViewModel with ChangeNotifier {
     this._createTournamentUseCase,
     this._getAllGroupsUseCase,
     this._getGroupUseCase,
+    this._createMatchUseCase,
   ) {
     fetchAllGroups();
   }
@@ -128,7 +131,9 @@ class CreateTournamentViewModel with ChangeNotifier {
         );
         _notifyChanges();
       case SaveTournament():
+        debugPrint('[토너먼트 저장 추적] 토너먼트 저장 시작');
         _saveTournament();
+        _saveMatches();
       case UpdateProcess():
         debugPrint('프로세스 업데이트: ${action.process}');
         final updatedTournament = _state.tournament.copyWith(
@@ -227,6 +232,25 @@ class CreateTournamentViewModel with ChangeNotifier {
     _notifyChanges();
   }
 
+  Future<void> _saveMatches() async {
+    try {
+      state.matches.map((match) async {
+        final result = await _createMatchUseCase.execute(match);
+        result.fold(
+          onSuccess: (id) {
+            debugPrint('매치 저장 성공: ID $id');
+            _notifyChanges();
+          },
+          onFailure: (error) {
+            debugPrint('매치 저장 실패: ${error.message}');
+          },
+        );
+      });
+    } catch (e) {
+      debugPrint('매치 저장 오류: $e');
+    }
+  }
+
   Future<void> _saveTournament() async {
     try {
       // 타이틀이 비어있는 경우 자동으로 날짜를 사용하여 설정
@@ -238,10 +262,7 @@ class CreateTournamentViewModel with ChangeNotifier {
         );
       }
 
-      final params = CreateTournamentParams.fromTournamentModel(
-        _state.tournament,
-      );
-      final result = await _createTournamentUseCase.execute(params);
+      final result = await _createTournamentUseCase.execute(_state.tournament);
 
       result.fold(
         onSuccess: (id) {
@@ -428,9 +449,7 @@ class CreateTournamentViewModel with ChangeNotifier {
     );
 
     // 이미 선택된 선수인지 확인 (이름으로만 비교)
-    final isAlreadySelected = _state.players.any(
-      (p) => p.name == player.name,
-    );
+    final isAlreadySelected = _state.players.any((p) => p.name == player.name);
 
     if (isAlreadySelected) {
       debugPrint('CreateTournamentViewModel - 이미 선택된 선수입니다: ${player.name}');
@@ -502,52 +521,16 @@ class CreateTournamentViewModel with ChangeNotifier {
 
         debugPrint('생성된 매치 수: ${newMatches.length}');
 
-        // 매치 ID와 순서를 설정
+        // 추가 처리 없이 그대로 사용 - BracketScheduler가 이미 올바른 playerA, playerB, playerC, playerD 필드를 설정함
         for (int i = 0; i < newMatches.length; i++) {
           final match = newMatches[i];
 
-          // 선수 이름이 콤마(,)로 구분된 경우 처리
-          String teamAName = match.teamAName ?? '';
-          String teamBName = match.teamBName ?? '';
+          // ID와 점수만 업데이트
+          newMatches[i] = match.copyWith(id: i + 1, scoreA: 0, scoreB: 0);
 
-          // 복식 토너먼트인 경우 포맷팅 변경
-          if (isDoubles) {
-            // A팀 처리
-            final teamAPlayers = teamAName.split(',');
-            if (teamAPlayers.length >= 2 &&
-                teamAPlayers[0].isNotEmpty &&
-                teamAPlayers[1].isNotEmpty) {
-              teamAName = '${teamAPlayers[0]} / ${teamAPlayers[1]}';
-            }
-
-            // B팀 처리
-            final teamBPlayers = teamBName.split(',');
-            if (teamBPlayers.length >= 2 &&
-                teamBPlayers[0].isNotEmpty &&
-                teamBPlayers[1].isNotEmpty) {
-              teamBName = '${teamBPlayers[0]} / ${teamBPlayers[1]}';
-            }
-          } else {
-            // 단식 토너먼트인 경우, 콤마로 구분된 문자열을 각각 하나의 매치로 분리해야 함
-            final teamAPlayers = teamAName.split(',');
-            final teamBPlayers = teamBName.split(',');
-
-            // 각각 첫 번째 선수만 사용 (단식)
-            if (teamAPlayers.isNotEmpty && teamAPlayers[0].isNotEmpty) {
-              teamAName = teamAPlayers[0];
-            }
-
-            if (teamBPlayers.isNotEmpty && teamBPlayers[0].isNotEmpty) {
-              teamBName = teamBPlayers[0];
-            }
-          }
-
-          newMatches[i] = match.copyWith(
-            id: i + 1,
-            scoreA: 0,
-            scoreB: 0,
-            teamAName: teamAName,
-            teamBName: teamBName,
+          // 로그로 생성된 매치 정보 출력
+          debugPrint(
+            'Match #${i + 1}: ${match.playerA} & ${match.playerC} vs ${match.playerB} & ${match.playerD}',
           );
         }
       } catch (e) {

@@ -74,10 +74,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                         physics: const ClampingScrollPhysics(),
                         itemCount: widget.matches.length,
                         itemBuilder: (context, index) {
-                          return _buildMatchItem(
-                            index,
-                            widget.matches[index],
-                          );
+                          return _buildMatchItem(index, widget.matches[index]);
                         },
                       ),
             ),
@@ -90,6 +87,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
             },
             onNext: () {
               widget.onAction(CreateTournamentAction.updateProcess(3));
+              widget.onAction(CreateTournamentAction.saveTournament());
               context.go(RoutePaths.match);
             },
           ),
@@ -399,11 +397,18 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
   // 매치 아이템 위젯
   Widget _buildMatchItem(int index, MatchModel match) {
     final isDoubles = widget.tournament.isDoubles;
-    
-    // 커스텀 선수 이름 사용 (MatchModel에 저장된 teamName이 있으면 사용)
-    final teamAName = match.teamAName ?? _getPlayerNameById(match.teamAId);
-    final teamBName = match.teamBName ?? _getPlayerNameById(match.teamBId);
-    
+
+    // MatchModel의 playerA, playerB, playerC, playerD 필드를 사용
+    final teamAName =
+        isDoubles && match.playerC != null
+            ? "${match.playerA ?? ''} / ${match.playerC ?? ''}"
+            : match.playerA ?? '선수 없음';
+
+    final teamBName =
+        isDoubles && match.playerD != null
+            ? "${match.playerB ?? ''} / ${match.playerD ?? ''}"
+            : match.playerB ?? '선수 없음';
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 2),
       decoration: BoxDecoration(
@@ -474,18 +479,6 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
         ),
       ),
     );
-  }
-
-  // 플레이어 ID로 이름 조회
-  String _getPlayerNameById(int? playerId) {
-    if (playerId == null) return "선수 없음";
-
-    final player = widget.players.firstWhere(
-      (p) => p.id == playerId,
-      orElse: () => PlayerModel(id: 0, name: "선수 없음"),
-    );
-
-    return player.name;
   }
 
   // 플레이어 이름 위젯
