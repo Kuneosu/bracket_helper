@@ -1,4 +1,5 @@
 import 'package:bracket_helper/domain/model/player_model.dart';
+import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'create_tournament_action.freezed.dart';
 
@@ -22,6 +23,14 @@ sealed class CreateTournamentAction with _$CreateTournamentAction {
   const factory CreateTournamentAction.fetchAllGroups() = FetchAllGroups;
   const factory CreateTournamentAction.loadPlayersFromGroup(int groupId) = LoadPlayersFromGroup;
   const factory CreateTournamentAction.selectPlayerFromGroup(PlayerModel player) = SelectPlayerFromGroup;
+
+  // 매치 관련 액션
+  const factory CreateTournamentAction.addMatch(MatchModel match) = AddMatch;
+  const factory CreateTournamentAction.updateMatch(MatchModel match) = UpdateMatch;
+  const factory CreateTournamentAction.removeMatch(int matchId) = RemoveMatch;
+  const factory CreateTournamentAction.generateMatches() = GenerateMatches;
+  const factory CreateTournamentAction.generateMatchesWithCourts(int courts) = GenerateMatchesWithCourts;
+  const factory CreateTournamentAction.updateMatches(List<MatchModel> matches) = UpdateMatches;
 
   // 대회 관련 액션
   const factory CreateTournamentAction.onDiscard() = OnDiscard;

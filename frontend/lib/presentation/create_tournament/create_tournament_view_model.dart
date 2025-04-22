@@ -1,4 +1,6 @@
 import 'package:bracket_helper/core/utils/date_formatter.dart';
+import 'package:bracket_helper/core/utils/bracket_scheduler.dart';
+import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/use_case/group/get_all_groups_use_case.dart';
@@ -6,6 +8,7 @@ import 'package:bracket_helper/domain/use_case/group/get_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/tournament/create_tournament_use_case.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_state.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 class CreateTournamentViewModel with ChangeNotifier {
@@ -51,7 +54,17 @@ class CreateTournamentViewModel with ChangeNotifier {
   void onAction(CreateTournamentAction action) {
     debugPrint('액션 실행: $action');
 
+    // 액션 타입에 따라 처리
     switch (action) {
+      case GenerateMatches():
+        debugPrint('GenerateMatches 액션 감지 - 기본 코트 수로 매치 생성');
+        _createMatchesDirectly(null);
+      
+      case GenerateMatchesWithCourts():
+        final courts = action.courts;
+        debugPrint('GenerateMatchesWithCourts 액션 감지 - 코트 수: $courts');
+        _createMatchesDirectly(courts);
+        
       case OnDateChanged():
         debugPrint('날짜 변경: ${action.date}');
         _state = _state.copyWith(
@@ -79,7 +92,6 @@ class CreateTournamentViewModel with ChangeNotifier {
           _notifyChanges();
         } catch (e) {
           debugPrint('점수 변환 오류: $e');
-          // 오류 발생 시 기존 값 유지
         }
       case OnTitleChanged():
         _state = _state.copyWith(
@@ -88,10 +100,10 @@ class CreateTournamentViewModel with ChangeNotifier {
         _notifyChanges();
       case OnGamesPerPlayerChanged():
         try {
-          if (action.gamesPerPlayer.isEmpty) return; // 빈 값인 경우 처리하지 않음
+          if (action.gamesPerPlayer.isEmpty) return;
           final gamesPerPlayer = int.parse(action.gamesPerPlayer);
 
-          if (gamesPerPlayer < 1) return; // 1보다 작은 값은 처리하지 않음
+          if (gamesPerPlayer < 1) return;
 
           _state = _state.copyWith(
             tournament: _state.tournament.copyWith(
@@ -101,7 +113,6 @@ class CreateTournamentViewModel with ChangeNotifier {
           _notifyChanges();
         } catch (e) {
           debugPrint('게임 수 변환 오류: $e');
-          // 오류 발생 시 기존 값 유지
         }
       case OnIsDoublesChanged():
         _state = _state.copyWith(
@@ -130,9 +141,8 @@ class CreateTournamentViewModel with ChangeNotifier {
         debugPrint(
           '플레이어 추가 시작: ${action.name} (현재 선수 수: ${_state.players.length})',
         );
-        if (action.name.trim().isEmpty) return; // 빈 이름은 처리하지 않음
+        if (action.name.trim().isEmpty) return;
 
-        // 임시 ID 생성 (실제 앱에서는 DB 또는 UUID 등으로 대체)
         final newId =
             _state.players.isEmpty
                 ? 1
@@ -182,6 +192,9 @@ class CreateTournamentViewModel with ChangeNotifier {
         selectPlayerFromGroup(action.player);
       case OnDiscard():
         _clear();
+      default:
+        // 다른 액션에 대한 기본 처리
+        debugPrint('처리되지 않은 액션: $action');
     }
   }
 
@@ -428,6 +441,106 @@ class CreateTournamentViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (e) {
       debugPrint('CreateTournamentViewModel - 상태 갱신 중 오류: $e');
+    }
+  }
+
+  // 직접 매치를 생성하는 함수
+  void _createMatchesDirectly([int? customCourts]) {
+    debugPrint('_createMatchesDirectly 함수 호출됨${customCourts != null ? " (코트 수: $customCourts)" : ""}');
+
+    try {
+      // 선수 목록 확인
+      final players = _state.players;
+      final isDoubles = _state.tournament.isDoubles;
+      final gamesPerPlayer = _state.tournament.gamesPerPlayer;
+
+      debugPrint('토너먼트 타입: ${isDoubles ? "복식" : "단식"}');
+      debugPrint('플레이어 당 게임 수: $gamesPerPlayer');
+
+      if (players.length < 4) {
+        debugPrint('선수가 부족합니다 (${players.length}명, 최소 4명 필요)');
+        return;
+      }
+
+      debugPrint('BracketScheduler를 통한 매치 생성 시작 - 선수 ${players.length}명');
+
+      List<MatchModel> newMatches;
+
+      try {
+        // BracketScheduler를 사용하여 매치 생성
+        // 코트 수가 지정되었으면 사용, 그렇지 않으면 기본값(players.length ~/ 4) 사용
+        final courts = customCourts ?? players.length ~/ 4;
+        debugPrint('사용할 코트 수: $courts');
+        
+        newMatches = BracketScheduler.generate(
+          players.shuffled(),
+          gamesPer: gamesPerPlayer,
+          courts: courts,
+        );
+
+        debugPrint('생성된 매치 수: ${newMatches.length}');
+
+        // 매치 ID와 순서를 설정
+        for (int i = 0; i < newMatches.length; i++) {
+          final match = newMatches[i];
+          
+          // 선수 이름이 콤마(,)로 구분된 경우 처리
+          String teamAName = match.teamAName ?? '';
+          String teamBName = match.teamBName ?? '';
+          
+          // 복식 토너먼트인 경우 포맷팅 변경
+          if (isDoubles) {
+            // A팀 처리
+            final teamAPlayers = teamAName.split(',');
+            if (teamAPlayers.length >= 2 &&
+                teamAPlayers[0].isNotEmpty &&
+                teamAPlayers[1].isNotEmpty) {
+              teamAName = '${teamAPlayers[0]} / ${teamAPlayers[1]}';
+            }
+            
+            // B팀 처리
+            final teamBPlayers = teamBName.split(',');
+            if (teamBPlayers.length >= 2 &&
+                teamBPlayers[0].isNotEmpty &&
+                teamBPlayers[1].isNotEmpty) {
+              teamBName = '${teamBPlayers[0]} / ${teamBPlayers[1]}';
+            }
+          } else {
+            // 단식 토너먼트인 경우, 콤마로 구분된 문자열을 각각 하나의 매치로 분리해야 함
+            final teamAPlayers = teamAName.split(',');
+            final teamBPlayers = teamBName.split(',');
+            
+            // 각각 첫 번째 선수만 사용 (단식)
+            if (teamAPlayers.isNotEmpty && teamAPlayers[0].isNotEmpty) {
+              teamAName = teamAPlayers[0];
+            }
+            
+            if (teamBPlayers.isNotEmpty && teamBPlayers[0].isNotEmpty) {
+              teamBName = teamBPlayers[0];
+            }
+          }
+          
+          newMatches[i] = match.copyWith(
+            id: i + 1, 
+            scoreA: 0, 
+            scoreB: 0,
+            teamAName: teamAName,
+            teamBName: teamBName,
+          );
+        }
+      } catch (e) {
+        debugPrint('BracketScheduler 매치 생성 중 오류: $e');
+        return;
+      }
+
+      // 생성한 매치 저장
+      debugPrint('총 ${newMatches.length}개 매치 생성 완료');
+      _state = _state.copyWith(matches: newMatches);
+      debugPrint('상태 업데이트: matches 길이 = ${_state.matches.length}');
+      _notifyChanges();
+      debugPrint('상태 변경 알림 완료');
+    } catch (e) {
+      debugPrint('매치 생성 중 오류: $e');
     }
   }
 }

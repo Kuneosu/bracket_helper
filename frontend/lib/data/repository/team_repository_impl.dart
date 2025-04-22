@@ -1,15 +1,19 @@
 import 'package:bracket_helper/data/database/app_database.dart';
 import 'package:bracket_helper/data/dao/team_dao.dart';
+import 'package:bracket_helper/data/dao/player_dao.dart';
 import 'package:bracket_helper/domain/error/app_error.dart';
 import 'package:bracket_helper/domain/error/result.dart';
+import 'package:bracket_helper/domain/model/team_model.dart';
 import 'package:bracket_helper/domain/repository/team_repository.dart';
+import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:flutter/foundation.dart';
 
 /// 팀 관련 Repository 구현체
 class TeamRepositoryImpl implements TeamRepository {
   final TeamDao _teamDao;
+  final PlayerDao _playerDao;
 
-  TeamRepositoryImpl(this._teamDao);
+  TeamRepositoryImpl(this._teamDao, this._playerDao);
 
   @override
   Future<Result<int>> createTeam(TeamsCompanion team) async {
@@ -62,10 +66,38 @@ class TeamRepositoryImpl implements TeamRepository {
   }
 
   @override
-  Future<Result<List<Team>>> fetchAllTeams() async {
+  Future<Result<List<TeamModel>>> fetchAllTeams() async {
     try {
       final teams = await _teamDao.fetchAllTeams();
-      return Result.success(teams);
+      // Team 객체를 TeamModel로 변환
+      final teamModels = await Future.wait(teams.map((team) async {
+        final player1 = await _playerDao.getPlayer(team.player1Id);
+        Player? player2;
+        if (team.player2Id != null) {
+          player2 = await _playerDao.getPlayer(team.player2Id!);
+        }
+        
+        if (player1 == null) {
+          throw Exception('Player with ID ${team.player1Id} not found');
+        }
+        
+        final playerModel1 = PlayerModel(
+          id: player1.id,
+          name: player1.name,
+        );
+        
+        PlayerModel? playerModel2;
+        if (player2 != null) {
+          playerModel2 = PlayerModel(
+            id: player2.id,
+            name: player2.name,
+          );
+        }
+        
+        return TeamModel(playerModel1, playerModel2);
+      }));
+      
+      return Result.success(teamModels);
     } catch (e) {
       return Result.failure(
         DatabaseError(
@@ -77,10 +109,28 @@ class TeamRepositoryImpl implements TeamRepository {
   }
 
   @override
-  Future<Result<List<dynamic>>> fetchTeamsWithPlayers() async {
+  Future<Result<List<TeamModel>>> fetchTeamsWithPlayers() async {
     try {
       final teamsWithPlayers = await _teamDao.fetchTeamsWithPlayers();
-      return Result.success(teamsWithPlayers);
+      // TeamWithPlayers 객체를 TeamModel로 변환
+      final teamModels = teamsWithPlayers.map((teamWithPlayers) {
+        final player1Model = PlayerModel(
+          id: teamWithPlayers.player1.id,
+          name: teamWithPlayers.player1.name,
+        );
+        
+        PlayerModel? player2Model;
+        if (teamWithPlayers.player2 != null) {
+          player2Model = PlayerModel(
+            id: teamWithPlayers.player2!.id,
+            name: teamWithPlayers.player2!.name,
+          );
+        }
+        
+        return TeamModel(player1Model, player2Model);
+      }).toList();
+      
+      return Result.success(teamModels);
     } catch (e) {
       return Result.failure(
         DatabaseError(
@@ -92,10 +142,39 @@ class TeamRepositoryImpl implements TeamRepository {
   }
 
   @override
-  Future<Result<Team?>> getTeam(int teamId) async {
+  Future<Result<TeamModel?>> getTeam(int teamId) async {
     try {
       final team = await _teamDao.getTeam(teamId);
-      return Result.success(team);
+      
+      if (team == null) {
+        return Result.success(null);
+      }
+      
+      // Team 객체를 TeamModel로 변환
+      final player1 = await _playerDao.getPlayer(team.player1Id);
+      Player? player2;
+      if (team.player2Id != null) {
+        player2 = await _playerDao.getPlayer(team.player2Id!);
+      }
+      
+      if (player1 == null) {
+        throw Exception('Player with ID ${team.player1Id} not found');
+      }
+      
+      final playerModel1 = PlayerModel(
+        id: player1.id,
+        name: player1.name,
+      );
+      
+      PlayerModel? playerModel2;
+      if (player2 != null) {
+        playerModel2 = PlayerModel(
+          id: player2.id,
+          name: player2.name,
+        );
+      }
+      
+      return Result.success(TeamModel(playerModel1, playerModel2));
     } catch (e) {
       return Result.failure(
         DatabaseError(

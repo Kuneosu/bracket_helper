@@ -95,14 +95,14 @@ class CreateMatchUseCase {
     final teamB = teamBResult.value!;
 
     // 선수 ID 추출
-    final teamAPlayerIds = <int>[teamA.player1Id];
-    if (teamA.player2Id != null) {
-      teamAPlayerIds.add(teamA.player2Id!);
+    final teamAPlayerIds = <int>[teamA.p1.id];
+    if (teamA.p2 != null) {
+      teamAPlayerIds.add(teamA.p2!.id);
     }
 
-    final teamBPlayerIds = <int>[teamB.player1Id];
-    if (teamB.player2Id != null) {
-      teamBPlayerIds.add(teamB.player2Id!);
+    final teamBPlayerIds = <int>[teamB.p1.id];
+    if (teamB.p2 != null) {
+      teamBPlayerIds.add(teamB.p2!.id);
     }
 
     // 중복 선수 확인

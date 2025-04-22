@@ -1,5 +1,5 @@
 import 'package:bracket_helper/domain/model/player_model.dart';
-import 'package:bracket_helper/domain/model/team.dart';
+import 'package:bracket_helper/domain/model/team_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'team_with_players.freezed.dart';
@@ -7,7 +7,7 @@ part 'team_with_players.freezed.dart';
 @freezed
 @JsonSerializable()
 class TeamWithPlayers with _$TeamWithPlayers {
-  final Team team;
+  final TeamModel team;
   final PlayerModel player1;
   final PlayerModel? player2;
 

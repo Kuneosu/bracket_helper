@@ -63,7 +63,7 @@ Future<void> setupDependencies() async {
     () => PlayerRepositoryImpl(getIt<PlayerDao>()),
   );
   getIt.registerLazySingleton<TeamRepository>(
-    () => TeamRepositoryImpl(getIt<TeamDao>()),
+    () => TeamRepositoryImpl(getIt<TeamDao>(), getIt<PlayerDao>()),
   );
   getIt.registerLazySingleton<MatchRepository>(
     () => MatchRepositoryImpl(getIt<MatchDao>()),
