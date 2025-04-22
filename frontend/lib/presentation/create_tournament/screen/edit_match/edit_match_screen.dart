@@ -475,12 +475,15 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                 ),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 8), // 간격 더 축소
             Expanded(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround, // 균등 분배
                 children: [
-                  _buildTeam(teamAName, isDoubles),
+                  Flexible(
+                    flex: 2, // 비율 할당
+                    child: Center(child: _buildTeam(teamAName, isDoubles)),
+                  ),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -499,7 +502,10 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                       style: TST.smallTextBold.copyWith(color: CST.primary100),
                     ),
                   ),
-                  _buildTeam(teamBName, isDoubles),
+                  Flexible(
+                    flex: 2, // 비율 할당
+                    child: Center(child: _buildTeam(teamBName, isDoubles)),
+                  ),
                 ],
               ),
             ),
@@ -530,22 +536,16 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
     return player.name;
   }
 
-  // 팀 위젯
-  Widget _buildTeam(String teamName, bool isDoubles) {
-    // 복식인 경우 '/'로 구분된 이름을 분리
-    final names = isDoubles ? teamName.split('/') : [teamName];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [...names.map((name) => _buildPlayerName(name.trim()))],
-    );
-  }
-
   // 플레이어 이름 위젯
   Widget _buildPlayerName(String name) {
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      // 고정 너비 제거하고 필요한 만큼만 차지하도록 설정
+      constraints: const BoxConstraints(
+        minWidth: 40, // 최소 너비 설정
+        maxWidth: 100, // 최대 너비 설정
+      ),
       decoration: BoxDecoration(
         color: CST.primary40.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
@@ -554,7 +554,24 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
           width: 0.5,
         ),
       ),
-      child: Text(name, style: TST.smallTextBold),
+      child: Text(
+        name,
+        style: TST.smallTextBold,
+        overflow: TextOverflow.ellipsis, // 이름이 길면 말줄임표로 처리
+        maxLines: 1, // 한 줄로 제한
+        textAlign: TextAlign.center, // 텍스트 중앙 정렬
+      ),
+    );
+  }
+
+  // 팀 위젯
+  Widget _buildTeam(String teamName, bool isDoubles) {
+    // 복식인 경우 '/'로 구분된 이름을 분리
+    final names = isDoubles ? teamName.split('/') : [teamName];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center, // 중앙 정렬
+      children: [...names.map((name) => _buildPlayerName(name.trim()))],
     );
   }
 }
