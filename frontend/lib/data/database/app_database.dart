@@ -36,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
   
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -47,6 +47,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) {
         // 버전 1에서 버전 2로 업데이트: Groups 테이블에 color 컬럼 추가
         await m.addColumn(groups, groups.color);
+      }
+      if (from < 3) {
+        // 버전 2에서 버전 3으로 업데이트: Tournaments 테이블에 process 컬럼 추가
+        await m.addColumn(tournaments, tournaments.process);
       }
     },
     beforeOpen: (details) async {

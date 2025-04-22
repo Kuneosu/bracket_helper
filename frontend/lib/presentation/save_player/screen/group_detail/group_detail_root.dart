@@ -161,55 +161,54 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
             return GroupDetailScreen(
               group: group,
               players: players,
-              onRefresh: () {
-                setState(() {
-                  _initData();
-                });
-              },
-              onAddPlayer: () {
-                // 선수 추가 다이얼로그 표시
-                _showAddPlayerDialog(context, group);
-              },
-              onEditGroup: () {
-                // TODO: 그룹 편집 화면으로 이동
-                debugPrint('GroupDetailRoot: 그룹 관리 버튼 클릭됨');
-              },
-              onDeletePlayer: (playerId) {
-                // 선수 삭제 액션 호출
-                widget.onAction(
-                  SavePlayerAction.onDeletePlayer(playerId, widget.groupId),
-                );
-
-                // 약간의 지연 후 데이터 갱신
-                Future.delayed(const Duration(milliseconds: 800), () {
-                  if (mounted) {
-                    debugPrint('GroupDetailRoot: 선수 삭제 후 데이터 새로고침');
-                    _refreshData();
-                  }
-                });
-              },
-              onUpdatePlayer: (playerId, newName) {
-                // 선수 정보 업데이트 액션 호출
-                widget.onAction(
-                  SavePlayerAction.onUpdatePlayer(
-                    playerId: playerId,
-                    newName: newName,
-                  ),
-                );
-
-                // 약간의 지연 후 데이터 갱신
-                Future.delayed(const Duration(milliseconds: 800), () {
-                  if (mounted) {
-                    debugPrint('GroupDetailRoot: 선수 정보 업데이트 후 데이터 새로고침');
-                    _refreshData();
-                  }
-                });
+              onAction: (action) {
+                debugPrint('GroupDetailRoot - 액션 수신: $action');
+                
+                // 선수 저장 액션 처리 - 빈 이름의 경우 다이얼로그 표시
+                if (action is OnSavePlayer && action.name.isEmpty) {
+                  _showAddPlayerDialog(context, group);
+                  return;
+                }
+                
+                // 나머지 액션 처리
+                _handleAction(action);
               },
             );
           },
         );
       },
     );
+  }
+
+  // 액션 처리 메서드
+  void _handleAction(SavePlayerAction action) {
+    debugPrint('GroupDetailRoot - 액션 처리: $action');
+    
+    // onRefresh 액션인 경우 로컬 메서드 호출
+    if (action is OnRefresh) {
+      _refreshData();
+      return;
+    }
+    
+    // SavePlayer, DeletePlayer, UpdatePlayer 액션은 상위로 전달하고 데이터 갱신
+    if (action is OnSavePlayer || 
+        action is OnDeletePlayer || 
+        action is OnUpdatePlayer) {
+      // 액션 전달
+      widget.onAction(action);
+      
+      // 약간의 지연 후 데이터 갱신
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) {
+          debugPrint('GroupDetailRoot: 액션 처리 후 데이터 새로고침');
+          _refreshData();
+        }
+      });
+      return;
+    }
+    
+    // 그 외 액션은 상위 컴포넌트로 전달
+    widget.onAction(action);
   }
 
   // 선수 추가 다이얼로그
@@ -350,24 +349,11 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                                         Navigator.of(context).pop();
 
                                         // 선수 추가 액션 호출
-                                        widget.onAction(
+                                        _handleAction(
                                           SavePlayerAction.onSavePlayer(
                                             playerName,
                                             widget.groupId,
                                           ),
-                                        );
-
-                                        // 성공적으로 추가된 후 데이터 새로고침 (지연 적용)
-                                        Future.delayed(
-                                          const Duration(milliseconds: 800),
-                                          () {
-                                            if (mounted) {
-                                              debugPrint(
-                                                'GroupDetailRoot: 선수 추가 후 데이터 새로고침',
-                                              );
-                                              _refreshData();
-                                            }
-                                          },
                                         );
                                       }
                                       : null, // 유효하지 않으면 버튼 비활성화

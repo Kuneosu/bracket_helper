@@ -1,5 +1,5 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
-import 'package:bracket_helper/presentation/create_match/create_match_root.dart';
+import 'package:bracket_helper/presentation/create_tournament/screen/create_tournament_root.dart';
 import 'package:bracket_helper/presentation/db_test/db_test_screen.dart';
 import 'package:bracket_helper/presentation/home/screen/home_root.dart';
 import 'package:bracket_helper/presentation/main/main_screen.dart';
@@ -17,19 +17,19 @@ final router = GoRouter(
     ),
     GoRoute(
       path: RoutePaths.createTournament,
-      builder: (context, state) => const CreateMatchRoot(),
+      builder: (context, state) => const CreateTournamentRoot(),
       routes: [
         GoRoute(
-          path: RoutePaths.matchInfo,
-          builder: (context, state) => const CreateMatchRoot(),
+          path: RoutePaths.tournamentInfo,
+          builder: (context, state) => const CreateTournamentRoot(),
         ),
         GoRoute(
           path: RoutePaths.editMatch,
-          builder: (context, state) => const CreateMatchRoot(),
+          builder: (context, state) => const CreateTournamentRoot(),
         ),
         GoRoute(
           path: RoutePaths.addPlayer,
-          builder: (context, state) => const CreateMatchRoot(),
+          builder: (context, state) => const CreateTournamentRoot(),
         ),
       ],
     ),

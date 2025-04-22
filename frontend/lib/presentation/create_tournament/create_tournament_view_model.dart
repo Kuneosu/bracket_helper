@@ -1,0 +1,568 @@
+import 'package:bracket_helper/core/utils/date_formatter.dart';
+import 'package:bracket_helper/core/utils/bracket_scheduler.dart';
+import 'package:bracket_helper/domain/model/match_model.dart';
+import 'package:bracket_helper/domain/model/player_model.dart';
+import 'package:bracket_helper/domain/model/tournament_model.dart';
+import 'package:bracket_helper/domain/use_case/group/get_all_groups_use_case.dart';
+import 'package:bracket_helper/domain/use_case/group/get_group_use_case.dart';
+import 'package:bracket_helper/domain/use_case/tournament/create_tournament_use_case.dart';
+import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
+import 'package:bracket_helper/presentation/create_tournament/create_tournament_state.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
+
+class CreateTournamentViewModel with ChangeNotifier {
+  final CreateTournamentUseCase _createTournamentUseCase;
+  final GetAllGroupsUseCase _getAllGroupsUseCase;
+  final GetGroupUseCase _getGroupUseCase;
+
+  CreateTournamentState _state = CreateTournamentState(
+    tournament: TournamentModel(id: 0, title: '', date: DateTime.now()),
+  );
+  CreateTournamentState get state => _state;
+
+  // 그룹별 선수 목록 캐시
+  final Map<int, List<PlayerModel>> _playerListCache = {};
+
+  CreateTournamentViewModel(
+    this._createTournamentUseCase,
+    this._getAllGroupsUseCase,
+    this._getGroupUseCase,
+  ) {
+    fetchAllGroups();
+  }
+
+  void _notifyChanges() {
+    debugPrint('상태 변경: ${_state.tournament.date}');
+    debugPrint('현재 선수 목록 수: ${_state.players.length}');
+    if (_state.players.isNotEmpty) {
+      debugPrint(
+        '선수 목록: ${_state.players.map((p) => "${p.id}:${p.name}").join(', ')}',
+      );
+    }
+
+    // 안전하게 상태 변경 알림
+    try {
+      // 대부분의 프레임워크 락 이슈는 메인 스레드에서 발생하므로
+      // Future.microtask를 사용하여 다음 마이크로태스크 큐에서 실행
+      Future.microtask(() => notifyListeners());
+    } catch (e) {
+      debugPrint('notifyListeners 호출 오류: $e');
+    }
+  }
+
+  void onAction(CreateTournamentAction action) {
+    debugPrint('액션 실행: $action');
+
+    // 액션 타입에 따라 처리
+    switch (action) {
+      case GenerateMatches():
+        debugPrint('GenerateMatches 액션 감지 - 기본 코트 수로 매치 생성');
+        _createMatchesDirectly(null);
+
+      case GenerateMatchesWithCourts():
+        final courts = action.courts;
+        debugPrint('GenerateMatchesWithCourts 액션 감지 - 코트 수: $courts');
+        _createMatchesDirectly(courts);
+
+      case OnDateChanged():
+        debugPrint('날짜 변경: ${action.date}');
+        _state = _state.copyWith(
+          tournament: _state.tournament.copyWith(date: action.date),
+        );
+        _notifyChanges();
+      case OnScoreChanged():
+        try {
+          if (action.score.isEmpty) return; // 빈 값인 경우 처리하지 않음
+          final score = int.parse(action.score);
+
+          if (action.type == '승') {
+            _state = _state.copyWith(
+              tournament: _state.tournament.copyWith(winPoint: score),
+            );
+          } else if (action.type == '무') {
+            _state = _state.copyWith(
+              tournament: _state.tournament.copyWith(drawPoint: score),
+            );
+          } else if (action.type == '패') {
+            _state = _state.copyWith(
+              tournament: _state.tournament.copyWith(losePoint: score),
+            );
+          }
+          _notifyChanges();
+        } catch (e) {
+          debugPrint('점수 변환 오류: $e');
+        }
+      case OnTitleChanged():
+        _state = _state.copyWith(
+          tournament: _state.tournament.copyWith(title: action.title),
+        );
+        _notifyChanges();
+      case OnGamesPerPlayerChanged():
+        try {
+          if (action.gamesPerPlayer.isEmpty) return;
+          final gamesPerPlayer = int.parse(action.gamesPerPlayer);
+
+          if (gamesPerPlayer < 1) return;
+
+          _state = _state.copyWith(
+            tournament: _state.tournament.copyWith(
+              gamesPerPlayer: gamesPerPlayer,
+            ),
+          );
+          _notifyChanges();
+        } catch (e) {
+          debugPrint('게임 수 변환 오류: $e');
+        }
+      case OnIsDoublesChanged():
+        _state = _state.copyWith(
+          tournament: _state.tournament.copyWith(isDoubles: action.isDoubles),
+        );
+        _notifyChanges();
+      case OnRecommendTitle():
+        _state = _state.copyWith(
+          tournament: _state.tournament.copyWith(
+            title:
+                '${DateFormatter.formatToYYYYMMDD(_state.tournament.date)} 대회',
+          ),
+        );
+        _notifyChanges();
+      case SaveTournament():
+        _saveTournament();
+      case UpdateProcess():
+        debugPrint('프로세스 업데이트: ${action.process}');
+        final updatedTournament = _state.tournament.copyWith(
+          process: action.process,
+        );
+        _state = _state.copyWith(tournament: updatedTournament);
+        debugPrint('새 프로세스 값: ${_state.tournament.process}');
+        _notifyChanges();
+      case AddPlayer():
+        debugPrint(
+          '플레이어 추가 시작: ${action.name} (현재 선수 수: ${_state.players.length})',
+        );
+        if (action.name.trim().isEmpty) return;
+
+        final newId =
+            _state.players.isEmpty
+                ? 1
+                : _state.players
+                        .map((p) => p.id)
+                        .reduce((max, id) => id > max ? id : max) +
+                    1;
+
+        // 이름 중복 확인 및 처리
+        final baseName = action.name.trim();
+        String uniqueName = baseName;
+
+        // 동일한 이름을 가진 선수들 찾기
+        final duplicateCount =
+            _state.players.where((p) {
+              // 정확히 같은 이름이거나, "이름(숫자)" 형태인 경우 모두 카운트
+              return p.name == baseName ||
+                  p.name.startsWith('$baseName(') && p.name.endsWith(')');
+            }).length;
+
+        // 중복 선수가 있는 경우
+        if (duplicateCount > 0) {
+          uniqueName = '$baseName(${duplicateCount + 1})';
+          debugPrint('중복된 이름 발견: $baseName → $uniqueName로 변경됨');
+        }
+
+        final newPlayer = PlayerModel(id: newId, name: uniqueName);
+        _state = _state.copyWith(players: [..._state.players, newPlayer]);
+        debugPrint(
+          '플레이어 추가 완료: ID ${newPlayer.id}, 이름 ${newPlayer.name} (추가 후 선수 수: ${_state.players.length})',
+        );
+        _notifyChanges();
+      case UpdatePlayer():
+        debugPrint(
+          '플레이어 수정 시작: ${action.player.id} - ${action.player.name} (현재 선수 수: ${_state.players.length})',
+        );
+        final updatedPlayers =
+            _state.players.map((player) {
+              if (player.id == action.player.id) {
+                return action.player;
+              }
+              return player;
+            }).toList();
+
+        _state = _state.copyWith(players: updatedPlayers);
+        debugPrint('플레이어 수정 완료 (수정 후 선수 수: ${_state.players.length})');
+        _notifyChanges();
+      case RemovePlayer():
+        debugPrint(
+          '플레이어 삭제 시작: ${action.playerId} (현재 선수 수: ${_state.players.length})',
+        );
+        _state = _state.copyWith(
+          players:
+              _state.players
+                  .where((player) => player.id != action.playerId)
+                  .toList(),
+        );
+        debugPrint('플레이어 삭제 완료 (삭제 후 선수 수: ${_state.players.length})');
+        _notifyChanges();
+      case FetchAllGroups():
+        fetchAllGroups();
+      case LoadPlayersFromGroup():
+        loadPlayersFromGroup(action.groupId);
+      case SelectPlayerFromGroup():
+        selectPlayerFromGroup(action.player);
+      case OnDiscard():
+        _clear();
+      default:
+        // 다른 액션에 대한 기본 처리
+        debugPrint('처리되지 않은 액션: $action');
+    }
+  }
+
+  void _clear() {
+    _state = _state.copyWith(
+      tournament: TournamentModel(id: 0, title: '', date: DateTime.now()),
+      players: [],
+      matches: [],
+      groups: [],
+    );
+    _playerListCache.clear(); // 캐시도 초기화
+    _notifyChanges();
+  }
+
+  Future<void> _saveTournament() async {
+    try {
+      // 타이틀이 비어있는 경우 자동으로 날짜를 사용하여 설정
+      String title = _state.tournament.title;
+      if (title.isEmpty) {
+        title = '${DateFormatter.formatToYYYYMMDD(_state.tournament.date)} 대회';
+        _state = _state.copyWith(
+          tournament: _state.tournament.copyWith(title: title),
+        );
+      }
+
+      final params = CreateTournamentParams.fromTournamentModel(
+        _state.tournament,
+      );
+      final result = await _createTournamentUseCase.execute(params);
+
+      result.fold(
+        onSuccess: (id) {
+          debugPrint('토너먼트 저장 성공: ID $id');
+          // 생성된 ID로 상태 업데이트
+          _state = _state.copyWith(
+            tournament: _state.tournament.copyWith(id: id),
+          );
+          _notifyChanges();
+        },
+        onFailure: (error) {
+          debugPrint('토너먼트 저장 실패: ${error.message}');
+          // 에러 처리를 추가할 수 있음
+        },
+      );
+    } catch (e) {
+      debugPrint('_saveTournament 예외 발생: $e');
+    }
+  }
+
+  // 모든 그룹 목록 조회
+  Future<void> fetchAllGroups() async {
+    debugPrint('CreateTournamentViewModel - 모든 그룹 목록 조회 시작');
+
+    // 상태 변경 전 플래그만 설정
+    _state = _state.copyWith(isLoading: true);
+
+    // 즉시 notifyListeners 호출하지 않고 비동기 작업 먼저 수행
+    try {
+      debugPrint('CreateTournamentViewModel - GetAllGroupsUseCase 호출 시작');
+      final result = await _getAllGroupsUseCase.execute();
+      debugPrint('CreateTournamentViewModel - GetAllGroupsUseCase 호출 완료');
+
+      if (result.isSuccess) {
+        // 작업 완료 후 상태 업데이트
+        final groups = result.value;
+        debugPrint(
+          'CreateTournamentViewModel - 그룹 목록 조회 성공: ${groups.length}개 그룹',
+        );
+
+        if (groups.isNotEmpty) {
+          debugPrint(
+            'CreateTournamentViewModel - 그룹 목록: ${groups.map((g) => "${g.id}:${g.name}").join(", ")}',
+          );
+        }
+
+        _state = _state.copyWith(groups: groups, isLoading: false);
+      } else {
+        debugPrint(
+          'CreateTournamentViewModel - 그룹 목록 조회 실패: ${result.error.message}',
+        );
+        _state = _state.copyWith(
+          errorMessage: '그룹 목록을 불러오는 데 실패했습니다: ${result.error.message}',
+          isLoading: false,
+        );
+      }
+    } catch (e) {
+      debugPrint('CreateTournamentViewModel - 그룹 목록 조회 중 예외 발생: $e');
+      _state = _state.copyWith(
+        errorMessage: '그룹 목록을 불러오는 중 오류가 발생했습니다: $e',
+        isLoading: false,
+      );
+    }
+
+    // 모든 작업 완료 후 한 번만 notifyListeners 호출
+    debugPrint('CreateTournamentViewModel - 그룹 목록 조회 완료, UI 갱신 요청');
+    try {
+      // Future.microtask를 사용하여 안전하게 알림
+      Future.microtask(() => notifyListeners());
+    } catch (e) {
+      debugPrint('CreateTournamentViewModel - notifyListeners 호출 오류: $e');
+    }
+  }
+
+  // 특정 그룹의 선수 목록을 조회 (캐시 또는 빈 목록 반환, 비동기 로드는 별도로 호출)
+  List<PlayerModel> getPlayersInGroupSync(int groupId) {
+    debugPrint('CreateTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 조회');
+
+    // ALL_GROUPS 상수 값이면 모든 그룹의 선수 목록 병합하여 반환
+    if (groupId == -999) {
+      // -999는 모든 그룹 선택을 의미
+      final allPlayers = <PlayerModel>[];
+      final seenPlayerIds = <int>{}; // 중복 제거용 집합
+
+      // 모든 그룹의 선수 목록 조회
+      for (final groupId in _playerListCache.keys) {
+        final players = _playerListCache[groupId] ?? [];
+
+        // 중복 선수 제거
+        for (final player in players) {
+          if (!seenPlayerIds.contains(player.id)) {
+            allPlayers.add(player);
+            seenPlayerIds.add(player.id);
+          }
+        }
+      }
+
+      debugPrint(
+        'CreateTournamentViewModel - 모든 그룹 선수 목록 반환: ${allPlayers.length}명',
+      );
+      return allPlayers;
+    }
+
+    // 특정 그룹 ID에 대한 처리
+    // 캐시된 선수 목록이 있으면 바로 반환
+    if (_playerListCache.containsKey(groupId)) {
+      final cachedPlayers = _playerListCache[groupId] ?? [];
+      debugPrint(
+        'CreateTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 있음 (${cachedPlayers.length}명)',
+      );
+      return cachedPlayers;
+    }
+
+    // 캐시에 없으면 빈 목록 반환
+    debugPrint('CreateTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 없음, 빈 목록 반환');
+    return [];
+  }
+
+  // 특정 그룹의 선수 목록 조회 (비동기 메서드)
+  Future<void> loadPlayersFromGroup(int groupId) async {
+    debugPrint('CreateTournamentViewModel - 그룹 $groupId의 선수 목록 조회 시작');
+
+    // UI에서 직접 로딩 상태를 처리하므로 여기서는 상태만 업데이트하고 알림 없음
+    _state = _state.copyWith(isLoading: true);
+
+    try {
+      // 캐시된 선수 목록이 있는지 확인
+      if (_playerListCache.containsKey(groupId)) {
+        final cachedPlayers = _playerListCache[groupId]!;
+        debugPrint(
+          'CreateTournamentViewModel - 캐시에서 선수 목록 반환 (${cachedPlayers.length}명)',
+        );
+
+        _state = _state.copyWith(isLoading: false);
+        // 캐시 사용 시에도 상태 업데이트만 하고 notifyListeners는 호출하지 않음
+        return;
+      }
+
+      // 캐시에 없으면 UseCase로 조회
+      final result = await _getGroupUseCase.execute(groupId);
+
+      if (result.isSuccess) {
+        // DB의 Player 모델을 UI 표시용 PlayerModel로 변환
+        final playersFromDb = result.value.players;
+        final players =
+            playersFromDb
+                .map((player) => PlayerModel(id: player.id, name: player.name))
+                .toList();
+
+        // 선수 목록 캐시에 저장
+        _playerListCache[groupId] = players;
+
+        debugPrint(
+          'CreateTournamentViewModel - DB에서 선수 목록 조회 성공 (${players.length}명)',
+        );
+      } else {
+        debugPrint(
+          'CreateTournamentViewModel - 그룹 정보 조회 실패: ${result.error.message}',
+        );
+        _state = _state.copyWith(
+          errorMessage: '그룹 선수 목록을 불러오는 데 실패했습니다: ${result.error.message}',
+        );
+      }
+    } catch (e) {
+      debugPrint('CreateTournamentViewModel - 그룹 선수 목록 조회 중 예외 발생: $e');
+      _state = _state.copyWith(errorMessage: '그룹 선수 목록을 불러오는 중 오류가 발생했습니다: $e');
+    }
+
+    _state = _state.copyWith(isLoading: false);
+
+    // 캐시 업데이트 후 UI에 알림 (필요한 경우만)
+    try {
+      // Future.microtask를 사용하여 안전하게 알림
+      Future.microtask(() => notifyListeners());
+    } catch (e) {
+      debugPrint('CreateTournamentViewModel - notifyListeners 호출 오류: $e');
+    }
+  }
+
+  // 그룹에서 선수 선택
+  void selectPlayerFromGroup(PlayerModel player) {
+    debugPrint(
+      'CreateTournamentViewModel - 그룹에서 선수 선택: ${player.id} - ${player.name}',
+    );
+
+    // 이미 선택된 선수인지 확인 (이름으로만 비교)
+    final isAlreadySelected = _state.players.any(
+      (p) => p.name == player.name,
+    );
+
+    if (isAlreadySelected) {
+      debugPrint('CreateTournamentViewModel - 이미 선택된 선수입니다: ${player.name}');
+      return;
+    }
+
+    // 선수 목록에 추가
+    _state = _state.copyWith(players: [..._state.players, player]);
+
+    debugPrint(
+      'CreateTournamentViewModel - 선수 추가됨: ${player.name} (현재 ${_state.players.length}명)',
+    );
+
+    // 안전하게 상태 변경 알림
+    try {
+      // Future.microtask를 사용하여 안전하게 알림
+      Future.microtask(() => notifyListeners());
+    } catch (e) {
+      debugPrint('CreateTournamentViewModel - notifyListeners 호출 오류: $e');
+    }
+  }
+
+  // 상태 강제 갱신 메서드 (UI 업데이트를 위한 용도)
+  void refreshState() {
+    debugPrint('CreateTournamentViewModel - 상태 강제 갱신');
+    try {
+      // Future.microtask를 사용하여 안전하게 알림
+      Future.microtask(() => notifyListeners());
+    } catch (e) {
+      debugPrint('CreateTournamentViewModel - 상태 갱신 중 오류: $e');
+    }
+  }
+
+  // 직접 매치를 생성하는 함수
+  void _createMatchesDirectly([int? customCourts]) {
+    debugPrint(
+      '_createMatchesDirectly 함수 호출됨${customCourts != null ? " (코트 수: $customCourts)" : ""}',
+    );
+
+    try {
+      // 선수 목록 확인
+      final players = _state.players;
+      final isDoubles = _state.tournament.isDoubles;
+      final gamesPerPlayer = _state.tournament.gamesPerPlayer;
+
+      debugPrint('토너먼트 타입: ${isDoubles ? "복식" : "단식"}');
+      debugPrint('플레이어 당 게임 수: $gamesPerPlayer');
+
+      if (players.length < 4) {
+        debugPrint('선수가 부족합니다 (${players.length}명, 최소 4명 필요)');
+        return;
+      }
+
+      debugPrint('BracketScheduler를 통한 매치 생성 시작 - 선수 ${players.length}명');
+
+      List<MatchModel> newMatches;
+
+      try {
+        // BracketScheduler를 사용하여 매치 생성
+        // 코트 수가 지정되었으면 사용, 그렇지 않으면 기본값(players.length ~/ 4) 사용
+        final courts = customCourts ?? players.length ~/ 4;
+        debugPrint('사용할 코트 수: $courts');
+
+        newMatches = BracketScheduler.generate(
+          players.shuffled(),
+          gamesPer: gamesPerPlayer,
+          courts: courts,
+        );
+
+        debugPrint('생성된 매치 수: ${newMatches.length}');
+
+        // 매치 ID와 순서를 설정
+        for (int i = 0; i < newMatches.length; i++) {
+          final match = newMatches[i];
+
+          // 선수 이름이 콤마(,)로 구분된 경우 처리
+          String teamAName = match.teamAName ?? '';
+          String teamBName = match.teamBName ?? '';
+
+          // 복식 토너먼트인 경우 포맷팅 변경
+          if (isDoubles) {
+            // A팀 처리
+            final teamAPlayers = teamAName.split(',');
+            if (teamAPlayers.length >= 2 &&
+                teamAPlayers[0].isNotEmpty &&
+                teamAPlayers[1].isNotEmpty) {
+              teamAName = '${teamAPlayers[0]} / ${teamAPlayers[1]}';
+            }
+
+            // B팀 처리
+            final teamBPlayers = teamBName.split(',');
+            if (teamBPlayers.length >= 2 &&
+                teamBPlayers[0].isNotEmpty &&
+                teamBPlayers[1].isNotEmpty) {
+              teamBName = '${teamBPlayers[0]} / ${teamBPlayers[1]}';
+            }
+          } else {
+            // 단식 토너먼트인 경우, 콤마로 구분된 문자열을 각각 하나의 매치로 분리해야 함
+            final teamAPlayers = teamAName.split(',');
+            final teamBPlayers = teamBName.split(',');
+
+            // 각각 첫 번째 선수만 사용 (단식)
+            if (teamAPlayers.isNotEmpty && teamAPlayers[0].isNotEmpty) {
+              teamAName = teamAPlayers[0];
+            }
+
+            if (teamBPlayers.isNotEmpty && teamBPlayers[0].isNotEmpty) {
+              teamBName = teamBPlayers[0];
+            }
+          }
+
+          newMatches[i] = match.copyWith(
+            id: i + 1,
+            scoreA: 0,
+            scoreB: 0,
+            teamAName: teamAName,
+            teamBName: teamBName,
+          );
+        }
+      } catch (e) {
+        debugPrint('BracketScheduler 매치 생성 중 오류: $e');
+        return;
+      }
+
+      // 생성한 매치 저장
+      debugPrint('총 ${newMatches.length}개 매치 생성 완료');
+      _state = _state.copyWith(matches: newMatches);
+      debugPrint('상태 업데이트: matches 길이 = ${_state.matches.length}');
+      _notifyChanges();
+      debugPrint('상태 변경 알림 완료');
+    } catch (e) {
+      debugPrint('매치 생성 중 오류: $e');
+    }
+  }
+}

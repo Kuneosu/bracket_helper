@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'match.freezed.dart';
+part 'match_model.freezed.dart';
 
 @freezed
 @JsonSerializable()
-class Match with _$Match {
+class MatchModel with _$MatchModel {
   final int id;
   final int? tournamentId;
   final int? teamAId;
@@ -15,7 +15,7 @@ class Match with _$Match {
   final int? scoreB;
   final int? order;
 
-  Match({
+  MatchModel({
     required this.id,
     this.tournamentId,
     this.teamAId,

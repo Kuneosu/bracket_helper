@@ -6,6 +6,7 @@ import 'package:bracket_helper/presentation/save_player/components/empty_state_w
 import 'package:bracket_helper/presentation/save_player/components/group_grid_item.dart';
 import 'package:bracket_helper/presentation/save_player/components/group_list_item.dart';
 import 'package:bracket_helper/presentation/save_player/components/rename_dialog.dart';
+import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -17,15 +18,8 @@ class GroupListScreen extends StatefulWidget {
   final bool isEditMode;
   final bool isGridView;
   final String searchQuery;
-  final Function(String) onSearchChanged;
-  final VoidCallback onToggleView;
-  final VoidCallback onToggleEditMode;
-  final Function(int) onDeleteGroup;
-  final Function(int, String?) onUpdateGroup;
-  final Function(int, Color) onUpdateColor;
+  final Function(SavePlayerAction) onAction;
   final Function(int) getPlayerCount;
-  final Function(int) onSelectGroup;
-  final VoidCallback? onRefresh;
 
   const GroupListScreen({
     super.key,
@@ -33,15 +27,8 @@ class GroupListScreen extends StatefulWidget {
     this.isEditMode = false,
     required this.isGridView,
     required this.searchQuery,
-    required this.onSearchChanged,
-    required this.onToggleView,
-    required this.onToggleEditMode,
-    required this.onDeleteGroup,
-    required this.onUpdateGroup,
-    required this.onUpdateColor,
+    required this.onAction,
     required this.getPlayerCount,
-    required this.onSelectGroup,
-    this.onRefresh,
   });
 
   @override
@@ -84,7 +71,7 @@ class _GroupListScreenState extends State<GroupListScreen>
 
   void _onSearchChanged() {
     // 사용자가 검색어를 입력할 때마다 콜백 호출
-    widget.onSearchChanged(_searchController.text);
+    widget.onAction(SavePlayerAction.onSearchQueryChanged(_searchController.text));
   }
 
   @override
@@ -98,9 +85,7 @@ class _GroupListScreenState extends State<GroupListScreen>
   // 새로고침 함수
   Future<void> _handleRefresh() async {
     debugPrint('GroupListScreen - 화면 새로고침 시작');
-    if (widget.onRefresh != null) {
-      widget.onRefresh!();
-    }
+    widget.onAction(SavePlayerAction.onRefresh());
     // 새로고침이 완료됐다고 간주하기 위해 잠시 대기
     await Future.delayed(const Duration(milliseconds: 500));
     debugPrint('GroupListScreen - 화면 새로고침 완료');
@@ -162,7 +147,9 @@ class _GroupListScreenState extends State<GroupListScreen>
                             title: '관리',
                             imagePath: 'assets/image/setting.png',
                             width: 160, // 너비 조정
-                            onTap: widget.onToggleEditMode,
+                            onTap: () {
+                              widget.onAction(SavePlayerAction.onToggleEditMode());
+                            },
                           ),
                       ],
                     ),
@@ -200,7 +187,9 @@ class _GroupListScreenState extends State<GroupListScreen>
                                   : Icons.grid_view,
                               color: CST.primary100,
                             ),
-                            onPressed: widget.onToggleView,
+                            onPressed: () {
+                              widget.onAction(SavePlayerAction.onToggleGridView());
+                            },
                           ),
                       ],
                     ),
@@ -242,7 +231,7 @@ class _GroupListScreenState extends State<GroupListScreen>
                                     onPressed: () {
                                       _searchController.clear();
                                       // 검색어 지우기 버튼 클릭 시 콜백 명시적 호출
-                                      widget.onSearchChanged('');
+                                      widget.onAction(SavePlayerAction.onSearchQueryChanged(''));
                                     },
                                   )
                                   : null,
@@ -252,8 +241,9 @@ class _GroupListScreenState extends State<GroupListScreen>
                             vertical: 12,
                           ),
                         ),
-                        onChanged:
-                            widget.onSearchChanged, // 직접적인 onChanged 핸들러 추가
+                        onChanged: (query) {
+                          widget.onAction(SavePlayerAction.onSearchQueryChanged(query));
+                        },
                       ),
                     ),
                   ],
@@ -287,7 +277,9 @@ class _GroupListScreenState extends State<GroupListScreen>
                 ),
                 child: DefaultButton(
                   text: '변경사항 저장',
-                  onTap: widget.onToggleEditMode,
+                  onTap: () {
+                    widget.onAction(SavePlayerAction.onToggleEditMode());
+                  },
                   height: 50,
                 ),
               ),
@@ -341,7 +333,7 @@ class _GroupListScreenState extends State<GroupListScreen>
                   playerCount: playerCount,
                   onTap: () {
                     // 그룹 ID 선택하고 상세 화면으로 이동
-                    widget.onSelectGroup(group.id);
+                    widget.onAction(SavePlayerAction.onSelectGroup(group.id));
                     debugPrint(
                       'GroupListScreen - 그룹 선택 후 화면 이동: ID=${group.id}, 이름=${group.name}',
                     );
@@ -355,7 +347,7 @@ class _GroupListScreenState extends State<GroupListScreen>
                     });
                   },
                   onRemoveTap: () {
-                    widget.onDeleteGroup(group.id);
+                    widget.onAction(SavePlayerAction.onDeleteGroup(group.id));
                   },
                   onRename: (newName) {
                     // 그룹 이름 변경 처리
@@ -363,7 +355,13 @@ class _GroupListScreenState extends State<GroupListScreen>
                   },
                   onUpdateColor: (color) {
                     // 그룹 색상 변경 처리
-                    widget.onUpdateColor(group.id, color);
+                    widget.onAction(
+                      SavePlayerAction.onUpdateGroup(
+                        groupId: group.id,
+                        newName: null,
+                        newColor: color,
+                      ),
+                    );
                   },
                   isEditMode: widget.isEditMode,
                 ),
@@ -390,7 +388,13 @@ class _GroupListScreenState extends State<GroupListScreen>
         newName: newName,
         onConfirm: (confirmedName) {
           debugPrint('그룹 이름 변경: $groupId => $confirmedName');
-          widget.onUpdateGroup(groupId, confirmedName);
+          widget.onAction(
+            SavePlayerAction.onUpdateGroup(
+              groupId: groupId,
+              newName: confirmedName,
+              newColor: null,
+            ),
+          );
         },
       );
     });
@@ -433,7 +437,7 @@ class _GroupListScreenState extends State<GroupListScreen>
       playerCount: playerCount,
       onTap: () {
         // 그룹 ID 선택하고 상세 화면으로 이동
-        widget.onSelectGroup(group.id);
+        widget.onAction(SavePlayerAction.onSelectGroup(group.id));
         debugPrint(
           'GroupListScreen - 그룹 선택 후 화면 이동: ID=${group.id}, 이름=${group.name}',
         );

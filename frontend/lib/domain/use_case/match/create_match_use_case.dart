@@ -1,6 +1,6 @@
 import 'package:bracket_helper/domain/error/app_error.dart';
 import 'package:bracket_helper/domain/error/result.dart';
-import 'package:bracket_helper/domain/model/match.dart';
+import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/repository/match_repository.dart';
 import 'package:bracket_helper/domain/repository/team_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -43,7 +43,7 @@ class CreateMatchUseCase {
   ///
   /// 성공 시 생성된 매치 정보를 포함한 [Result<Match>]를 반환합니다.
   /// 실패 시 에러 정보를 포함한 [Result<Match>]를 반환합니다.
-  Future<Result<Match>> execute(CreateMatchParams params) async {
+  Future<Result<MatchModel>> execute(CreateMatchParams params) async {
     // 디버깅용 로그
     debugPrint(
       'CreateMatchUseCase: 매치 생성 요청 - '
@@ -95,14 +95,14 @@ class CreateMatchUseCase {
     final teamB = teamBResult.value!;
 
     // 선수 ID 추출
-    final teamAPlayerIds = <int>[teamA.player1Id];
-    if (teamA.player2Id != null) {
-      teamAPlayerIds.add(teamA.player2Id!);
+    final teamAPlayerIds = <int>[teamA.p1.id];
+    if (teamA.p2 != null) {
+      teamAPlayerIds.add(teamA.p2!.id);
     }
 
-    final teamBPlayerIds = <int>[teamB.player1Id];
-    if (teamB.player2Id != null) {
-      teamBPlayerIds.add(teamB.player2Id!);
+    final teamBPlayerIds = <int>[teamB.p1.id];
+    if (teamB.p2 != null) {
+      teamBPlayerIds.add(teamB.p2!.id);
     }
 
     // 중복 선수 확인

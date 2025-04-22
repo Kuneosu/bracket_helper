@@ -70,49 +70,17 @@ class _GroupListRootState extends State<GroupListRoot> {
           getPlayerCount: (groupId) {
             return widget.viewModel.getPlayerCountSync(groupId);
           },
-          onSearchChanged: (query) {
-            debugPrint('Search query changed: $query');
-            widget.viewModel.onAction(SavePlayerAction.onSearchQueryChanged(query));
+          onAction: (action) {
+            debugPrint('GroupListRoot - 액션 수신: $action');
+            
+            // onRefresh 액션인 경우 로컬 메서드 호출
+            if (action is OnRefresh) {
+              _handleRefresh();
+            } else {
+              // 그 외 액션은 ViewModel로 전달
+              widget.viewModel.onAction(action);
+            }
           },
-          onToggleView: () {
-            debugPrint('Toggle view called');
-            widget.viewModel.onAction(SavePlayerAction.onToggleGridView());
-          },
-          onToggleEditMode: () {
-            debugPrint('Toggle edit mode called');
-            widget.viewModel.onAction(SavePlayerAction.onToggleEditMode());
-          },
-          onDeleteGroup: (groupId) {
-            debugPrint('Delete group: $groupId');
-            widget.viewModel.onAction(SavePlayerAction.onDeleteGroup(groupId));
-          },
-          onUpdateGroup: (groupId, newName) {
-            debugPrint('Update group name: $groupId => $newName');
-            widget.viewModel.onAction(
-              SavePlayerAction.onUpdateGroup(
-                groupId: groupId, 
-                newName: newName,
-                newColor: null,
-              ),
-            );
-          },
-          onUpdateColor: (groupId, newColor) {
-            debugPrint('Update group color: $groupId => $newColor');
-            widget.viewModel.onAction(
-              SavePlayerAction.onUpdateGroup(
-                groupId: groupId,
-                newName: null,
-                newColor: newColor,
-              ),
-            );
-          },
-          onSelectGroup: (groupId) {
-            debugPrint('Selected group: $groupId');
-            widget.viewModel.onAction(
-              SavePlayerAction.onSelectGroup(groupId),
-            );
-          },
-          onRefresh: _handleRefresh,
         );
       },
     );

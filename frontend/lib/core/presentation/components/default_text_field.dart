@@ -7,13 +7,14 @@ class DefaultTextField extends StatefulWidget {
   final TextAlign? textAlign;
   final String? initialValue;
   final Function(String)? onChanged;
-
+  final bool bottomBorder;
   const DefaultTextField({
     super.key,
     required this.hintText,
     this.textAlign = TextAlign.start,
     this.initialValue,
     this.onChanged,
+    this.bottomBorder = false,
   });
 
   @override
@@ -48,9 +49,11 @@ class _DefaultTextFieldState extends State<DefaultTextField> {
         border: OutlineInputBorder(borderSide: BorderSide(color: CST.gray3)),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: CST.gray3),
+          borderRadius: widget.bottomBorder ? BorderRadius.only(bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8)) : BorderRadius.circular(8),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: CST.primary100),
+          borderRadius: widget.bottomBorder ? BorderRadius.only(bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8)) : BorderRadius.circular(8),
         ),
       ),
     );

@@ -8,7 +8,7 @@ abstract class RoutePaths {
   static const String createGroup = '/create-group';
   static const String groupDetail = '/group-detail/:id';
   static const String groupList = '/group-list';
-  static const String matchInfo = '/match-info';
+  static const String tournamentInfo = '/tournament-info';
   static const String editMatch = '/edit-match';
   static const String addPlayer = '/add-player';
 }

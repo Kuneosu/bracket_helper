@@ -37,9 +37,13 @@ class _DefaultDatePickerState extends State<DefaultDatePicker> {
     _controller = TextEditingController(
       text: DateFormat('yyyy-MM-dd(E)', 'ko').format(_selectedDate),
     );
-    setState(() {
+    if (mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
+    } else {
       _isInitialized = true;
-    });
+    }
   }
 
   @override
@@ -69,15 +73,18 @@ class _DefaultDatePickerState extends State<DefaultDatePicker> {
     );
 
     if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-        _controller?.text = DateFormat(
-          'yyyy-MM-dd(E)',
-          'ko',
-        ).format(_selectedDate);
-      });
-      if (widget.onDateSelected != null) {
-        widget.onDateSelected!(_selectedDate);
+      if (mounted) {
+        setState(() {
+          _selectedDate = picked;
+          _controller?.text = DateFormat(
+            'yyyy-MM-dd(E)',
+            'ko',
+          ).format(_selectedDate);
+        });
+        
+        if (widget.onDateSelected != null) {
+          widget.onDateSelected!(_selectedDate);
+        }
       }
     }
   }

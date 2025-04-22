@@ -1,25 +1,22 @@
 import 'package:bracket_helper/presentation/save_player/components/action_button_row.dart';
 import 'package:bracket_helper/presentation/save_player/components/color_picker_grid.dart';
 import 'package:bracket_helper/presentation/save_player/components/form_card.dart';
+import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class CreateGroupScreen extends StatelessWidget {
   final TextEditingController groupNameController;
   final bool isFormValid;
-  final Function(String) onGroupNameChanged;
   final Color selectedColor;
-  final Function(Color) onColorSelected;
-  final VoidCallback onSaveGroup;
+  final Function(SavePlayerAction) onAction;
 
   const CreateGroupScreen({
     super.key,
     required this.groupNameController,
     required this.isFormValid,
-    required this.onGroupNameChanged,
     required this.selectedColor,
-    required this.onColorSelected,
-    required this.onSaveGroup,
+    required this.onAction,
   });
 
   @override
@@ -54,7 +51,9 @@ class CreateGroupScreen extends StatelessWidget {
                       children: [
                         TextField(
                           controller: groupNameController,
-                          onChanged: onGroupNameChanged,
+                          onChanged: (text) {
+                            onAction(SavePlayerAction.onGroupNameChanged(text));
+                          },
                           decoration: InputDecoration(
                             hintText: '그룹명을 입력해주세요',
                             filled: true,
@@ -101,7 +100,9 @@ class CreateGroupScreen extends StatelessWidget {
                     subtitle: '그룹을 대표할 색상을 선택하세요',
                     content: ColorPickerGrid(
                       selectedColor: selectedColor,
-                      onColorSelected: onColorSelected,
+                      onColorSelected: (color) {
+                        onAction(SavePlayerAction.onGroupColorSelected(color));
+                      },
                     ),
                   ),
 
@@ -112,7 +113,14 @@ class CreateGroupScreen extends StatelessWidget {
                     cancelText: '생성 취소',
                     confirmText: '그룹 생성하기',
                     onCancel: () => context.pop(),
-                    onConfirm: onSaveGroup,
+                    onConfirm: () {
+                      onAction(
+                        SavePlayerAction.onSaveGroup(
+                          groupNameController.text.trim(),
+                          selectedColor,
+                        ),
+                      );
+                    },
                     isConfirmEnabled: isFormValid,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),

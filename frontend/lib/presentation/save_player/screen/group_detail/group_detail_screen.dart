@@ -6,6 +6,7 @@ import 'package:bracket_helper/presentation/save_player/components/group_header_
 import 'package:bracket_helper/presentation/save_player/components/player_confirm_delete_dialog.dart';
 import 'package:bracket_helper/presentation/save_player/components/player_list_item.dart';
 import 'package:bracket_helper/presentation/save_player/components/player_search_field.dart';
+import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:flutter/material.dart';
@@ -13,21 +14,13 @@ import 'package:flutter/material.dart';
 class GroupDetailScreen extends StatelessWidget {
   final GroupModel group;
   final List<PlayerModel> players;
-  final VoidCallback? onRefresh;
-  final VoidCallback? onAddPlayer;
-  final VoidCallback? onEditGroup;
-  final Function(int)? onDeletePlayer;
-  final Function(int, String)? onUpdatePlayer;
+  final Function(SavePlayerAction) onAction;
 
   const GroupDetailScreen({
     super.key,
     required this.group,
     required this.players,
-    this.onRefresh,
-    this.onAddPlayer,
-    this.onEditGroup,
-    this.onDeletePlayer,
-    this.onUpdatePlayer,
+    required this.onAction,
   });
 
   @override
@@ -37,9 +30,7 @@ class GroupDetailScreen extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: () async {
-        if (onRefresh != null) {
-          onRefresh!();
-        }
+        onAction(SavePlayerAction.onRefresh());
         // 새로고침 효과를 위한 지연
         await Future.delayed(const Duration(milliseconds: 500));
       },
@@ -57,7 +48,10 @@ class GroupDetailScreen extends StatelessWidget {
                 group: group,
                 playerCount: players.length,
                 groupColor: groupColor,
-                onAddPlayer: onAddPlayer,
+                onAddPlayer: () {
+                  debugPrint('GroupDetailScreen: 선수 추가 버튼 클릭');
+                  onAction(SavePlayerAction.onSavePlayer('', group.id));
+                },
               ),
 
               const SizedBox(height: 24),
@@ -66,8 +60,10 @@ class GroupDetailScreen extends StatelessWidget {
               PlayerSearchField(
                 players: players,
                 groupColor: groupColor,
-                onEditPlayer: (player) => _showEditPlayerDialog(context, player),
-                onDeletePlayer: (player) => _showDeleteConfirmDialog(context, player),
+                onEditPlayer:
+                    (player) => _showEditPlayerDialog(context, player),
+                onDeletePlayer:
+                    (player) => _showDeleteConfirmDialog(context, player),
               ),
 
               const SizedBox(height: 16),
@@ -84,7 +80,12 @@ class GroupDetailScreen extends StatelessWidget {
 
               // 선수 목록 또는 빈 상태 메시지
               players.isEmpty
-                  ? EmptyPlayerListWidget(onAddPlayer: onAddPlayer)
+                  ? EmptyPlayerListWidget(
+                    onAddPlayer: () {
+                      debugPrint('GroupDetailScreen: 빈 화면에서 선수 추가 버튼 클릭');
+                      onAction(SavePlayerAction.onSavePlayer('', group.id));
+                    },
+                  )
                   : _buildPlayerList(context),
 
               // 하단 여백 추가
@@ -102,9 +103,7 @@ class GroupDetailScreen extends StatelessWidget {
       context: context,
       player: player,
       onDelete: (playerId) {
-        if (onDeletePlayer != null) {
-          onDeletePlayer!(playerId);
-        }
+        onAction(SavePlayerAction.onDeletePlayer(playerId, group.id));
       },
     );
   }
@@ -115,9 +114,9 @@ class GroupDetailScreen extends StatelessWidget {
       context: context,
       player: player,
       onUpdate: (playerId, newName) {
-        if (onUpdatePlayer != null) {
-          onUpdatePlayer!(playerId, newName);
-        }
+        onAction(
+          SavePlayerAction.onUpdatePlayer(playerId: playerId, newName: newName),
+        );
       },
     );
   }

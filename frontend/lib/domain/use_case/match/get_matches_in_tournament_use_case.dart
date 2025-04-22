@@ -1,6 +1,6 @@
 import 'package:bracket_helper/domain/error/app_error.dart';
 import 'package:bracket_helper/domain/error/result.dart';
-import 'package:bracket_helper/domain/model/match.dart' as domain;
+import 'package:bracket_helper/domain/model/match_model.dart' as domain;
 import 'package:bracket_helper/domain/repository/tournament_repository.dart';
 import 'package:flutter/foundation.dart';
 
@@ -16,7 +16,7 @@ class GetMatchesInTournamentUseCase {
   ///
   /// 반환값: 성공 시 [Result.success]와 함께 매치 목록,
   /// 실패 시 에러 정보를 포함한 [Result.failure]
-  Future<Result<List<domain.Match>>> execute(int tournamentId) async {
+  Future<Result<List<domain.MatchModel>>> execute(int tournamentId) async {
     try {
       // 유효성 검증
       if (tournamentId <= 0) {

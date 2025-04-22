@@ -2,7 +2,7 @@ import 'package:bracket_helper/data/database/app_database.dart';
 import 'package:bracket_helper/data/dao/match_dao.dart';
 import 'package:bracket_helper/domain/error/app_error.dart';
 import 'package:bracket_helper/domain/error/result.dart';
-import 'package:bracket_helper/domain/model/match.dart' as domain;
+import 'package:bracket_helper/domain/model/match_model.dart' as domain;
 import 'package:bracket_helper/domain/repository/match_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:drift/drift.dart';
@@ -14,7 +14,7 @@ class MatchRepositoryImpl implements MatchRepository {
   MatchRepositoryImpl(this._matchDao);
 
   @override
-  Future<Result<domain.Match>> createMatch({
+  Future<Result<domain.MatchModel>> createMatch({
     required int tournamentId,
     int? teamAId,
     int? teamBId,
@@ -40,7 +40,7 @@ class MatchRepositoryImpl implements MatchRepository {
       final matchId = await _matchDao.insertMatches([match]);
 
       // 매치 도메인 객체 생성
-      final createdMatch = domain.Match(
+      final createdMatch = domain.MatchModel(
         id: matchId,
         tournamentId: tournamentId,
         teamAId: teamAId,
@@ -62,7 +62,7 @@ class MatchRepositoryImpl implements MatchRepository {
   }
 
   @override
-  Future<Result<List<domain.Match>>> createMatches(
+  Future<Result<List<domain.MatchModel>>> createMatches(
     List<Map<String, dynamic>> matchesData,
   ) async {
     try {
@@ -104,7 +104,7 @@ class MatchRepositoryImpl implements MatchRepository {
       final createdMatches =
           matchesData.mapIndexed((index, data) {
             final order = data['order'] as int? ?? 0;
-            return domain.Match(
+            return domain.MatchModel(
               id: firstMatchId + index, // 추정 ID (실제로는 다르게 처리 필요)
               tournamentId: data['tournamentId'] as int,
               teamAId: data['teamAId'] as int?,
@@ -134,7 +134,7 @@ class MatchRepositoryImpl implements MatchRepository {
   }
 
   @override
-  Future<Result<List<domain.Match>>> fetchMatchesByTournament(
+  Future<Result<List<domain.MatchModel>>> fetchMatchesByTournament(
     int tournamentId,
   ) async {
     try {
@@ -158,7 +158,7 @@ class MatchRepositoryImpl implements MatchRepository {
   }
 
   @override
-  Future<Result<domain.Match>> updateScore({
+  Future<Result<domain.MatchModel>> updateScore({
     required int matchId,
     required int? scoreA,
     required int? scoreB,
@@ -182,7 +182,7 @@ class MatchRepositoryImpl implements MatchRepository {
         return Result.failure(DatabaseError(message: '업데이트된 매치를 찾을 수 없습니다.'));
       }
 
-      final updatedMatch = domain.Match(
+      final updatedMatch = domain.MatchModel(
         id: matchId,
         tournamentId: updatedDbMatch.tournamentId,
         teamAId: updatedDbMatch.teamAId,
