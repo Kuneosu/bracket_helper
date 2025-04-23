@@ -26,6 +26,7 @@ class MatchRoot extends StatelessWidget {
           players: viewModel.state.players,
           isLoading: viewModel.state.isLoading,
           sortOption: viewModel.state.sortOption,
+          playerStats: viewModel.playerStats,
           onAction: (action) {
             // 액션 처리
             viewModel.onAction(action, context);

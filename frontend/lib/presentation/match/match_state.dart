@@ -4,7 +4,6 @@ import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'match_state.freezed.dart';
-part 'match_state.g.dart';
 
 @freezed
 @JsonSerializable()

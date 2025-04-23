@@ -2,6 +2,7 @@ import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/presentation/match/match_action.dart';
+import 'package:bracket_helper/presentation/match/match_view_model.dart';
 import 'package:bracket_helper/presentation/match/widgets/match_item.dart';
 import 'package:bracket_helper/presentation/match/widgets/player_rank_item.dart';
 import 'package:bracket_helper/presentation/match/widgets/rank_header.dart';
@@ -16,6 +17,7 @@ class MatchScreen extends StatelessWidget {
   final bool isLoading;
   final String sortOption;
   final void Function(MatchAction) onAction;
+  final Map<String, PlayerStats> playerStats;
 
   const MatchScreen({
     super.key,
@@ -23,6 +25,7 @@ class MatchScreen extends StatelessWidget {
     required this.matches,
     required this.players,
     required this.onAction,
+    required this.playerStats,
     this.sortOption = 'points',
     this.isLoading = false,
   });
@@ -169,11 +172,15 @@ class MatchScreen extends StatelessWidget {
                   child: ListView.builder(
                     itemCount: players.length,
                     itemBuilder: (context, index) {
+                      final player = players[index];
+                      final stats = playerStats[player.name];
+                      
                       return PlayerRankItem(
-                        player: players[index],
+                        player: player,
                         rank: index + 1,
                         isEven: index % 2 == 0,
                         isLast: index == players.length - 1,
+                        stats: stats,
                       );
                     },
                   ),
