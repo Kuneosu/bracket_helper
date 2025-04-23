@@ -38,6 +38,9 @@ class MatchScreen extends StatelessWidget {
             style: TST.mediumTextBold.copyWith(color: CST.white),
           ),
           backgroundColor: CST.primary100,
+          centerTitle: true,
+          automaticallyImplyLeading: true,
+          scrolledUnderElevation: 0,
           actions: [
             IconButton(
               onPressed: () {},

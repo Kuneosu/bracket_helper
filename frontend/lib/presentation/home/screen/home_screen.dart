@@ -10,10 +10,12 @@ import 'package:go_router/go_router.dart';
 class HomeScreen extends StatelessWidget {
   final List<TournamentModel> tournaments;
   final void Function(HomeAction) onAction;
+  final VoidCallback onHelpPressed;
   const HomeScreen({
     super.key,
     required this.tournaments,
     required this.onAction,
+    required this.onHelpPressed,
   });
 
   @override
@@ -30,7 +32,7 @@ class HomeScreen extends StatelessWidget {
         elevation: 0,
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: onHelpPressed,
             child: Text(
               "도움말",
               style: TST.normalTextBold.copyWith(color: CST.white),

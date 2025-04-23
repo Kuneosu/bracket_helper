@@ -30,7 +30,8 @@ class CreateMatchUseCase {
       '선수A: ${params.playerA}, '
       '선수B: ${params.playerB}, '
       '선수C: ${params.playerC}, '
-      '선수D: ${params.playerD}',
+      '선수D: ${params.playerD}, '
+      '순서: ${params.order}',
     );
 
     // 필수 필드 검증
@@ -58,6 +59,7 @@ class CreateMatchUseCase {
         playerB: params.playerB!,
         playerC: params.playerC,
         playerD: params.playerD,
+        order: params.order ?? 0,
       );
 
       // 성공 시 결과 반환

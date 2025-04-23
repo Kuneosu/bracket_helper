@@ -20,10 +20,10 @@ abstract class TournamentRepository {
   Future<Result<TournamentModel?>> getTournament(int id);
 
   /// 토너먼트 삭제하기
-  Future<Result<void>> deleteTournament(int id);
+  Future<Result<Unit>> deleteTournament(int id);
 
   /// 토너먼트 정보 업데이트하기
-  Future<Result<void>> updateTournament(TournamentsCompanion tournament);
+  Future<Result<Unit>> updateTournament(TournamentsCompanion tournament);
 
   /// 토너먼트 내 매치 가져오기
   Future<Result<List<domain.MatchModel>>> fetchMatchesByTournament(int tournamentId);

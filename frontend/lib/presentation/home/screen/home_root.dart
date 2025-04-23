@@ -24,6 +24,7 @@ class HomeRoot extends StatelessWidget {
                 viewModel.onAction(action);
               }
             },
+            onHelpPressed: () => viewModel.printAllMatches(),
           ),
     );
   }

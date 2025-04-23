@@ -20,6 +20,7 @@ class MatchRepositoryImpl implements MatchRepository {
     String? playerB,
     String? playerC,
     String? playerD,
+    int order = 0,
   }) async {
     try {
       if (playerA == null || playerB == null) {
@@ -28,28 +29,46 @@ class MatchRepositoryImpl implements MatchRepository {
         );
       }
 
-      // 매치 정보 생성 (order는 일단 0으로 설정)
+      // 매치 정보 생성 (order 파라미터로 설정)
       final match = MatchesCompanion(
         tournamentId: Value(tournamentId),
         playerA: Value(playerA),
         playerB: Value(playerB),
         playerC: Value(playerC),
         playerD: Value(playerD),
-        order: const Value(0),
+        order: Value(order),
+        // 기본 점수 추가
+        scoreA: const Value(0),
+        scoreB: const Value(0),
       );
 
       // 매치 저장
       final matchId = await _matchDao.insertMatches([match]);
 
-      // 매치 도메인 객체 생성
+      // 이 부분이 중요: 저장된 매치를 다시 조회하여 실제 DB에 저장된 정보를 가져옴
+      final savedMatch = await _matchDao.getMatch(matchId);
+      
+      if (savedMatch == null) {
+        return Result.failure(
+          DatabaseError(message: '매치가 저장되었으나 조회에 실패했습니다.'),
+        );
+      }
+      
+      if (kDebugMode) {
+        print('Repository: 저장된 매치 조회 성공 - ID: ${savedMatch.id}, Order: ${savedMatch.order}');
+      }
+
+      // 저장된 실제 DB 정보로부터 도메인 객체 생성
       final createdMatch = domain.MatchModel(
-        id: matchId,
-        tournamentId: tournamentId,
-        playerA: playerA,
-        playerB: playerB,
-        playerC: playerC,
-        playerD: playerD,
-        order: 0,
+        id: savedMatch.id,
+        tournamentId: savedMatch.tournamentId,
+        playerA: savedMatch.playerA,
+        playerB: savedMatch.playerB,
+        playerC: savedMatch.playerC,
+        playerD: savedMatch.playerD,
+        scoreA: savedMatch.scoreA ?? 0,
+        scoreB: savedMatch.scoreB ?? 0,
+        order: savedMatch.order,
       );
 
       return Result.success(createdMatch);
@@ -252,6 +271,27 @@ class MatchRepositoryImpl implements MatchRepository {
 
       return Result.failure(
         DatabaseError(message: '매치를 삭제하는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+
+  @override
+  Future<Result<List<domain.MatchModel>>> fetchAllMatches() async {
+    try {
+      if (kDebugMode) {
+        print('Repository: 모든 매치 목록 조회');
+      }
+      final matches = await _matchDao.fetchAllMatches();
+      if (kDebugMode) {
+        print('Repository: 전체 ${matches.length}개 매치 조회 성공');
+      }
+      return Result.success(matches);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Repository: 모든 매치 조회 중 예외 발생 - $e');
+      }
+      return Result.failure(
+        DatabaseError(message: '모든 매치 목록을 불러오는데 실패했습니다.', cause: e),
       );
     }
   }

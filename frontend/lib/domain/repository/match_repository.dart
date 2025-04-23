@@ -5,6 +5,9 @@ import 'package:bracket_helper/domain/model/match_model.dart';
 abstract class MatchRepository {
   /// 토너먼트에 속한 모든 매치 조회
   Future<Result<List<MatchModel>>> fetchMatchesByTournament(int tournamentId);
+  
+  /// 모든 매치 조회
+  Future<Result<List<MatchModel>>> fetchAllMatches();
 
   /// 새로운 매치 생성
   Future<Result<MatchModel>> createMatch({
@@ -13,6 +16,7 @@ abstract class MatchRepository {
     String? playerB,
     String? playerC,
     String? playerD,
+    int order = 0,
   });
 
   /// 여러 매치 한번에 생성

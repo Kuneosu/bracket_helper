@@ -85,10 +85,36 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                 '${RoutePaths.createTournament}${RoutePaths.addPlayer}',
               );
             },
-            onNext: () {
+            onNext: () async {
+              debugPrint('다음 단계로 진행 - 매치 저장 시작');
+
+              // 먼저 프로세스 상태 업데이트
               widget.onAction(CreateTournamentAction.updateProcess(3));
-              widget.onAction(CreateTournamentAction.saveTournament());
-              context.go(RoutePaths.match);
+
+              try {
+                // 로딩 표시를 추가할 수 있음
+
+                // SaveTournament 액션 생성 및 ViewModel에 전달
+                widget.onAction(CreateTournamentAction.saveTournament());
+
+                // 저장이 완료될 충분한 시간 대기
+                // ViewModel에서 Future를 직접 반환받을 수 있다면 더 좋겠지만,
+                // 현재 구조에서는 적절한 딜레이를 주는 방식으로 대응
+                await Future.delayed(const Duration(milliseconds: 500));
+
+                if (context.mounted) {
+                  debugPrint('매치 저장 완료 - 매치 화면으로 이동');
+                  context.go(RoutePaths.match);
+                }
+              } catch (e) {
+                debugPrint('매치 저장 중 오류 발생: $e');
+                // 오류 처리 (예: 스낵바 표시)
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('매치 저장 중 오류가 발생했습니다.')),
+                  );
+                }
+              }
             },
           ),
         ],

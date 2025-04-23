@@ -122,10 +122,10 @@ class TournamentRepositoryImpl implements TournamentRepository {
   }
 
   @override
-  Future<Result<void>> deleteTournament(int id) async {
+  Future<Result<Unit>> deleteTournament(int id) async {
     try {
       await _tournamentDao.deleteTournament(id);
-      return Result.success(null);
+      return Result.successVoid;
     } catch (e) {
       debugPrint('TournamentRepositoryImpl: 토너먼트 삭제 실패 - $e');
       return Result.failure(
@@ -135,11 +135,11 @@ class TournamentRepositoryImpl implements TournamentRepository {
   }
 
   @override
-  Future<Result<void>> updateTournament(TournamentsCompanion tournament) async {
+  Future<Result<Unit>> updateTournament(TournamentsCompanion tournament) async {
     try {
       await (_database.update(_database.tournaments)
         ..where((tbl) => tbl.id.equals(tournament.id.value))).write(tournament);
-      return Result.success(null);
+      return Result.successVoid;
     } catch (e) {
       debugPrint('TournamentRepositoryImpl: 토너먼트 업데이트 실패 - $e');
       return Result.failure(

@@ -16,6 +16,7 @@ import 'package:bracket_helper/domain/repository/team_repository.dart';
 import 'package:bracket_helper/domain/repository/tournament_repository.dart';
 import 'package:bracket_helper/domain/use_case/group/add_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/add_player_to_group_use_case.dart';
+import 'package:bracket_helper/domain/use_case/match/get_all_matches_use_case.dart';
 import 'package:bracket_helper/domain/use_case/player/add_player_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/create_match_use_case.dart';
 import 'package:bracket_helper/domain/use_case/team/create_team_use_case.dart';
@@ -143,12 +144,16 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton(
     () => CountPlayersInGroupUseCase(getIt<GroupRepository>()),
   );
-
+  getIt.registerLazySingleton<GetAllMatchesUseCase>(
+    () => GetAllMatchesUseCase(getIt<MatchRepository>()),
+  );
+  
   // 뷰모델 등록
   getIt.registerFactory<HomeViewModel>(
     () => HomeViewModel(
       getAllTournamentsUseCase: getIt<GetAllTournamentsUseCase>(),
       deleteTournamentUseCase: getIt<DeleteTournamentUseCase>(),
+      getAllMatchesUseCase: getIt<GetAllMatchesUseCase>(),
     ),
   );
   getIt.registerFactory<SavePlayerViewModel>(
