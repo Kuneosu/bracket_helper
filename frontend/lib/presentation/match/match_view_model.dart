@@ -1,5 +1,4 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
-import 'package:bracket_helper/domain/error/result.dart';
 import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
@@ -11,7 +10,6 @@ import 'package:bracket_helper/presentation/match/match_action.dart';
 import 'package:bracket_helper/presentation/match/match_state.dart';
 import 'package:bracket_helper/presentation/match/widgets/bracket_share_utils.dart';
 import 'package:bracket_helper/core/utils/bracket_scheduler.dart';
-import 'package:bracket_helper/domain/repository/match_repository.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -98,23 +96,40 @@ class MatchViewModel with ChangeNotifier {
   Future<void> loadMatchesAndPlayers() async {
     _state = _state.copyWith(isLoading: true);
     _notifyChanges();
+    
+    debugPrint('토너먼트 ID $tournamentId의 매치 데이터 로드 시작');
+    
+    // DB에서 최신 매치 데이터 로드
     final result = await _getMatchesInTournamentUseCase.execute(tournamentId);
+    
     if (result.isSuccess) {
+      debugPrint('매치 데이터 로드 성공: ${result.value.length}개 매치');
       _state = _state.copyWith(matches: result.value);
+      
+      // 매치 데이터로부터 플레이어 목록 추출
       final players = <PlayerModel>{};
+      
       for (var match in result.value) {
-        players.add(PlayerModel(id: 0, name: match.playerA!));
-        players.add(PlayerModel(id: 0, name: match.playerB!));
-        players.add(PlayerModel(id: 0, name: match.playerC!));
-        players.add(PlayerModel(id: 0, name: match.playerD!));
+        if (match.playerA != null) players.add(PlayerModel(id: 0, name: match.playerA!));
+        if (match.playerB != null) players.add(PlayerModel(id: 0, name: match.playerB!));
+        if (match.playerC != null) players.add(PlayerModel(id: 0, name: match.playerC!));
+        if (match.playerD != null) players.add(PlayerModel(id: 0, name: match.playerD!));
       }
+      
+      debugPrint('추출된 플레이어 수: ${players.length}명');
       _state = _state.copyWith(players: players.toList());
 
       // 매치 데이터가 있으면 통계 계산
       _calculatePlayerStats();
     } else {
-      _state = _state.copyWith(errorMessage: result.error.toString());
+      debugPrint('매치 데이터 로드 실패: ${result.error}');
+      _state = _state.copyWith(
+        errorMessage: '매치 데이터를 불러오는데 실패했습니다: ${result.error}',
+        matches: [], // 실패 시 빈 목록으로 초기화
+        players: [], // 실패 시 빈 목록으로 초기화
+      );
     }
+    
     _state = _state.copyWith(isLoading: false);
     _notifyChanges();
   }
@@ -330,34 +345,37 @@ class MatchViewModel with ChangeNotifier {
 
     try {
       // 모든 매치에 현재 토너먼트 ID와 기본 점수를 설정
-      final List<MatchModel> updatedMatches = matches.map((match) {
-        return match.copyWith(
-          tournamentId: tournamentId,
-          scoreA: 0,  // 기본 점수 설정
-          scoreB: 0,  // 기본 점수 설정
-        );
-      }).toList();
-      
+      final List<MatchModel> updatedMatches =
+          matches.map((match) {
+            return match.copyWith(
+              tournamentId: tournamentId,
+              scoreA: 0, // 기본 점수 설정
+              scoreB: 0, // 기본 점수 설정
+            );
+          }).toList();
+
       // 매치 데이터를 Map으로 변환하여 저장
       final futures = <Future<dynamic>>[];
 
       // 각 매치에 대해 비동기 작업 실행
       for (final match in updatedMatches) {
-        debugPrint('매치 생성 요청 - 토너먼트 ID: ${match.tournamentId}, 선수A: ${match.playerA}, 선수B: ${match.playerB}, 선수C: ${match.playerC}, 선수D: ${match.playerD}');
+        debugPrint(
+          '매치 생성 요청 - 토너먼트 ID: ${match.tournamentId}, 선수A: ${match.playerA}, 선수B: ${match.playerB}, 선수C: ${match.playerC}, 선수D: ${match.playerD}',
+        );
         futures.add(_createMatchUseCase.execute(match));
       }
 
       // 모든 Future가 완료될 때까지 기다림
       final results = await Future.wait(futures);
-      
+
       final successCount = results.where((result) => result.isSuccess).length;
       final failureCount = results.where((result) => !result.isSuccess).length;
-      
+
       if (failureCount == 0) {
         debugPrint('새 매치 일괄 생성 성공: $successCount개');
       } else {
         debugPrint('일부 매치 생성 실패: $failureCount개 실패, $successCount개 성공');
-        
+
         // 첫 번째 실패한 결과의 오류 메시지 가져오기
         final firstFailure = results.firstWhere((result) => !result.isSuccess);
         throw Exception('새 대진표를 생성하는데 실패했습니다: ${firstFailure.error.message}');
@@ -427,7 +445,25 @@ class MatchViewModel with ChangeNotifier {
       case SortPlayersBy():
         setSortOption(action.sortOption);
         break;
+      case EditBracket():
+        editBracket(context);
+        break;
     }
+  }
+
+  // 대진표 수정 화면으로 이동
+  void editBracket(BuildContext context) {
+    debugPrint('대진표 수정 화면으로 이동: ${_state.tournament.id}');
+
+    // 대진 수정 화면으로 이동
+    context.go(
+      '${RoutePaths.createTournament}${RoutePaths.editMatch}',
+      extra: {
+        'tournament': _state.tournament,
+        'players': _state.players,
+        'matches': _state.matches,
+      },
+    );
   }
 
   // 대진표 캡처 및 공유

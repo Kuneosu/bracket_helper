@@ -30,11 +30,11 @@ class _EditMatchRootState extends State<EditMatchRoot> {
   // 매치 자동 생성
   void _generateMatches() {
     debugPrint('EditMatchRoot: _generateMatches() 함수 호출');
-    
+
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       // 새 매치 전달
       debugPrint('화면에서 매치 생성 버튼 클릭됨');
@@ -44,9 +44,9 @@ class _EditMatchRootState extends State<EditMatchRoot> {
     } catch (e) {
       debugPrint('매치 생성 액션 실행 중 오류: $e');
     }
-    
+
     // 잠시 후 로딩 상태 해제
-    Future.delayed(const Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -65,6 +65,7 @@ class _EditMatchRootState extends State<EditMatchRoot> {
           players: widget.viewModel.state.players,
           matches: widget.viewModel.state.matches,
           isLoading: _isLoading,
+          isEditMode: widget.viewModel.state.isEditMode,
           onAction: (action) {
             debugPrint('EditMatchRoot - 액션 전달: $action');
 

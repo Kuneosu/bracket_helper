@@ -82,7 +82,7 @@ class _AddPlayerRootState extends State<AddPlayerRoot> {
               widget.viewModel.onAction(action);
               
               // 잠시 후 로딩 상태 해제
-              Future.delayed(const Duration(milliseconds: 200), () {
+              Future.delayed(const Duration(milliseconds: 100), () {
                 if (mounted) {
                   setState(() {
                     _isLoading = false;

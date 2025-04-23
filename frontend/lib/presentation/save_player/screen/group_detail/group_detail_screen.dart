@@ -32,7 +32,7 @@ class GroupDetailScreen extends StatelessWidget {
       onRefresh: () async {
         onAction(SavePlayerAction.onRefresh());
         // 새로고침 효과를 위한 지연
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 100));
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),

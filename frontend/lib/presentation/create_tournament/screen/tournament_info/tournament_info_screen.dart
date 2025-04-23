@@ -97,11 +97,23 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        "대회 정보 입력",
-                        style: TST.headerTextBold.copyWith(
-                          color: CST.primary100,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            "대회 정보 입력",
+                            style: TST.headerTextBold.copyWith(
+                              color: CST.primary100,
+                            ),
+                          ),
+                          Spacer(),
+                          IconButton(
+                            icon: Icon(Icons.refresh, color: CST.primary100),
+                            tooltip: '초기화',
+                            onPressed: () {
+                              _showResetConfirmationDialog(context);
+                            },
+                          ),
+                        ],
                       ),
                       SizedBox(height: 20),
                       _buildTitleSection(),
@@ -350,5 +362,75 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
     );
 
     return result ?? false;
+  }
+
+  // 초기화 확인 다이얼로그
+  Future<void> _showResetConfirmationDialog(BuildContext context) async {
+    await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.refresh, color: CST.primary100, size: 28),
+                SizedBox(width: 12),
+                Text(
+                  '입력 초기화',
+                  style: TST.normalTextBold.copyWith(color: CST.primary100),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '모든 입력을 초기화하시겠습니까?',
+                  style: TST.normalTextBold.copyWith(color: CST.gray1),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  '입력한 모든 정보가 지워집니다.',
+                  style: TST.smallTextRegular.copyWith(color: CST.gray2),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: CST.white,
+                  backgroundColor: CST.gray3,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('취소', style: TST.smallTextBold),
+              ),
+              SizedBox(width: 16),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CST.primary100,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  widget.onAction(CreateTournamentAction.resetState());
+                  Navigator.of(context).pop(true);
+                },
+                child: Text('초기화', style: TST.smallTextBold),
+              ),
+            ],
+            actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            buttonPadding: EdgeInsets.zero,
+          ),
+    );
   }
 }

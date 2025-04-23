@@ -33,4 +33,7 @@ abstract class MatchRepository {
 
   /// 매치 삭제
   Future<Result<Unit>> deleteMatch(int matchId);
+
+  /// 토너먼트 ID에 해당하는 모든 매치 삭제
+  Future<Result<Unit>> deleteMatchesByTournamentId(int tournamentId);
 }

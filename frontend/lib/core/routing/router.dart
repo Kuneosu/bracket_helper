@@ -1,6 +1,5 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/presentation/create_tournament/screen/create_tournament_root.dart';
-import 'package:bracket_helper/presentation/db_test/db_test_screen.dart';
 import 'package:bracket_helper/presentation/home/screen/home_root.dart';
 import 'package:bracket_helper/presentation/main/main_screen.dart';
 import 'package:bracket_helper/presentation/match/screen/match_root.dart';
@@ -36,10 +35,7 @@ final router = GoRouter(
         ),
       ],
     ),
-    GoRoute(
-      path: RoutePaths.dbTest,
-      builder: (context, state) => const DbTestScreen(),
-    ),
+
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return MainScreen(

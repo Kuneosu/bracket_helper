@@ -2,6 +2,7 @@ import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/use_case/group/get_all_groups_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/get_group_use_case.dart';
+import 'package:bracket_helper/domain/use_case/match/delete_match_by_tournament_id_use_case.dart';
 import 'package:bracket_helper/domain/use_case/tournament/create_tournament_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/create_match_use_case.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
@@ -65,6 +66,7 @@ class _CreateTournamentRootState extends State<CreateTournamentRoot>
         getIt<GetAllGroupsUseCase>(),
         getIt<GetGroupUseCase>(),
         getIt<CreateMatchUseCase>(),
+        getIt<DeleteMatchByTournamentIdUseCase>(),
       );
       getIt.registerSingleton<CreateTournamentViewModel>(viewModel);
 
@@ -124,6 +126,52 @@ class _CreateTournamentRootState extends State<CreateTournamentRoot>
         'CreateTournamentRoot - didChangeDependencies: 현재 경로 $currentLocation, 이전 경로 $prevLocation',
       );
 
+      // extra 데이터 확인 (대진 수정 모드)
+      final state = GoRouterState.of(context);
+      final extra = state.extra;
+
+      // shouldReset 파라미터 확인 (홈 화면에서 넘어올 때)
+      if (extra != null && extra is Map<String, dynamic> && extra.containsKey('shouldReset')) {
+        final shouldReset = extra['shouldReset'] as bool;
+        
+        if (shouldReset) {
+          debugPrint('CreateTournamentRoot - shouldReset 파라미터가 true, ViewModel 초기화');
+          
+          // 뷰모델 상태 초기화
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            viewModel.resetState();
+          });
+        }
+      }
+
+      // 대진표 수정 모드로 접근한 경우 (MatchScreen에서 이동)
+      if (extra != null &&
+          extra is Map<String, dynamic> &&
+          currentLocation.endsWith(RoutePaths.editMatch)) {
+        debugPrint('CreateTournamentRoot - 대진 수정 모드로 접근: $extra');
+
+        // 데이터 추출
+        final tournament = extra['tournament'];
+        final players = extra['players'];
+        final matches = extra['matches'];
+
+        if (tournament != null && players != null && matches != null) {
+          debugPrint('CreateTournamentRoot - 대진 수정 데이터 초기화 시작');
+
+          // 뷰모델 상태 초기화 (이미 초기화되지 않은 경우에만)
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (viewModel.state.tournament.id != tournament.id) {
+              debugPrint('CreateTournamentRoot - 뷰모델 상태 초기화');
+              viewModel.initializeFromExisting(
+                tournament: tournament,
+                players: players,
+                matches: matches,
+              );
+            }
+          });
+        }
+      }
+
       // 대회 생성 프로세스 내부 이동은 무시하고, 완전히 다른 경로로 이동한 경우에만 뷰모델 정리
       if (prevLocation.isNotEmpty &&
           prevLocation.contains(RoutePaths.createTournament) &&
@@ -178,24 +226,23 @@ class _CreateTournamentRootState extends State<CreateTournamentRoot>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
 
-    // 화면이 완전히 제거될 때는 현재 경로 확인하여 조건부로 뷰모델 정리
+    // 저장된 currentLocation을 사용하여 뷰모델 정리 여부 결정
     try {
-      // 현재 경로 확인 방법
-      final currentPath = GoRouterState.of(context).matchedLocation;
-
-      // 대회 생성 경로가 아닌 곳으로 이동했을 때만 뷰모델 정리
-      if (!currentPath.contains(RoutePaths.createTournament)) {
+      // 현재 저장된 경로 사용 (GoRouterState.of(context) 호출 대신)
+      if (!currentLocation.contains(RoutePaths.createTournament)) {
         debugPrint(
-          'CreateTournamentRoot - dispose: 대회 생성 프로세스 외부로 이동 ($currentPath), 뷰모델 정리',
+          'CreateTournamentRoot - dispose: 대회 생성 프로세스 외부로 이동 ($currentLocation), 뷰모델 정리',
         );
         _cleanupViewModel();
       } else {
         debugPrint(
-          'CreateTournamentRoot - dispose: 대회 생성 프로세스 내부에서 종료 ($currentPath), 뷰모델 유지',
+          'CreateTournamentRoot - dispose: 대회 생성 프로세스 내부에서 종료 ($currentLocation), 뷰모델 유지',
         );
       }
     } catch (e) {
       debugPrint('CreateTournamentRoot - dispose 중 오류: $e');
+      // 오류 발생 시 안전하게 뷰모델 정리
+      _cleanupViewModel();
     }
 
     super.dispose();

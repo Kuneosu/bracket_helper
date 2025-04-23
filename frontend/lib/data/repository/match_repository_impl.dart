@@ -47,15 +47,15 @@ class MatchRepositoryImpl implements MatchRepository {
 
       // 이 부분이 중요: 저장된 매치를 다시 조회하여 실제 DB에 저장된 정보를 가져옴
       final savedMatch = await _matchDao.getMatch(matchId);
-      
+
       if (savedMatch == null) {
-        return Result.failure(
-          DatabaseError(message: '매치가 저장되었으나 조회에 실패했습니다.'),
-        );
+        return Result.failure(DatabaseError(message: '매치가 저장되었으나 조회에 실패했습니다.'));
       }
-      
+
       if (kDebugMode) {
-        print('Repository: 저장된 매치 조회 성공 - ID: ${savedMatch.id}, Ord: ${savedMatch.ord}');
+        print(
+          'Repository: 저장된 매치 조회 성공 - ID: ${savedMatch.id}, Ord: ${savedMatch.ord}',
+        );
       }
 
       // 저장된 실제 DB 정보로부터 도메인 객체 생성
@@ -106,12 +106,14 @@ class MatchRepositoryImpl implements MatchRepository {
               tournamentId: Value(data['tournamentId'] as int),
               playerA: Value(playerA),
               playerB: Value(playerB),
-              playerC: data['playerC'] != null
-                  ? Value(data['playerC'] as String)
-                  : const Value.absent(),
-              playerD: data['playerD'] != null
-                  ? Value(data['playerD'] as String)
-                  : const Value.absent(),
+              playerC:
+                  data['playerC'] != null
+                      ? Value(data['playerC'] as String)
+                      : const Value.absent(),
+              playerD:
+                  data['playerD'] != null
+                      ? Value(data['playerD'] as String)
+                      : const Value.absent(),
               ord: Value(order),
               scoreA:
                   data['scoreA'] != null
@@ -292,6 +294,36 @@ class MatchRepositoryImpl implements MatchRepository {
       }
       return Result.failure(
         DatabaseError(message: '모든 매치 목록을 불러오는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+
+  @override
+  Future<Result<Unit>> deleteMatchesByTournamentId(int tournamentId) async {
+    try {
+      if (kDebugMode) {
+        print('Repository: 토너먼트($tournamentId)의 모든 매치 삭제 시도');
+      }
+
+      final deletedCount = await _matchDao.deleteMatchesByTournamentId(
+        tournamentId,
+      );
+      if (deletedCount <= 0) {
+        return Result.failure(DatabaseError(message: '매치 삭제에 실패했습니다.'));
+      }
+
+      if (kDebugMode) {
+        print('Repository: 토너먼트($tournamentId)의 모든 매치 삭제 성공');
+      }
+
+      return Result.successVoid;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Repository: 토너먼트 매치 삭제 예외 발생 - $e');
+      }
+
+      return Result.failure(
+        DatabaseError(message: '토너먼트 매치를 삭제하는데 실패했습니다.', cause: e),
       );
     }
   }

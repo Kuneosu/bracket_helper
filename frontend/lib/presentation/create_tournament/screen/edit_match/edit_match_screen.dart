@@ -16,6 +16,7 @@ class EditMatchScreen extends StatefulWidget {
   final List<PlayerModel> players;
   final List<MatchModel> matches;
   final bool isLoading;
+  final bool isEditMode;
   final Function(CreateTournamentAction) onAction;
 
   const EditMatchScreen({
@@ -25,6 +26,7 @@ class EditMatchScreen extends StatefulWidget {
     required this.matches,
     this.isLoading = false,
     required this.onAction,
+    required this.isEditMode,
   });
 
   @override
@@ -88,27 +90,24 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
             onNext: () async {
               debugPrint('다음 단계로 진행 - 매치 저장 시작');
 
-              // 먼저 프로세스 상태 업데이트
-              widget.onAction(CreateTournamentAction.updateProcess(3));
-
               try {
-                // 로딩 표시를 추가할 수 있음
-
-                // SaveTournament 액션 생성 및 ViewModel에 전달
-                widget.onAction(CreateTournamentAction.saveTournament());
-
+                // 모드에 따라 저장 로직 실행
+                await widget.onAction(
+                  CreateTournamentAction.saveTournamentOrUpdateMatches(),
+                );
+  
                 // 저장이 완료될 충분한 시간 대기
-                // ViewModel에서 Future를 직접 반환받을 수 있다면 더 좋겠지만,
-                // 현재 구조에서는 적절한 딜레이를 주는 방식으로 대응
                 await Future.delayed(const Duration(milliseconds: 500));
+                await widget.onAction(CreateTournamentAction.onDiscard());
 
                 if (context.mounted) {
-                  debugPrint('매치 저장 완료 - 매치 화면으로 이동');
+                  // 저장 후 최신 토너먼트 ID 사용
                   final tournamentId = widget.tournament.id;
-                  debugPrint('이동할 토너먼트 ID: $tournamentId');
-
-                  // 토너먼트 ID를 파라미터로 전달
-                  context.go('${RoutePaths.match}?tournamentId=$tournamentId');
+                  debugPrint('매치 저장 완료 - 매치 화면으로 이동 (ID: $tournamentId)');
+                  // 매치 화면으로 이동 - shouldRefresh=true 파라미터 추가
+                  context.go(
+                    '${RoutePaths.match}?tournamentId=$tournamentId&shouldRefresh=true',
+                  );
                 }
               } catch (e) {
                 debugPrint('매치 저장 중 오류 발생: $e');
@@ -120,6 +119,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                 }
               }
             },
+            nextText: widget.isEditMode ? '저장 후 돌아가기' : '저장 후 완료',
           ),
         ],
       ),

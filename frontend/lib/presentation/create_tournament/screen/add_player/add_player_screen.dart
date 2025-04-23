@@ -211,7 +211,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
     }
 
     // 약간의 딜레이 후 UI 갱신
-    Future.delayed(Duration(milliseconds: 200), () {
+    Future.delayed(Duration(milliseconds: 100), () {
       if (mounted) {
         setState(() {
           // 상태 갱신을 통해 UI 다시 그리기

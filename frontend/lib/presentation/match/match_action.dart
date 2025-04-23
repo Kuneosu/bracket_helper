@@ -12,6 +12,7 @@ sealed class MatchAction with _$MatchAction {
   const factory MatchAction.captureAndShareBracket() = CaptureAndShareBracket;
   const factory MatchAction.shuffleBracket() = ShuffleBracket;
   const factory MatchAction.finishTournament() = FinishTournament;
+  const factory MatchAction.editBracket() = EditBracket;
 
   const factory MatchAction.sortPlayersBy(String sortOption) = SortPlayersBy;
 }

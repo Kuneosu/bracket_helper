@@ -87,7 +87,7 @@ class _GroupListScreenState extends State<GroupListScreen>
     debugPrint('GroupListScreen - 화면 새로고침 시작');
     widget.onAction(SavePlayerAction.onRefresh());
     // 새로고침이 완료됐다고 간주하기 위해 잠시 대기
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 100));
     debugPrint('GroupListScreen - 화면 새로고침 완료');
     return Future.value();
   }
@@ -443,7 +443,7 @@ class _GroupListScreenState extends State<GroupListScreen>
         );
         // 약간의 지연 후 화면 이동 (상태 업데이트 시간 확보)
         Future.microtask(() {
-          if (context.mounted) {
+          if (mounted) {
             context.push('${RoutePaths.savePlayer}/group-detail/${group.id}');
           }
         });

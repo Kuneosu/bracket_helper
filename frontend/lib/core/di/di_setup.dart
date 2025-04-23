@@ -16,6 +16,7 @@ import 'package:bracket_helper/domain/repository/team_repository.dart';
 import 'package:bracket_helper/domain/repository/tournament_repository.dart';
 import 'package:bracket_helper/domain/use_case/group/add_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/add_player_to_group_use_case.dart';
+import 'package:bracket_helper/domain/use_case/match/delete_match_by_tournament_id_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/get_all_matches_use_case.dart';
 import 'package:bracket_helper/domain/use_case/player/add_player_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/create_match_use_case.dart';
@@ -151,6 +152,9 @@ Future<void> setupDependencies() async {
   );
   getIt.registerLazySingleton<GetTournamentByIdUseCase>(
     () => GetTournamentByIdUseCase(getIt<TournamentRepository>()),
+  );
+  getIt.registerLazySingleton<DeleteMatchByTournamentIdUseCase>(
+    () => DeleteMatchByTournamentIdUseCase(getIt<MatchRepository>()),
   );
 
   // 뷰모델 등록

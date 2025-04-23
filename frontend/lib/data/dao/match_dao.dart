@@ -191,6 +191,25 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
     return (delete(matches)..where((m) => m.id.equals(matchId))).go();
   }
 
+  // 토너먼트 ID로 모든 매치 삭제
+  Future<int> deleteMatchesByTournamentId(int tournamentId) async {
+    if (kDebugMode) {
+      print('MatchDao: 토너먼트($tournamentId)의 모든 매치 삭제 시작');
+    }
+    try {
+      final result = await (delete(matches)..where((m) => m.tournamentId.equals(tournamentId))).go();
+      if (kDebugMode) {
+        print('MatchDao: 토너먼트($tournamentId)의 매치 $result개 삭제 완료');
+      }
+      return result;
+    } catch (e) {
+      if (kDebugMode) {
+        print('MatchDao: 토너먼트($tournamentId) 매치 삭제 중 오류 발생 - $e');
+      }
+      rethrow;
+    }
+  }
+
   // Drift의 Matche 엔티티를 사용하여 모든 매치 조회 - SQL 직접 사용
   Future<List<Matche>> getAllMatches() async {
     if (kDebugMode) {

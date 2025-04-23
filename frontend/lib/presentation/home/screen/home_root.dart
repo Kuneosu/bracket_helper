@@ -21,10 +21,10 @@ class HomeRoot extends StatelessWidget {
               if (action is OnTapCreateTournament) {
                 context.push(RoutePaths.createTournament);
               } else {
-                viewModel.onAction(action);
+                viewModel.onAction(action, context);
               }
             },
-            onHelpPressed: () => viewModel.printAllMatches(),
+            onHelpPressed: () => viewModel.onAction(OnTapHelp(), context),
           ),
     );
   }

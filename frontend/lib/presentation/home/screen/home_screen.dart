@@ -1,7 +1,7 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/presentation/home/home_action.dart';
-import 'package:bracket_helper/presentation/home/widget/recent_tournament_card.dart';
+import 'package:bracket_helper/presentation/home/widgets/recent_tournament_card.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +29,7 @@ class HomeScreen extends StatelessWidget {
         centerTitle: false,
         backgroundColor: CST.primary100,
         foregroundColor: CST.white,
+        scrolledUnderElevation: 0,
         elevation: 0,
         actions: [
           TextButton(
