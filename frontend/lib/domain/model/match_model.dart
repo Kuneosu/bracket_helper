@@ -13,7 +13,7 @@ class MatchModel with _$MatchModel {
   final String? playerD;
   final int? scoreA;
   final int? scoreB;
-  final int? order;
+  final int? ord;
 
   MatchModel({
     required this.id,
@@ -24,7 +24,7 @@ class MatchModel with _$MatchModel {
     this.playerD,
     this.scoreA,
     this.scoreB,
-    this.order,
+    this.ord,
   });
 
   /// 경기 결과가 있는지 확인

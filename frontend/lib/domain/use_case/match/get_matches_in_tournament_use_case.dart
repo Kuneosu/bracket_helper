@@ -31,7 +31,7 @@ class GetMatchesInTournamentUseCase {
       }
 
       // 토너먼트 존재 여부 확인
-      final tournamentResult = await _tournamentRepository.getTournament(tournamentId);
+      final tournamentResult = await _tournamentRepository.fetchTournamentById(tournamentId);
       
       if (tournamentResult.isFailure) {
         if (kDebugMode) {
@@ -39,15 +39,6 @@ class GetMatchesInTournamentUseCase {
         }
         return Result.failure(
           TournamentError(message: '토너먼트 정보를 조회할 수 없습니다.', cause: tournamentResult.error),
-        );
-      }
-      
-      if (tournamentResult.value == null) {
-        if (kDebugMode) {
-          print('GetMatchesInTournamentUseCase: 존재하지 않는 토너먼트 - ID: $tournamentId');
-        }
-        return Result.failure(
-          TournamentError(message: '존재하지 않는 토너먼트입니다.'),
         );
       }
 

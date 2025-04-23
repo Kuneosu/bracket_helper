@@ -28,7 +28,7 @@ class DeleteTournamentUseCase {
       }
 
       // 토너먼트 존재 여부 확인
-      final tournament = await _tournamentRepository.getTournament(
+      final tournament = await _tournamentRepository.fetchTournamentById(
         tournamentId,
       );
       if (tournament.isFailure) {

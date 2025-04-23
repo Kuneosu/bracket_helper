@@ -1,40 +1,47 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/core/presentation/components/default_text_field.dart';
-import 'package:bracket_helper/data/database/app_database.dart';
 import 'package:bracket_helper/domain/model/match_model.dart';
+import 'package:bracket_helper/domain/model/player_model.dart';
+import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class MatchScreen extends StatelessWidget {
-  const MatchScreen({super.key});
+  final TournamentModel tournament;
+  final List<MatchModel> matches;
+  final List<PlayerModel> players;
+  final bool isLoading;
+
+  const MatchScreen({
+    super.key, 
+    required this.tournament,
+    required this.matches,
+    required this.players,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final List<Player> players = [
-      Player(id: 1, name: '홍길동'),
-      Player(id: 2, name: '이순신'),
-      Player(id: 3, name: '임꺽정'),
-      Player(id: 4, name: '김유신'),
-    ];
-    final List<MatchModel> matchList = [
-      MatchModel(id: 1),
-      MatchModel(id: 2),
-      MatchModel(id: 3),
-      MatchModel(id: 4),
-      MatchModel(id: 5),
-      MatchModel(id: 6),
-      MatchModel(id: 7),
-      MatchModel(id: 8),
-    ];
+    if (isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('로딩 중...', style: TST.mediumTextBold.copyWith(color: CST.white)),
+          backgroundColor: CST.primary100,
+        ),
+        body: Center(
+          child: CircularProgressIndicator(color: CST.primary100),
+        ),
+      );
+    }
 
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            '2025-04-14(월) 대회',
+            tournament.title,
             style: TST.mediumTextBold.copyWith(color: CST.white),
           ),
           backgroundColor: CST.primary100,
@@ -56,7 +63,7 @@ class MatchScreen extends StatelessWidget {
               child: TabBarView(
                 children: [
                   // 대진표 탭 내용
-                  _buildBracketTab(context, matchList, players),
+                  _buildBracketTab(context, matches, players),
                   // 현재 순위 탭 내용
                   _buildRankTab(players),
                 ],
@@ -89,7 +96,7 @@ class MatchScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRankTab(List<Player> players) {
+  Widget _buildRankTab(List<PlayerModel> players) {
     final List<String> sortOptions = ["이름", "승점", "득실"];
 
     return Column(
@@ -203,7 +210,7 @@ class MatchScreen extends StatelessWidget {
   Widget _buildBracketTab(
     BuildContext context,
     List<MatchModel> matchList,
-    List<Player> players,
+    List<PlayerModel> playerList,
   ) {
     return Column(
       children: [
@@ -213,7 +220,7 @@ class MatchScreen extends StatelessWidget {
             physics: const ClampingScrollPhysics(),
             itemCount: matchList.length,
             itemBuilder: (context, index) {
-              return _buildMatchList(index, players);
+              return _buildMatchList(index, playerList);
             },
           ),
         ),
@@ -271,7 +278,7 @@ class MatchScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMatchList(int index, List<Player> playerList) {
+  Widget _buildMatchList(int index, List<PlayerModel> playerList) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

@@ -36,7 +36,7 @@ class MatchRepositoryImpl implements MatchRepository {
         playerB: Value(playerB),
         playerC: Value(playerC),
         playerD: Value(playerD),
-        order: Value(order),
+        ord: Value(order),
         // 기본 점수 추가
         scoreA: const Value(0),
         scoreB: const Value(0),
@@ -55,7 +55,7 @@ class MatchRepositoryImpl implements MatchRepository {
       }
       
       if (kDebugMode) {
-        print('Repository: 저장된 매치 조회 성공 - ID: ${savedMatch.id}, Order: ${savedMatch.order}');
+        print('Repository: 저장된 매치 조회 성공 - ID: ${savedMatch.id}, Ord: ${savedMatch.ord}');
       }
 
       // 저장된 실제 DB 정보로부터 도메인 객체 생성
@@ -68,7 +68,7 @@ class MatchRepositoryImpl implements MatchRepository {
         playerD: savedMatch.playerD,
         scoreA: savedMatch.scoreA ?? 0,
         scoreB: savedMatch.scoreB ?? 0,
-        order: savedMatch.order,
+        ord: savedMatch.ord,
       );
 
       return Result.success(createdMatch);
@@ -112,7 +112,7 @@ class MatchRepositoryImpl implements MatchRepository {
               playerD: data['playerD'] != null
                   ? Value(data['playerD'] as String)
                   : const Value.absent(),
-              order: Value(order),
+              ord: Value(order),
               scoreA:
                   data['scoreA'] != null
                       ? Value(data['scoreA'] as int)
@@ -140,7 +140,7 @@ class MatchRepositoryImpl implements MatchRepository {
               playerD: data['playerD'] as String?,
               scoreA: data['scoreA'] as int?,
               scoreB: data['scoreB'] as int?,
-              order: order,
+              ord: order,
             );
           }).toList();
 
@@ -218,7 +218,7 @@ class MatchRepositoryImpl implements MatchRepository {
         playerD: updatedDbMatch.playerD,
         scoreA: scoreA,
         scoreB: scoreB,
-        order: updatedDbMatch.order,
+        ord: updatedDbMatch.ord,
       );
 
       if (kDebugMode) {

@@ -16,7 +16,7 @@ abstract class MatchRepository {
     String? playerB,
     String? playerC,
     String? playerD,
-    int order = 0,
+    int order = 0, // ord 필드에 매핑됨
   });
 
   /// 여러 매치 한번에 생성

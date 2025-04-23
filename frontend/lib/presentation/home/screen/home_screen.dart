@@ -87,7 +87,9 @@ class HomeScreen extends StatelessWidget {
                         child: RecentTournamentCard(
                           tournament: tournaments[index],
                           onTapCard: () {
-                            context.push(RoutePaths.match);
+                            context.push(
+                              '${RoutePaths.match}?tournamentId=${tournaments[index].id}',
+                            );
                           },
                           onTapDelete: () {
                             onAction(

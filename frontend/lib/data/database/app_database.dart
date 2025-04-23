@@ -36,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -80,7 +80,7 @@ class AppDatabase extends _$AppDatabase {
 
             if (oldTableExists.isNotEmpty) {
               await customStatement('''
-                INSERT INTO matches (id, tournament_id, "order", score_a, score_b)
+                INSERT INTO matches (id, tournament_id, "ord", score_a, score_b)
                 SELECT id, tournament_id, "order", score_a, score_b
                 FROM matches_old
               ''');
@@ -135,6 +135,96 @@ class AppDatabase extends _$AppDatabase {
             debugPrint('order 필드 마이그레이션 오류: $e');
           }
         });
+      }
+      if (from < 6) {
+        // 버전 5에서 버전 6으로 업데이트: match_order 필드 이름을 order로 다시 변경
+        debugPrint('Matches 테이블 match_order 필드 이름을 order로 변경 (버전 5 -> 6)');
+        
+        try {
+          // 기존 테이블 백업
+          await customStatement('ALTER TABLE matches RENAME TO matches_old');
+          debugPrint('기존 matches 테이블 이름 변경 성공 (matches_old)');
+          
+          // 새 테이블 생성 (order 컬럼 사용)
+          await m.createTable(matches);
+          debugPrint('새 matches 테이블 생성 성공 (order 컬럼 사용)');
+          
+          // 데이터 마이그레이션
+          try {
+            await customStatement('''
+              INSERT INTO matches (id, tournament_id, "order", player_a, player_b, player_c, player_d, score_a, score_b)
+              SELECT id, tournament_id, match_order, player_a, player_b, player_c, player_d, score_a, score_b
+              FROM matches_old
+            ''');
+            debugPrint('matches_old에서 새 테이블로 데이터 복사 성공');
+          } catch (e) {
+            debugPrint('데이터 마이그레이션 중 오류: $e');
+            
+            // match_order 컬럼이 없는 경우 대체 마이그레이션
+            try {
+              await customStatement('''
+                INSERT INTO matches (id, tournament_id, "order", player_a, player_b, player_c, player_d, score_a, score_b)
+                SELECT id, tournament_id, id, player_a, player_b, player_c, player_d, score_a, score_b
+                FROM matches_old
+              ''');
+              debugPrint('대체 마이그레이션 성공 (id를 order로 사용)');
+            } catch (e) {
+              debugPrint('대체 마이그레이션도 실패: $e');
+            }
+          }
+          
+          // 임시 테이블 삭제
+          await customStatement('DROP TABLE matches_old');
+          debugPrint('임시 테이블 matches_old 삭제 성공');
+          
+        } catch (e) {
+          debugPrint('match_order -> order 마이그레이션 오류: $e');
+        }
+      }
+      if (from < 7) {
+        // 버전 6에서 버전 7로 업데이트: 'order' 컬럼을 'ord'로 변경
+        debugPrint('Matches 테이블의 "order" 컬럼을 "ord"로 변경 (버전 6 -> 7)');
+        
+        try {
+          // 기존 테이블 백업
+          await customStatement('ALTER TABLE matches RENAME TO matches_old');
+          debugPrint('기존 matches 테이블 이름 변경 성공 (matches_old)');
+          
+          // 새 테이블 생성 (ord 컬럼으로 변경)
+          await m.createTable(matches);
+          debugPrint('새 matches 테이블 생성 성공 (ord 컬럼 사용)');
+          
+          // 데이터 마이그레이션
+          try {
+            await customStatement('''
+              INSERT INTO matches (id, tournament_id, ord, player_a, player_b, player_c, player_d, score_a, score_b)
+              SELECT id, tournament_id, "order", player_a, player_b, player_c, player_d, score_a, score_b
+              FROM matches_old
+            ''');
+            debugPrint('matches_old에서 새 테이블로 데이터 복사 성공 (order -> ord)');
+          } catch (e) {
+            debugPrint('order -> ord 마이그레이션 중 오류: $e');
+            
+            // order 컬럼이 없는 경우 대체 마이그레이션
+            try {
+              await customStatement('''
+                INSERT INTO matches (id, tournament_id, ord, player_a, player_b, player_c, player_d, score_a, score_b)
+                SELECT id, tournament_id, id, player_a, player_b, player_c, player_d, score_a, score_b
+                FROM matches_old
+              ''');
+              debugPrint('대체 마이그레이션 성공 (id를 ord로 사용)');
+            } catch (e) {
+              debugPrint('대체 마이그레이션도 실패: $e');
+            }
+          }
+          
+          // 임시 테이블 삭제
+          await customStatement('DROP TABLE matches_old');
+          debugPrint('임시 테이블 matches_old 삭제 성공');
+          
+        } catch (e) {
+          debugPrint('order -> ord 마이그레이션 오류: $e');
+        }
       }
     },
     beforeOpen: (details) async {

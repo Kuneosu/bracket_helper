@@ -18,7 +18,7 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
         print('MatchDao: 매치 삽입 시작 - ${list.length}개 항목');
         for (int i = 0; i < list.length; i++) {
           final item = list[i];
-          print('MatchDao: 삽입 항목 #${i+1} - Order: ${item.order.value}, A: ${item.playerA.value}');
+          print('MatchDao: 삽입 항목 #${i+1} - Order: ${item.ord.value}, A: ${item.playerA.value}');
         }
       }
       
@@ -27,7 +27,7 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
         // ID 필드를 제외하고 새로운 MatchesCompanion 객체 생성
         return MatchesCompanion(
           tournamentId: item.tournamentId,
-          order: item.order,
+          ord: item.ord,
           playerA: item.playerA,
           playerB: item.playerB,
           playerC: item.playerC,
@@ -45,7 +45,7 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
         final id = await into(matches).insert(item);
         insertedIds.add(id);
         if (kDebugMode) {
-          print('MatchDao: 매치 삽입 성공 - 생성된 ID: $id');
+          print('MatchDao: 매치 삽입 성공 - 생성된 ID: $id, 순서: ${item.ord.value}');
         }
       }
       
@@ -76,12 +76,39 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
     }
   }
 
-  // Drift의 Matche 엔티티를 사용하여 쿼리 실행
-  Future<List<Matche>> getMatchesByTournament(int tournamentId) {
-    return (select(matches)
-          ..where((m) => m.tournamentId.equals(tournamentId))
-          ..orderBy([(m) => OrderingTerm.asc(m.order)]))
-        .get();
+  // Drift의 Matche 엔티티를 사용하여 쿼리 실행 - SQL 직접 사용
+  Future<List<Matche>> getMatchesByTournament(int tournamentId) async {
+    if (kDebugMode) {
+      print('MatchDao: 토너먼트($tournamentId) 매치 조회 시작');
+    }
+    
+    // ord 컬럼으로 정렬
+    final query = customSelect(
+      'SELECT * FROM matches WHERE tournament_id = ? ORDER BY ord ASC;',
+      variables: [Variable.withInt(tournamentId)],
+    );
+    
+    // 결과를 Matche 객체로 변환
+    final rows = await query.get();
+    final matches = rows.map((row) {
+      return Matche(
+        id: row.read<int>('id'),
+        tournamentId: row.read<int>('tournament_id'),
+        ord: row.read<int>('ord'),
+        playerA: row.readNullable<String>('player_a'),
+        playerB: row.readNullable<String>('player_b'),
+        playerC: row.readNullable<String>('player_c'),
+        playerD: row.readNullable<String>('player_d'),
+        scoreA: row.readNullable<int>('score_a'),
+        scoreB: row.readNullable<int>('score_b'),
+      );
+    }).toList();
+    
+    if (kDebugMode) {
+      print('MatchDao: 토너먼트($tournamentId) 매치 ${matches.length}개 조회 성공');
+    }
+    
+    return matches;
   }
 
   // 특정 ID의 매치 조회
@@ -96,7 +123,7 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
         final allMatches = await select(matches).get();
         print('MatchDao: 데이터베이스에 ${allMatches.length}개 매치 존재');
         for (final m in allMatches) {
-          print('MatchDao: 매치 정보 - ID: ${m.id}, Order: ${m.order}, A: ${m.playerA}');
+          print('MatchDao: 매치 정보 - ID: ${m.id}, Ord: ${m.ord}, A: ${m.playerA}');
         }
       }
       
@@ -106,7 +133,7 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
       
       if (kDebugMode) {
         if (result != null) {
-          print('MatchDao: 매치 조회 성공 - ID: ${result.id}, Order: ${result.order}');
+          print('MatchDao: 매치 조회 성공 - ID: ${result.id}, Ord: ${result.ord}');
         } else {
           print('MatchDao: 매치 조회 실패 - ID $matchId 없음');
         }
@@ -121,37 +148,31 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
     }
   }
 
-  // 도메인 모델로 변환하는 메서드
-  Future<List<domain.MatchModel>> fetchMatchesByTournament(
-    int tournamentId,
-  ) async {
+  // 토너먼트별 매치 조회 (도메인 모델로 변환)
+  Future<List<domain.MatchModel>> fetchMatchesByTournament(int tournamentId) async {
     try {
-      // 1. 매치 정보 가져오기
-      final dbMatches = await getMatchesByTournament(tournamentId);
-      final result = <domain.MatchModel>[];
-
-      // 2. 각 매치에 대해 도메인 모델 생성
-      for (final dbMatch in dbMatches) {
-        // 3. 매치 도메인 모델 생성
-        final domainMatch = domain.MatchModel(
-          id: dbMatch.id,
-          tournamentId: dbMatch.tournamentId,
-          playerA: dbMatch.playerA,
-          playerB: dbMatch.playerB,
-          playerC: dbMatch.playerC,
-          playerD: dbMatch.playerD,
-          scoreA: dbMatch.scoreA,
-          scoreB: dbMatch.scoreB,
-          order: dbMatch.order,
-        );
-
-        result.add(domainMatch);
+      if (kDebugMode) {
+        print('MatchDao: 토너먼트($tournamentId) 매치 조회 시작 (도메인 모델 변환)');
       }
-
-      return result;
+      
+      // 데이터베이스 매치 레코드 가져오기
+      final matchRecords = await getMatchesByTournament(tournamentId);
+      
+      // 도메인 모델로 변환
+      return matchRecords.map((matche) => domain.MatchModel(
+        id: matche.id,
+        tournamentId: matche.tournamentId,
+        ord: matche.ord,
+        playerA: matche.playerA,
+        playerB: matche.playerB,
+        playerC: matche.playerC,
+        playerD: matche.playerD,
+        scoreA: matche.scoreA,
+        scoreB: matche.scoreB,
+      )).toList();
     } catch (e) {
       if (kDebugMode) {
-        print('MatchDao: 토너먼트 매치 조회 중 오류 발생 - $e');
+        print('MatchDao: 토너먼트($tournamentId) 매치 조회 실패 - $e');
       }
       rethrow;
     }
@@ -170,14 +191,38 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
     return (delete(matches)..where((m) => m.id.equals(matchId))).go();
   }
 
-  // Drift의 Matche 엔티티를 사용하여 모든 매치 조회
-  Future<List<Matche>> getAllMatches() {
-    return (select(matches)
-        ..orderBy([
-          (m) => OrderingTerm.asc(m.tournamentId),
-          (m) => OrderingTerm.asc(m.order)
-        ]))
-        .get();
+  // Drift의 Matche 엔티티를 사용하여 모든 매치 조회 - SQL 직접 사용
+  Future<List<Matche>> getAllMatches() async {
+    if (kDebugMode) {
+      print('MatchDao: 모든 매치 조회 시작');
+    }
+    
+    // 직접 SQL 쿼리 작성 - tournament_id, ord로 정렬
+    final query = customSelect(
+      'SELECT * FROM matches ORDER BY tournament_id ASC, ord ASC;',
+    );
+    
+    // 결과를 Matche 객체로 변환
+    final rows = await query.get();
+    final matches = rows.map((row) {
+      return Matche(
+        id: row.read<int>('id'),
+        tournamentId: row.read<int>('tournament_id'),
+        ord: row.read<int>('ord'),
+        playerA: row.readNullable<String>('player_a'),
+        playerB: row.readNullable<String>('player_b'),
+        playerC: row.readNullable<String>('player_c'),
+        playerD: row.readNullable<String>('player_d'),
+        scoreA: row.readNullable<int>('score_a'),
+        scoreB: row.readNullable<int>('score_b'),
+      );
+    }).toList();
+    
+    if (kDebugMode) {
+      print('MatchDao: 모든 매치 ${matches.length}개 조회 성공');
+    }
+    
+    return matches;
   }
 
   // 모든 매치를 도메인 모델로 변환
@@ -203,7 +248,7 @@ class MatchDao extends DatabaseAccessor<AppDatabase> with _$MatchDaoMixin {
           playerD: dbMatch.playerD,
           scoreA: dbMatch.scoreA,
           scoreB: dbMatch.scoreB,
-          order: dbMatch.order,
+          ord: dbMatch.ord,
         );
 
         result.add(domainMatch);

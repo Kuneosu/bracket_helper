@@ -76,7 +76,7 @@ class HomeViewModel with ChangeNotifier {
           print('모든 매치 정보:');
           for (var match in result.value) {
             print(
-              '매치 ID: ${match.id}, 순서: ${match.order}, 토너먼트ID: ${match.tournamentId}',
+              '매치 ID: ${match.id}, 순서: ${match.ord}, 토너먼트ID: ${match.tournamentId}',
             );
             print('플레이어A: ${match.playerA}, 플레이어B: ${match.playerB}');
             print('점수A: ${match.scoreA}, 점수B: ${match.scoreB}');

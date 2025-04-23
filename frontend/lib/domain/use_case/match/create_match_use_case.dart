@@ -18,7 +18,7 @@ class CreateMatchUseCase {
   /// [params.playerB] B팀 선수1
   /// [params.playerC] A팀 선수2 (복식인 경우)
   /// [params.playerD] B팀 선수2 (복식인 경우)
-  /// [params.order] 경기 순서 (선택)
+  /// [params.ord] 경기 순서 (선택)
   ///
   /// 성공 시 생성된 매치 정보를 포함한 [Result<Match>]를 반환합니다.
   /// 실패 시 에러 정보를 포함한 [Result<Match>]를 반환합니다.
@@ -31,7 +31,7 @@ class CreateMatchUseCase {
       '선수B: ${params.playerB}, '
       '선수C: ${params.playerC}, '
       '선수D: ${params.playerD}, '
-      '순서: ${params.order}',
+      '순서: ${params.ord}',
     );
 
     // 필수 필드 검증
@@ -59,7 +59,7 @@ class CreateMatchUseCase {
         playerB: params.playerB!,
         playerC: params.playerC,
         playerD: params.playerD,
-        order: params.order ?? 0,
+        order: params.ord ?? 0,
       );
 
       // 성공 시 결과 반환

@@ -2111,7 +2111,7 @@ class _DbTestScreenState extends State<DbTestScreen>
                                     dense: true,
                                     // title: Text('$teamAName vs $teamBName'),
                                     subtitle: Text(
-                                      '순서: ${match.order ?? "미지정"}, 점수: $scoreText',
+                                      '순서: ${match.ord ?? "미지정"}, 점수: $scoreText',
                                     ),
                                     trailing: IconButton(
                                       icon: const Icon(
@@ -2207,7 +2207,7 @@ class _DbTestScreenState extends State<DbTestScreen>
                           return ListTile(
                             // title: Text('$teamAName vs $teamBName'),
                             subtitle: Text(
-                              '순서: ${match.order ?? "미지정"}, 점수: $scoreText',
+                              '순서: ${match.ord ?? "미지정"}, 점수: $scoreText',
                             ),
                             onLongPress: () => _confirmDeleteMatch(match),
                           );

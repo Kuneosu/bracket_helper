@@ -17,7 +17,7 @@ abstract class TournamentRepository {
   );
 
   /// 토너먼트 정보 가져오기
-  Future<Result<TournamentModel?>> getTournament(int id);
+  Future<Result<TournamentModel>> fetchTournamentById(int id);
 
   /// 토너먼트 삭제하기
   Future<Result<Unit>> deleteTournament(int id);

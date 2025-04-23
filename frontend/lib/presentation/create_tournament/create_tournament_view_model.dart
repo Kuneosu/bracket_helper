@@ -255,7 +255,7 @@ class CreateTournamentViewModel with ChangeNotifier {
         final matchOrder = i + 1;
         final saveMatch = match.copyWith(
           tournamentId: tournamentId,
-          order: matchOrder, // 항상 인덱스+1 값으로 설정 (1부터 시작)
+          ord: matchOrder, // 항상 인덱스+1 값으로 설정 (1부터 시작)
         );
 
         // 매치 저장 전 로깅
@@ -283,21 +283,19 @@ class CreateTournamentViewModel with ChangeNotifier {
     try {
       // 로그 추가 - 저장 요청 확인
       debugPrint(
-        '매치 저장 요청: ${match.order}번째 매치 (토너먼트 ID: ${match.tournamentId}, Order: ${match.order})',
+        '매치 저장 요청: ${match.ord}번째 매치 (토너먼트 ID: ${match.tournamentId}, Order: ${match.ord})',
       );
 
       final result = await _createMatchUseCase.execute(match);
       result.fold(
         onSuccess: (savedMatch) {
-          debugPrint(
-            '매치 저장 성공: ID ${savedMatch.id}, Order ${savedMatch.order}',
-          );
+          debugPrint('매치 저장 성공: ID ${savedMatch.id}, Order ${savedMatch.ord}');
 
           // 디버그용: 저장된 매치 정보 상세 출력
           if (kDebugMode) {
             print('저장된 매치 상세 정보:');
             print('  - ID: ${savedMatch.id}');
-            print('  - Order: ${savedMatch.order}');
+            print('  - Order: ${savedMatch.ord}');
             print('  - 토너먼트 ID: ${savedMatch.tournamentId}');
             print('  - 선수 A: ${savedMatch.playerA}');
             print('  - 선수 B: ${savedMatch.playerB}');
@@ -601,7 +599,7 @@ class CreateTournamentViewModel with ChangeNotifier {
 
           // 로그로 생성된 매치 정보 출력
           debugPrint(
-            'Match #${i + 1}: Order ${match.order}, ${match.playerA} & ${match.playerC} vs ${match.playerB} & ${match.playerD}',
+            'Match #${i + 1}: Order ${match.ord}, ${match.playerA} & ${match.playerC} vs ${match.playerB} & ${match.playerD}',
           );
         }
       } catch (e) {

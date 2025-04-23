@@ -177,7 +177,7 @@ class BracketScheduler {
         // 복식 경기인 경우 양 팀 모두 2명씩의 선수 할당
         final matchModel = MatchModel(
           id: idSeq++,
-          order: orderIdx + 1,
+          ord: orderIdx + 1,
           playerA: m.teamA.p1.name,
           playerB: m.teamB.p1.name,
           playerC: m.teamA.p2?.name, // 두 번째 선수가 없으면 null

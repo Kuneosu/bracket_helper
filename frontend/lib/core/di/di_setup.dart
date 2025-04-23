@@ -35,7 +35,9 @@ import 'package:bracket_helper/domain/use_case/match/get_matches_in_tournament_u
 import 'package:bracket_helper/domain/use_case/group/remove_player_from_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/update_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/player/update_player_use_case.dart';
+import 'package:bracket_helper/domain/use_case/tournament/get_tournament_by_id_use_case.dart';
 import 'package:bracket_helper/presentation/home/home_view_model.dart';
+import 'package:bracket_helper/presentation/match/match_view_model.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_view_model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bracket_helper/domain/use_case/group/count_players_in_group_use_case.dart';
@@ -147,7 +149,10 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<GetAllMatchesUseCase>(
     () => GetAllMatchesUseCase(getIt<MatchRepository>()),
   );
-  
+  getIt.registerLazySingleton<GetTournamentByIdUseCase>(
+    () => GetTournamentByIdUseCase(getIt<TournamentRepository>()),
+  );
+
   // 뷰모델 등록
   getIt.registerFactory<HomeViewModel>(
     () => HomeViewModel(
@@ -168,6 +173,16 @@ Future<void> setupDependencies() async {
       removePlayerFromGroupUseCase: getIt<RemovePlayerFromGroupUseCase>(),
       deletePlayerUseCase: getIt<DeletePlayerUseCase>(),
       updatePlayerUseCase: getIt<UpdatePlayerUseCase>(),
+    ),
+  );
+  
+  // MatchViewModel은 factory 함수로 등록하여 tournamentId를 전달받을 수 있도록 함
+  // 이제 getIt.get<MatchViewModel>() 대신 getIt.call<MatchViewModel>(param) 형태로 사용
+  getIt.registerFactoryParam<MatchViewModel, int, void>(
+    (tournamentId, _) => MatchViewModel(
+      tournamentId: tournamentId,
+      getTournamentByIdUseCase: getIt<GetTournamentByIdUseCase>(),
+      getMatchesInTournamentUseCase: getIt<GetMatchesInTournamentUseCase>(),
     ),
   );
 }
