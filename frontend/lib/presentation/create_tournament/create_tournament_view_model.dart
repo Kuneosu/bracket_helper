@@ -5,16 +5,20 @@ import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/use_case/group/get_all_groups_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/get_group_use_case.dart';
+import 'package:bracket_helper/domain/use_case/match/create_match_use_case.dart';
+import 'package:bracket_helper/domain/use_case/match/delete_match_by_tournament_id_use_case.dart';
 import 'package:bracket_helper/domain/use_case/tournament/create_tournament_use_case.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_state.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class CreateTournamentViewModel with ChangeNotifier {
   final CreateTournamentUseCase _createTournamentUseCase;
   final GetAllGroupsUseCase _getAllGroupsUseCase;
   final GetGroupUseCase _getGroupUseCase;
+  final CreateMatchUseCase _createMatchUseCase;
+  final DeleteMatchByTournamentIdUseCase _deleteMatchByTournamentIdUseCase;
 
   CreateTournamentState _state = CreateTournamentState(
     tournament: TournamentModel(id: 0, title: '', date: DateTime.now()),
@@ -28,8 +32,21 @@ class CreateTournamentViewModel with ChangeNotifier {
     this._createTournamentUseCase,
     this._getAllGroupsUseCase,
     this._getGroupUseCase,
+    this._createMatchUseCase,
+    this._deleteMatchByTournamentIdUseCase,
   ) {
     fetchAllGroups();
+  }
+
+  // 상태 초기화 메서드
+  void resetState() {
+    debugPrint('CreateTournamentViewModel - 상태 초기화');
+    _state = CreateTournamentState(
+      tournament: TournamentModel(id: 0, title: '', date: DateTime.now()),
+    );
+    _playerListCache.clear();
+    fetchAllGroups();
+    _notifyChanges();
   }
 
   void _notifyChanges() {
@@ -65,6 +82,10 @@ class CreateTournamentViewModel with ChangeNotifier {
         debugPrint('GenerateMatchesWithCourts 액션 감지 - 코트 수: $courts');
         _createMatchesDirectly(courts);
 
+      case ResetState():
+        debugPrint('ResetState 액션 감지 - 상태 초기화 시작');
+        resetState();
+        
       case OnDateChanged():
         debugPrint('날짜 변경: ${action.date}');
         _state = _state.copyWith(
@@ -128,7 +149,10 @@ class CreateTournamentViewModel with ChangeNotifier {
         );
         _notifyChanges();
       case SaveTournament():
-        _saveTournament();
+        debugPrint('[토너먼트 저장 추적] 토너먼트 저장 시작');
+        // Future를 반환하지 않고 실행만 함
+        // 이 부분이 문제의 원인이었음: 비동기 작업 완료를 기다리지 않고 즉시 다음 화면으로 이동
+        saveTournamentAndMatches();
       case UpdateProcess():
         debugPrint('프로세스 업데이트: ${action.process}');
         final updatedTournament = _state.tournament.copyWith(
@@ -210,6 +234,12 @@ class CreateTournamentViewModel with ChangeNotifier {
         selectPlayerFromGroup(action.player);
       case OnDiscard():
         _clear();
+      case UpdateExistingTournamentMatches():
+        debugPrint('[토너먼트 매치 업데이트 추적] 기존 토너먼트 매치 업데이트 시작');
+        updateExistingTournamentMatches();
+      case SaveTournamentOrUpdateMatches():
+        debugPrint('[토너먼트 저장/업데이트 추적] 모드에 따른 저장 로직 시작');
+        saveTournamentOrUpdateMatches();
       default:
         // 다른 액션에 대한 기본 처리
         debugPrint('처리되지 않은 액션: $action');
@@ -227,6 +257,88 @@ class CreateTournamentViewModel with ChangeNotifier {
     _notifyChanges();
   }
 
+  Future<void> _saveMatches() async {
+    try {
+      debugPrint('매치 저장 시작 - ${state.matches.length}개 매치 저장 중...');
+
+      // state.matches가 비어있는 경우 처리
+      if (state.matches.isEmpty) {
+        debugPrint('저장할 매치가 없습니다.');
+        return;
+      }
+
+      final tournamentId = _state.tournament.id;
+      debugPrint('토너먼트 ID: $tournamentId로 매치 저장');
+
+      // 모든 매치에 대해 비동기 작업 실행
+      final futures = <Future<void>>[];
+
+      for (int i = 0; i < state.matches.length; i++) {
+        final match = state.matches[i];
+        // 토너먼트 ID 설정 확인 및 order 값 설정 (1부터 시작하는 매치 번호)
+        final matchOrder = i + 1;
+        final saveMatch = match.copyWith(
+          tournamentId: tournamentId,
+          ord: matchOrder, // 항상 인덱스+1 값으로 설정 (1부터 시작)
+        );
+
+        // 매치 저장 전 로깅
+        debugPrint(
+          '매치 저장 요청: ${i + 1}번째 매치 (토너먼트 ID: $tournamentId, Order: $matchOrder)',
+        );
+
+        // Future 리스트에 추가
+        futures.add(_saveMatch(saveMatch));
+      }
+
+      // 모든 Future가 완료될 때까지 기다림
+      await Future.wait(futures);
+      debugPrint('모든 매치 저장 작업 완료');
+
+
+      // 작업 완료 후 상태 갱신
+      _notifyChanges();
+    } catch (e) {
+      debugPrint('매치 저장 오류: $e');
+    }
+  }
+
+  // 개별 매치 저장을 위한 헬퍼 메서드
+  Future<void> _saveMatch(MatchModel match) async {
+    try {
+      // 로그 추가 - 저장 요청 확인
+      debugPrint(
+        '매치 저장 요청: ${match.ord}번째 매치 (토너먼트 ID: ${match.tournamentId}, Order: ${match.ord})',
+      );
+
+      final result = await _createMatchUseCase.execute(match);
+      result.fold(
+        onSuccess: (savedMatch) {
+          debugPrint('매치 저장 성공: ID ${savedMatch.id}, Order ${savedMatch.ord}');
+
+          // 디버그용: 저장된 매치 정보 상세 출력
+          if (kDebugMode) {
+            print('저장된 매치 상세 정보:');
+            print('  - ID: ${savedMatch.id}');
+            print('  - Order: ${savedMatch.ord}');
+            print('  - 토너먼트 ID: ${savedMatch.tournamentId}');
+            print('  - 선수 A: ${savedMatch.playerA}');
+            print('  - 선수 B: ${savedMatch.playerB}');
+            print('  - 선수 C: ${savedMatch.playerC}');
+            print('  - 선수 D: ${savedMatch.playerD}');
+            print('  - 점수 A: ${savedMatch.scoreA}');
+            print('  - 점수 B: ${savedMatch.scoreB}');
+          }
+        },
+        onFailure: (error) {
+          debugPrint('매치 저장 실패: ${error.message}');
+        },
+      );
+    } catch (e) {
+      debugPrint('매치 저장 중 예외 발생: $e');
+    }
+  }
+
   Future<void> _saveTournament() async {
     try {
       // 타이틀이 비어있는 경우 자동으로 날짜를 사용하여 설정
@@ -238,10 +350,7 @@ class CreateTournamentViewModel with ChangeNotifier {
         );
       }
 
-      final params = CreateTournamentParams.fromTournamentModel(
-        _state.tournament,
-      );
-      final result = await _createTournamentUseCase.execute(params);
+      final result = await _createTournamentUseCase.execute(_state.tournament);
 
       result.fold(
         onSuccess: (id) {
@@ -428,9 +537,7 @@ class CreateTournamentViewModel with ChangeNotifier {
     );
 
     // 이미 선택된 선수인지 확인 (이름으로만 비교)
-    final isAlreadySelected = _state.players.any(
-      (p) => p.name == player.name,
-    );
+    final isAlreadySelected = _state.players.any((p) => p.name == player.name);
 
     if (isAlreadySelected) {
       debugPrint('CreateTournamentViewModel - 이미 선택된 선수입니다: ${player.name}');
@@ -461,6 +568,48 @@ class CreateTournamentViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (e) {
       debugPrint('CreateTournamentViewModel - 상태 갱신 중 오류: $e');
+    }
+  }
+
+  // 기존 토너먼트 데이터로 상태 초기화 (대진 수정 시 사용)
+  void initializeFromExisting({
+    required TournamentModel tournament,
+    required List<PlayerModel> players,
+    required List<MatchModel> matches,
+  }) {
+    debugPrint('기존 토너먼트 데이터로 상태 초기화 시작');
+    debugPrint('토너먼트 ID: ${tournament.id}, 제목: ${tournament.title}');
+    debugPrint('선수 수: ${players.length}, 매치 수: ${matches.length}');
+
+    // 상태 업데이트 (isEditMode를 true로 설정)
+    _state = _state.copyWith(
+      tournament: tournament,
+      players: players,
+      matches: matches,
+      isEditMode: true, // 대진 수정 모드로 설정
+    );
+
+    // 상태 변경 알림
+    _notifyChanges();
+    debugPrint('기존 토너먼트 데이터로 상태 초기화 완료 (대진 수정 모드)');
+  }
+
+  // 모드에 따라 토너먼트 저장 또는 매치 업데이트 (EditMatchScreen에서 호출됨)
+  Future<int> saveTournamentOrUpdateMatches() async {
+    try {
+      // 현재 모드 확인
+      if (_state.isEditMode) {
+        debugPrint('대진 수정 모드: 기존 토너먼트 매치만 업데이트');
+        await updateExistingTournamentMatches();
+        return _state.tournament.id; // 기존 토너먼트 ID 반환
+      } else {
+        debugPrint('새 대진표 생성 모드: 새 토너먼트 및 매치 저장');
+        await saveTournamentAndMatches();
+        return _state.tournament.id; // 새로 생성된 토너먼트 ID 반환
+      }
+    } catch (e) {
+      debugPrint('토너먼트 저장 또는 매치 업데이트 중 오류 발생: $e');
+      rethrow;
     }
   }
 
@@ -502,52 +651,22 @@ class CreateTournamentViewModel with ChangeNotifier {
 
         debugPrint('생성된 매치 수: ${newMatches.length}');
 
-        // 매치 ID와 순서를 설정
+        // 각 매치에 점수 설정 및 ID 수정 (자동 생성 대신 0으로 설정)
         for (int i = 0; i < newMatches.length; i++) {
           final match = newMatches[i];
 
-          // 선수 이름이 콤마(,)로 구분된 경우 처리
-          String teamAName = match.teamAName ?? '';
-          String teamBName = match.teamBName ?? '';
-
-          // 복식 토너먼트인 경우 포맷팅 변경
-          if (isDoubles) {
-            // A팀 처리
-            final teamAPlayers = teamAName.split(',');
-            if (teamAPlayers.length >= 2 &&
-                teamAPlayers[0].isNotEmpty &&
-                teamAPlayers[1].isNotEmpty) {
-              teamAName = '${teamAPlayers[0]} / ${teamAPlayers[1]}';
-            }
-
-            // B팀 처리
-            final teamBPlayers = teamBName.split(',');
-            if (teamBPlayers.length >= 2 &&
-                teamBPlayers[0].isNotEmpty &&
-                teamBPlayers[1].isNotEmpty) {
-              teamBName = '${teamBPlayers[0]} / ${teamBPlayers[1]}';
-            }
-          } else {
-            // 단식 토너먼트인 경우, 콤마로 구분된 문자열을 각각 하나의 매치로 분리해야 함
-            final teamAPlayers = teamAName.split(',');
-            final teamBPlayers = teamBName.split(',');
-
-            // 각각 첫 번째 선수만 사용 (단식)
-            if (teamAPlayers.isNotEmpty && teamAPlayers[0].isNotEmpty) {
-              teamAName = teamAPlayers[0];
-            }
-
-            if (teamBPlayers.isNotEmpty && teamBPlayers[0].isNotEmpty) {
-              teamBName = teamBPlayers[0];
-            }
-          }
-
+          // order는 BracketScheduler가 기본적으로 설정한 값 사용,
+          // id를 0으로 설정하여 데이터베이스에서 자동 생성되도록 함
+          // scoreA와 scoreB는 0으로 명시적 설정
           newMatches[i] = match.copyWith(
-            id: i + 1,
+            id: 0, // id를 0으로 설정하여 DB에서 자동 생성되도록 함
             scoreA: 0,
             scoreB: 0,
-            teamAName: teamAName,
-            teamBName: teamBName,
+          );
+
+          // 로그로 생성된 매치 정보 출력
+          debugPrint(
+            'Match #${i + 1}: Order ${match.ord}, ${match.playerA} & ${match.playerC} vs ${match.playerB} & ${match.playerD}',
           );
         }
       } catch (e) {
@@ -563,6 +682,69 @@ class CreateTournamentViewModel with ChangeNotifier {
       debugPrint('상태 변경 알림 완료');
     } catch (e) {
       debugPrint('매치 생성 중 오류: $e');
+    }
+  }
+
+  // 토너먼트와 매치를 함께 저장하는 비동기 메서드
+  Future<void> saveTournamentAndMatches() async {
+    try {
+      debugPrint('토너먼트 및 매치 저장 시작');
+      // 토너먼트 저장 (기존의 _saveTournament 호출)
+      await _saveTournament();
+
+      // 매치 저장 (기존의 _saveMatches 호출)
+      await _saveMatches();
+
+      debugPrint('토너먼트 및 매치 저장 완료');
+    } catch (e) {
+      debugPrint('토너먼트 및 매치 저장 중 오류 발생: $e');
+    }
+  }
+
+  // 기존 토너먼트의 매치만 업데이트하는 메서드 (대진 수정 시 사용)
+  Future<void> updateExistingTournamentMatches() async {
+    try {
+      final tournamentId = _state.tournament.id;
+
+      // 토너먼트 ID가 유효하지 않으면 먼저 저장
+      if (tournamentId <= 0) {
+        debugPrint('유효하지 않은 토너먼트 ID: $tournamentId, 먼저 토너먼트 저장 후 진행');
+        await _saveTournament();
+
+        // 저장 후 ID 재확인
+        if (_state.tournament.id <= 0) {
+          debugPrint('토너먼트 저장 후에도 ID가 유효하지 않음');
+          throw Exception('토너먼트 저장에 실패했습니다.');
+        }
+      }
+
+      // 저장 후 갱신된 ID 사용
+      final updatedTournamentId = _state.tournament.id;
+      debugPrint('기존 토너먼트($updatedTournamentId)의 매치 업데이트 시작');
+
+      // 토너먼트 ID로 한 번에 모든 매치 삭제
+      debugPrint('토너먼트($updatedTournamentId) 매치 일괄 삭제 시작');
+      final deleteResult = await _deleteMatchByTournamentIdUseCase.execute(
+        updatedTournamentId,
+      );
+
+      if (deleteResult.isSuccess) {
+        debugPrint('토너먼트($updatedTournamentId) 매치 일괄 삭제 성공');
+      } else {
+        debugPrint(
+          '토너먼트($updatedTournamentId) 매치 일괄 삭제 실패: ${deleteResult.error.message}',
+        );
+        // 실패해도 계속 진행 (새 매치 저장은 시도)
+      }
+
+      // 2. 새 매치 저장
+      debugPrint('새 매치 저장 시작 - 총 ${_state.matches.length}개 매치');
+      await _saveMatches();
+
+      debugPrint('기존 토너먼트($updatedTournamentId)의 매치 업데이트 완료');
+    } catch (e) {
+      debugPrint('기존 토너먼트 매치 업데이트 중 오류 발생: $e');
+      rethrow;
     }
   }
 }

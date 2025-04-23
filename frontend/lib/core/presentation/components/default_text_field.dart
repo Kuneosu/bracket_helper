@@ -43,6 +43,7 @@ class _DefaultTextFieldState extends State<DefaultTextField> {
       textAlign: widget.textAlign!,
       textAlignVertical: TextAlignVertical.center,
       onChanged: widget.onChanged,
+      style: TST.mediumTextRegular,
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: TST.mediumTextRegular.copyWith(color: CST.gray3),
@@ -55,6 +56,9 @@ class _DefaultTextFieldState extends State<DefaultTextField> {
           borderSide: BorderSide(color: CST.primary100),
           borderRadius: widget.bottomBorder ? BorderRadius.only(bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8)) : BorderRadius.circular(8),
         ),
+        contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        isDense: true,
+        isCollapsed: true,
       ),
     );
   }

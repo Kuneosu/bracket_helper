@@ -19,6 +19,7 @@ sealed class SavePlayerAction with _$SavePlayerAction {
   // 선수 관련 액션
   const factory SavePlayerAction.onPlayerNameChanged(String name) = OnPlayerNameChanged;
   const factory SavePlayerAction.onSavePlayer(String name, int groupId) = OnSavePlayer;
+  const factory SavePlayerAction.onSaveMultiplePlayers(String names, int groupId) = OnSaveMultiplePlayers;
   const factory SavePlayerAction.onDeletePlayer(int playerId, int groupId) = OnDeletePlayer;
   const factory SavePlayerAction.onUpdatePlayer({
     required int playerId,

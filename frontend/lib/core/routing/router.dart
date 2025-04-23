@@ -1,9 +1,8 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/presentation/create_tournament/screen/create_tournament_root.dart';
-import 'package:bracket_helper/presentation/db_test/db_test_screen.dart';
 import 'package:bracket_helper/presentation/home/screen/home_root.dart';
 import 'package:bracket_helper/presentation/main/main_screen.dart';
-import 'package:bracket_helper/presentation/match/match_root.dart';
+import 'package:bracket_helper/presentation/match/screen/match_root.dart';
 import 'package:bracket_helper/presentation/save_player/screen/save_player_root.dart';
 import 'package:bracket_helper/presentation/setting/setting_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +12,10 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: RoutePaths.match,
-      builder: (context, state) => const MatchRoot(),
+      builder: (context, state) {
+        final String? tournamentId = state.uri.queryParameters['tournamentId'];
+        return MatchRoot(tournamentIdStr: tournamentId);
+      },
     ),
     GoRoute(
       path: RoutePaths.createTournament,
@@ -33,10 +35,7 @@ final router = GoRouter(
         ),
       ],
     ),
-    GoRoute(
-      path: RoutePaths.dbTest,
-      builder: (context, state) => const DbTestScreen(),
-    ),
+
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return MainScreen(

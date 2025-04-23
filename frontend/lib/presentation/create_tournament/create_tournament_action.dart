@@ -34,4 +34,7 @@ sealed class CreateTournamentAction with _$CreateTournamentAction {
 
   // 대회 관련 액션
   const factory CreateTournamentAction.onDiscard() = OnDiscard;
+  const factory CreateTournamentAction.resetState() = ResetState;
+  const factory CreateTournamentAction.updateExistingTournamentMatches() = UpdateExistingTournamentMatches;
+  const factory CreateTournamentAction.saveTournamentOrUpdateMatches() = SaveTournamentOrUpdateMatches;
 }

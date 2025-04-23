@@ -71,14 +71,25 @@ class TournamentRepositoryImpl implements TournamentRepository {
     try {
       final matchesCompanions =
           matches.map((match) {
-            final teamAId = match.teamAId ?? 0;
-            final teamBId = match.teamBId ?? 0;
-
             return MatchesCompanion(
               tournamentId: Value(0),
-              teamAId: Value(teamAId),
-              teamBId: Value(teamBId),
-              order: match.order != null ? Value(match.order!) : const Value(0),
+              playerA:
+                  match.playerA != null
+                      ? Value(match.playerA!)
+                      : const Value.absent(),
+              playerB:
+                  match.playerB != null
+                      ? Value(match.playerB!)
+                      : const Value.absent(),
+              playerC:
+                  match.playerC != null
+                      ? Value(match.playerC!)
+                      : const Value.absent(),
+              playerD:
+                  match.playerD != null
+                      ? Value(match.playerD!)
+                      : const Value.absent(),
+              ord: match.ord != null ? Value(match.ord!) : const Value(0),
               scoreA:
                   match.scoreA != null
                       ? Value(match.scoreA!)
@@ -104,7 +115,7 @@ class TournamentRepositoryImpl implements TournamentRepository {
   }
 
   @override
-  Future<Result<TournamentModel?>> getTournament(int id) async {
+  Future<Result<TournamentModel>> fetchTournamentById(int id) async {
     try {
       final tournamentWithMatches = await _tournamentDao.fetchTournament(id);
       if (tournamentWithMatches?.tournament != null) {
@@ -113,7 +124,9 @@ class TournamentRepositoryImpl implements TournamentRepository {
           _mapToDomainTournament(tournamentWithMatches!.tournament),
         );
       }
-      return Result.success(null);
+      return Result.success(
+        TournamentModel(id: 0, title: '', date: DateTime.now()),
+      );
     } catch (e) {
       debugPrint('TournamentRepositoryImpl: 토너먼트 정보 조회 실패 - $e');
       return Result.failure(
@@ -123,10 +136,10 @@ class TournamentRepositoryImpl implements TournamentRepository {
   }
 
   @override
-  Future<Result<void>> deleteTournament(int id) async {
+  Future<Result<Unit>> deleteTournament(int id) async {
     try {
       await _tournamentDao.deleteTournament(id);
-      return Result.success(null);
+      return Result.successVoid;
     } catch (e) {
       debugPrint('TournamentRepositoryImpl: 토너먼트 삭제 실패 - $e');
       return Result.failure(
@@ -136,11 +149,11 @@ class TournamentRepositoryImpl implements TournamentRepository {
   }
 
   @override
-  Future<Result<void>> updateTournament(TournamentsCompanion tournament) async {
+  Future<Result<Unit>> updateTournament(TournamentsCompanion tournament) async {
     try {
       await (_database.update(_database.tournaments)
         ..where((tbl) => tbl.id.equals(tournament.id.value))).write(tournament);
-      return Result.success(null);
+      return Result.successVoid;
     } catch (e) {
       debugPrint('TournamentRepositoryImpl: 토너먼트 업데이트 실패 - $e');
       return Result.failure(

@@ -16,38 +16,59 @@ class MatchRepositoryImpl implements MatchRepository {
   @override
   Future<Result<domain.MatchModel>> createMatch({
     required int tournamentId,
-    int? teamAId,
-    int? teamBId,
-    String? teamAName,
-    String? teamBName,
+    String? playerA,
+    String? playerB,
+    String? playerC,
+    String? playerD,
+    int order = 0,
   }) async {
     try {
-      if (teamAId == null || teamBId == null) {
+      if (playerA == null || playerB == null) {
         return Result.failure(
-          ValidationError(message: '매치 생성에 필요한 팀 정보가 부족합니다.'),
+          ValidationError(message: '매치 생성에 필요한 선수 정보가 부족합니다.'),
         );
       }
 
-      // 매치 정보 생성 (order는 일단 0으로 설정)
+      // 매치 정보 생성 (order 파라미터로 설정)
       final match = MatchesCompanion(
         tournamentId: Value(tournamentId),
-        teamAId: Value(teamAId),
-        teamBId: Value(teamBId),
-        order: const Value(0),
+        playerA: Value(playerA),
+        playerB: Value(playerB),
+        playerC: Value(playerC),
+        playerD: Value(playerD),
+        ord: Value(order),
+        // 기본 점수 추가
+        scoreA: const Value(0),
+        scoreB: const Value(0),
       );
 
       // 매치 저장
       final matchId = await _matchDao.insertMatches([match]);
 
-      // 매치 도메인 객체 생성
+      // 이 부분이 중요: 저장된 매치를 다시 조회하여 실제 DB에 저장된 정보를 가져옴
+      final savedMatch = await _matchDao.getMatch(matchId);
+
+      if (savedMatch == null) {
+        return Result.failure(DatabaseError(message: '매치가 저장되었으나 조회에 실패했습니다.'));
+      }
+
+      if (kDebugMode) {
+        print(
+          'Repository: 저장된 매치 조회 성공 - ID: ${savedMatch.id}, Ord: ${savedMatch.ord}',
+        );
+      }
+
+      // 저장된 실제 DB 정보로부터 도메인 객체 생성
       final createdMatch = domain.MatchModel(
-        id: matchId,
-        tournamentId: tournamentId,
-        teamAId: teamAId,
-        teamBId: teamBId,
-        teamAName: teamAName,
-        teamBName: teamBName,
-        order: 0,
+        id: savedMatch.id,
+        tournamentId: savedMatch.tournamentId,
+        playerA: savedMatch.playerA,
+        playerB: savedMatch.playerB,
+        playerC: savedMatch.playerC,
+        playerD: savedMatch.playerD,
+        scoreA: savedMatch.scoreA ?? 0,
+        scoreB: savedMatch.scoreB ?? 0,
+        ord: savedMatch.ord,
       );
 
       return Result.success(createdMatch);
@@ -73,19 +94,27 @@ class MatchRepositoryImpl implements MatchRepository {
       // MatchesCompanion 리스트로 변환
       final matchesCompanions =
           matchesData.map((data) {
-            final teamAId = data['teamAId'] as int?;
-            final teamBId = data['teamBId'] as int?;
+            final playerA = data['playerA'] as String?;
+            final playerB = data['playerB'] as String?;
             final order = data['order'] as int? ?? 0;
 
-            if (teamAId == null || teamBId == null) {
-              throw ValidationError(message: '매치 생성에 필요한 팀 정보가 없습니다.');
+            if (playerA == null || playerB == null) {
+              throw ValidationError(message: '매치 생성에 필요한 선수 정보가 없습니다.');
             }
 
             return MatchesCompanion(
               tournamentId: Value(data['tournamentId'] as int),
-              teamAId: Value(teamAId),
-              teamBId: Value(teamBId),
-              order: Value(order),
+              playerA: Value(playerA),
+              playerB: Value(playerB),
+              playerC:
+                  data['playerC'] != null
+                      ? Value(data['playerC'] as String)
+                      : const Value.absent(),
+              playerD:
+                  data['playerD'] != null
+                      ? Value(data['playerD'] as String)
+                      : const Value.absent(),
+              ord: Value(order),
               scoreA:
                   data['scoreA'] != null
                       ? Value(data['scoreA'] as int)
@@ -107,13 +136,13 @@ class MatchRepositoryImpl implements MatchRepository {
             return domain.MatchModel(
               id: firstMatchId + index, // 추정 ID (실제로는 다르게 처리 필요)
               tournamentId: data['tournamentId'] as int,
-              teamAId: data['teamAId'] as int?,
-              teamBId: data['teamBId'] as int?,
-              teamAName: data['teamAName'] as String?,
-              teamBName: data['teamBName'] as String?,
+              playerA: data['playerA'] as String?,
+              playerB: data['playerB'] as String?,
+              playerC: data['playerC'] as String?,
+              playerD: data['playerD'] as String?,
               scoreA: data['scoreA'] as int?,
               scoreB: data['scoreB'] as int?,
-              order: order,
+              ord: order,
             );
           }).toList();
 
@@ -185,11 +214,13 @@ class MatchRepositoryImpl implements MatchRepository {
       final updatedMatch = domain.MatchModel(
         id: matchId,
         tournamentId: updatedDbMatch.tournamentId,
-        teamAId: updatedDbMatch.teamAId,
-        teamBId: updatedDbMatch.teamBId,
+        playerA: updatedDbMatch.playerA,
+        playerB: updatedDbMatch.playerB,
+        playerC: updatedDbMatch.playerC,
+        playerD: updatedDbMatch.playerD,
         scoreA: scoreA,
         scoreB: scoreB,
-        order: updatedDbMatch.order,
+        ord: updatedDbMatch.ord,
       );
 
       if (kDebugMode) {
@@ -242,6 +273,57 @@ class MatchRepositoryImpl implements MatchRepository {
 
       return Result.failure(
         DatabaseError(message: '매치를 삭제하는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+
+  @override
+  Future<Result<List<domain.MatchModel>>> fetchAllMatches() async {
+    try {
+      if (kDebugMode) {
+        print('Repository: 모든 매치 목록 조회');
+      }
+      final matches = await _matchDao.fetchAllMatches();
+      if (kDebugMode) {
+        print('Repository: 전체 ${matches.length}개 매치 조회 성공');
+      }
+      return Result.success(matches);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Repository: 모든 매치 조회 중 예외 발생 - $e');
+      }
+      return Result.failure(
+        DatabaseError(message: '모든 매치 목록을 불러오는데 실패했습니다.', cause: e),
+      );
+    }
+  }
+
+  @override
+  Future<Result<Unit>> deleteMatchesByTournamentId(int tournamentId) async {
+    try {
+      if (kDebugMode) {
+        print('Repository: 토너먼트($tournamentId)의 모든 매치 삭제 시도');
+      }
+
+      final deletedCount = await _matchDao.deleteMatchesByTournamentId(
+        tournamentId,
+      );
+      if (deletedCount <= 0) {
+        return Result.failure(DatabaseError(message: '매치 삭제에 실패했습니다.'));
+      }
+
+      if (kDebugMode) {
+        print('Repository: 토너먼트($tournamentId)의 모든 매치 삭제 성공');
+      }
+
+      return Result.successVoid;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Repository: 토너먼트 매치 삭제 예외 발생 - $e');
+      }
+
+      return Result.failure(
+        DatabaseError(message: '토너먼트 매치를 삭제하는데 실패했습니다.', cause: e),
       );
     }
   }

@@ -182,7 +182,8 @@ class CreateTournamentScreen extends StatelessWidget {
             actions: [
               TextButton(
                 style: TextButton.styleFrom(
-                  foregroundColor: CST.gray2,
+                  foregroundColor: CST.white,
+                  backgroundColor: CST.gray3,
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -191,6 +192,7 @@ class CreateTournamentScreen extends StatelessWidget {
                 onPressed: () => Navigator.of(context).pop(false),
                 child: Text('취소', style: TST.smallTextBold),
               ),
+              SizedBox(width: 16),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CST.primary100,

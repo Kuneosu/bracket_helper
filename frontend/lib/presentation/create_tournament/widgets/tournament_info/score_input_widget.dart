@@ -33,12 +33,12 @@ class ScoreInputWidget extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: TST.largeTextRegular.copyWith(color: Colors.white),
+            style: TST.normalTextBold.copyWith(color: Colors.white),
           ),
         ),
         Container(
           width: 60,
-          height: 50,
+          height: 40,
           decoration: BoxDecoration(
             border: Border.all(color: color),
             borderRadius: BorderRadius.only(
@@ -57,4 +57,4 @@ class ScoreInputWidget extends StatelessWidget {
       ],
     );
   }
-} 
+}

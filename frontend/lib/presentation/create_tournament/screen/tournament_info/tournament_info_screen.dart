@@ -66,6 +66,16 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
     super.dispose();
   }
 
+  // BuildContext 저장 변수 추가
+  BuildContext? _safeContext;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 현재 유효한 BuildContext를 저장
+    _safeContext = context;
+  }
+
   @override
   Widget build(BuildContext context) {
     debugPrint('TournamentInfoScreen - build 호출: 날짜 ${widget.tournament.date}');
@@ -87,9 +97,23 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        "대회 정보 입력",
-                        style: TST.headerTextBold.copyWith(color: CST.primary100),
+                      Row(
+                        children: [
+                          Text(
+                            "대회 정보 입력",
+                            style: TST.headerTextBold.copyWith(
+                              color: CST.primary100,
+                            ),
+                          ),
+                          Spacer(),
+                          IconButton(
+                            icon: Icon(Icons.refresh, color: CST.primary100),
+                            tooltip: '초기화',
+                            onPressed: () {
+                              _showResetConfirmationDialog(context);
+                            },
+                          ),
+                        ],
                       ),
                       SizedBox(height: 20),
                       _buildTitleSection(),
@@ -105,7 +129,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                 ),
               ),
             ),
-            
+
             // 하단 고정 버튼 영역
             _buildButtons(),
           ],
@@ -242,22 +266,27 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
     return NavigationButtonsWidget(
       previousText: '종료',
       onPrevious: () async {
+        // 안전한 컨텍스트 사용
+        final ctx = _safeContext ?? context;
+
         // 종료 전 확인 다이얼로그 표시
-        final shouldExit = await _showExitConfirmationDialog(context);
+        final shouldExit = await _showExitConfirmationDialog(ctx);
         if (shouldExit) {
-          if (mounted) {
-            context.go(RoutePaths.home);
+          if (mounted && ctx.mounted) {
+            ctx.go(RoutePaths.home);
             widget.onAction(CreateTournamentAction.onDiscard());
           }
         }
       },
       onNext: () {
+        // 안전한 컨텍스트 사용
+        final ctx = _safeContext ?? context;
+        if (!mounted || !ctx.mounted) return;
+
         // 프로세스 진행 상태만 업데이트
         debugPrint('TournamentInfoScreen - 다음 버튼 클릭');
         widget.onAction(CreateTournamentAction.updateProcess(1));
-        context.go(
-          '${RoutePaths.createTournament}${RoutePaths.addPlayer}',
-        );
+        ctx.go('${RoutePaths.createTournament}${RoutePaths.addPlayer}');
       },
     );
   }
@@ -266,64 +295,142 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
   Future<bool> _showExitConfirmationDialog(BuildContext context) async {
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: CST.primary100, size: 28),
-            SizedBox(width: 12),
-            Text('대회 생성 종료', style: TST.normalTextBold.copyWith(color: CST.primary100)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '대회 생성을 종료하시겠습니까?',
-              style: TST.normalTextBold.copyWith(color: CST.gray1),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
             ),
-            SizedBox(height: 8),
-            Text(
-              '지금까지 입력한 모든 정보는 저장되지 않습니다.',
-              style: TST.smallTextRegular.copyWith(color: CST.gray2),
+            title: Row(
+              children: [
+                Icon(
+                  Icons.warning_amber_rounded,
+                  color: CST.primary100,
+                  size: 28,
+                ),
+                SizedBox(width: 12),
+                Text(
+                  '대회 생성 종료',
+                  style: TST.normalTextBold.copyWith(color: CST.primary100),
+                ),
+              ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: CST.white,
-              backgroundColor: CST.gray3,
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '대회 생성을 종료하시겠습니까?',
+                  style: TST.normalTextBold.copyWith(color: CST.gray1),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  '지금까지 입력한 모든 정보는 저장되지 않습니다.',
+                  style: TST.smallTextRegular.copyWith(color: CST.gray2),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: CST.white,
+                  backgroundColor: CST.gray3,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('취소', style: TST.smallTextBold),
               ),
-            ),
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('취소', style: TST.smallTextBold),
-          ),
-          SizedBox(width: 16),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: CST.primary100,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+              SizedBox(width: 16),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CST.primary100,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text('종료하기', style: TST.smallTextBold),
               ),
-            ),
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text('종료하기', style: TST.smallTextBold),
+            ],
+            actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            buttonPadding: EdgeInsets.zero,
           ),
-        ],
-        actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        buttonPadding: EdgeInsets.zero,
-      ),
     );
-    
+
     return result ?? false;
+  }
+
+  // 초기화 확인 다이얼로그
+  Future<void> _showResetConfirmationDialog(BuildContext context) async {
+    await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.refresh, color: CST.primary100, size: 28),
+                SizedBox(width: 12),
+                Text(
+                  '입력 초기화',
+                  style: TST.normalTextBold.copyWith(color: CST.primary100),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '모든 입력을 초기화하시겠습니까?',
+                  style: TST.normalTextBold.copyWith(color: CST.gray1),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  '입력한 모든 정보가 지워집니다.',
+                  style: TST.smallTextRegular.copyWith(color: CST.gray2),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: CST.white,
+                  backgroundColor: CST.gray3,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('취소', style: TST.smallTextBold),
+              ),
+              SizedBox(width: 16),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CST.primary100,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  widget.onAction(CreateTournamentAction.resetState());
+                  Navigator.of(context).pop(true);
+                },
+                child: Text('초기화', style: TST.smallTextBold),
+              ),
+            ],
+            actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            buttonPadding: EdgeInsets.zero,
+          ),
+    );
   }
 }

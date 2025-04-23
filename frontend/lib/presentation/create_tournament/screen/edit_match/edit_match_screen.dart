@@ -16,6 +16,7 @@ class EditMatchScreen extends StatefulWidget {
   final List<PlayerModel> players;
   final List<MatchModel> matches;
   final bool isLoading;
+  final bool isEditMode;
   final Function(CreateTournamentAction) onAction;
 
   const EditMatchScreen({
@@ -25,6 +26,7 @@ class EditMatchScreen extends StatefulWidget {
     required this.matches,
     this.isLoading = false,
     required this.onAction,
+    required this.isEditMode,
   });
 
   @override
@@ -74,10 +76,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                         physics: const ClampingScrollPhysics(),
                         itemCount: widget.matches.length,
                         itemBuilder: (context, index) {
-                          return _buildMatchItem(
-                            index,
-                            widget.matches[index],
-                          );
+                          return _buildMatchItem(index, widget.matches[index]);
                         },
                       ),
             ),
@@ -88,10 +87,39 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                 '${RoutePaths.createTournament}${RoutePaths.addPlayer}',
               );
             },
-            onNext: () {
-              widget.onAction(CreateTournamentAction.updateProcess(3));
-              context.go(RoutePaths.match);
+            onNext: () async {
+              debugPrint('다음 단계로 진행 - 매치 저장 시작');
+
+              try {
+                // 모드에 따라 저장 로직 실행
+                await widget.onAction(
+                  CreateTournamentAction.saveTournamentOrUpdateMatches(),
+                );
+  
+                // 저장이 완료될 충분한 시간 대기
+                await Future.delayed(const Duration(milliseconds: 500));
+                await widget.onAction(CreateTournamentAction.onDiscard());
+
+                if (context.mounted) {
+                  // 저장 후 최신 토너먼트 ID 사용
+                  final tournamentId = widget.tournament.id;
+                  debugPrint('매치 저장 완료 - 매치 화면으로 이동 (ID: $tournamentId)');
+                  // 매치 화면으로 이동 - shouldRefresh=true 파라미터 추가
+                  context.go(
+                    '${RoutePaths.match}?tournamentId=$tournamentId&shouldRefresh=true',
+                  );
+                }
+              } catch (e) {
+                debugPrint('매치 저장 중 오류 발생: $e');
+                // 오류 처리 (예: 스낵바 표시)
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('매치 저장 중 오류가 발생했습니다.')),
+                  );
+                }
+              }
             },
+            nextText: widget.isEditMode ? '저장 후 돌아가기' : '저장 후 완료',
           ),
         ],
       ),
@@ -399,11 +427,18 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
   // 매치 아이템 위젯
   Widget _buildMatchItem(int index, MatchModel match) {
     final isDoubles = widget.tournament.isDoubles;
-    
-    // 커스텀 선수 이름 사용 (MatchModel에 저장된 teamName이 있으면 사용)
-    final teamAName = match.teamAName ?? _getPlayerNameById(match.teamAId);
-    final teamBName = match.teamBName ?? _getPlayerNameById(match.teamBId);
-    
+
+    // MatchModel의 playerA, playerB, playerC, playerD 필드를 사용
+    final teamAName =
+        isDoubles && match.playerC != null
+            ? "${match.playerA ?? ''} / ${match.playerC ?? ''}"
+            : match.playerA ?? '선수 없음';
+
+    final teamBName =
+        isDoubles && match.playerD != null
+            ? "${match.playerB ?? ''} / ${match.playerD ?? ''}"
+            : match.playerB ?? '선수 없음';
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 2),
       decoration: BoxDecoration(
@@ -474,18 +509,6 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
         ),
       ),
     );
-  }
-
-  // 플레이어 ID로 이름 조회
-  String _getPlayerNameById(int? playerId) {
-    if (playerId == null) return "선수 없음";
-
-    final player = widget.players.firstWhere(
-      (p) => p.id == playerId,
-      orElse: () => PlayerModel(id: 0, name: "선수 없음"),
-    );
-
-    return player.name;
   }
 
   // 플레이어 이름 위젯

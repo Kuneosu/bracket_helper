@@ -163,13 +163,13 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
               players: players,
               onAction: (action) {
                 debugPrint('GroupDetailRoot - 액션 수신: $action');
-                
+
                 // 선수 저장 액션 처리 - 빈 이름의 경우 다이얼로그 표시
                 if (action is OnSavePlayer && action.name.isEmpty) {
                   _showAddPlayerDialog(context, group);
                   return;
                 }
-                
+
                 // 나머지 액션 처리
                 _handleAction(action);
               },
@@ -183,22 +183,22 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
   // 액션 처리 메서드
   void _handleAction(SavePlayerAction action) {
     debugPrint('GroupDetailRoot - 액션 처리: $action');
-    
+
     // onRefresh 액션인 경우 로컬 메서드 호출
     if (action is OnRefresh) {
       _refreshData();
       return;
     }
-    
+
     // SavePlayer, DeletePlayer, UpdatePlayer 액션은 상위로 전달하고 데이터 갱신
-    if (action is OnSavePlayer || 
-        action is OnDeletePlayer || 
+    if (action is OnSavePlayer ||
+        action is OnDeletePlayer ||
         action is OnUpdatePlayer) {
       // 액션 전달
       widget.onAction(action);
-      
+
       // 약간의 지연 후 데이터 갱신
-      Future.delayed(const Duration(milliseconds: 800), () {
+      Future.delayed(const Duration(milliseconds: 100), () {
         if (mounted) {
           debugPrint('GroupDetailRoot: 액션 처리 후 데이터 새로고침');
           _refreshData();
@@ -206,7 +206,7 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
       });
       return;
     }
-    
+
     // 그 외 액션은 상위 컴포넌트로 전달
     widget.onAction(action);
   }
@@ -309,6 +309,48 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                             }
                           },
                         ),
+                        const SizedBox(height: 10),
+
+                        // 다중 선수 추가 안내 메시지
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey[300]!),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    size: 16,
+                                    color: groupColor,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '여러 선수 한 번에 추가하기',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: groupColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              const Text(
+                                '띄어쓰기로 구분하여 여러 명의 선수를 한 번에 등록할 수 있습니다.\n예: "홍길동 김철수"',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         const SizedBox(height: 25),
 
                         // 버튼
@@ -348,13 +390,66 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                                         // 다이얼로그 닫기
                                         Navigator.of(context).pop();
 
-                                        // 선수 추가 액션 호출
-                                        _handleAction(
-                                          SavePlayerAction.onSavePlayer(
-                                            playerName,
-                                            widget.groupId,
-                                          ),
-                                        );
+                                        // 선수 이름들을 공백으로 분리
+                                        final playerNames =
+                                            playerName
+                                                .split(' ')
+                                                .where(
+                                                  (name) =>
+                                                      name.trim().isNotEmpty,
+                                                )
+                                                .toList();
+
+                                        // 여러 선수 처리
+                                        if (playerNames.length > 1) {
+                                          int addedCount = 0;
+                                          debugPrint(
+                                            '다중 선수 추가 시작: ${playerNames.length}명',
+                                          );
+
+                                          // 여러 선수 순차적으로 추가
+                                          for (final name in playerNames) {
+                                            widget.onAction(
+                                              SavePlayerAction.onSavePlayer(
+                                                name.trim(),
+                                                widget.groupId,
+                                              ),
+                                            );
+                                            addedCount++;
+
+                                            // 약간의 딜레이 추가
+                                            await Future.delayed(
+                                              const Duration(milliseconds: 100),
+                                            );
+                                          }
+
+                                          debugPrint(
+                                            '다중 선수 추가 완료: $addedCount명',
+                                          );
+
+                                          // 모든 선수가 추가된 후 데이터 새로고침
+                                          if (mounted) {
+                                            Future.delayed(
+                                              const Duration(milliseconds: 100),
+                                              () {
+                                                if (mounted) {
+                                                  debugPrint(
+                                                    '다중 선수 추가 후 데이터 새로고침',
+                                                  );
+                                                  _refreshData();
+                                                }
+                                              },
+                                            );
+                                          }
+                                        } else {
+                                          // 단일 선수 추가 (기존 방식)
+                                          _handleAction(
+                                            SavePlayerAction.onSavePlayer(
+                                              playerName,
+                                              widget.groupId,
+                                            ),
+                                          );
+                                        }
                                       }
                                       : null, // 유효하지 않으면 버튼 비활성화
                               style: ElevatedButton.styleFrom(

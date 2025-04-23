@@ -63,9 +63,11 @@ class Teams extends Table {
 class Matches extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get tournamentId => integer().references(Tournaments, #id)();
-  IntColumn get order        => integer()();                     // 경기 순서
-  IntColumn get teamAId      => integer().references(Teams, #id)();
-  IntColumn get teamBId      => integer().references(Teams, #id)();
-  IntColumn get scoreA       => integer().nullable()();
-  IntColumn get scoreB       => integer().nullable()();
+  IntColumn get ord => integer()();           // 경기 순서 (order 대신 ord 사용)
+  TextColumn get playerA => text().nullable()();                   // A팀 선수1
+  TextColumn get playerB => text().nullable()();                   // B팀 선수1
+  TextColumn get playerC => text().nullable()();                   // A팀 선수2 (복식인 경우)
+  TextColumn get playerD => text().nullable()();                   // B팀 선수2 (복식인 경우)
+  IntColumn get scoreA => integer().nullable()();
+  IntColumn get scoreB => integer().nullable()();
 }

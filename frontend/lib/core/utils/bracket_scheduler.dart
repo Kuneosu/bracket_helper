@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/team_model.dart';
+import 'package:flutter/foundation.dart';
 
 /// 4인 1경기 × 1인당 4경기.
 /// - 코트 수(courts) 만큼 '동시 진행'
@@ -16,10 +17,10 @@ class BracketScheduler {
   /// [restart]  : 실패 시 시드 재시도 횟수
   static List<MatchModel> generate(
     List<PlayerModel> players, {
-    required int courts,            // NEW
+    required int courts, // NEW
     int gamesPer = 4,
     int? seed,
-    int restart = 3000,             // NEW
+    int restart = 3000, // NEW
   }) {
     if (players.length < 4 || players.length > 32) {
       throw ArgumentError('인원수는 4~32 명만 지원합니다.');
@@ -31,7 +32,7 @@ class BracketScheduler {
 
     final outerRand = Random(seed);
     final baseLimit = _pairLimitByN(players.length);
-    final retries   = restart + max(0, players.length - 8) * 200; // NEW
+    final retries = restart + max(0, players.length - 8) * 200; // NEW
 
     // ① baseLimit 으로 재시도
     for (var i = 0; i < retries; i++) {
@@ -67,7 +68,12 @@ class BracketScheduler {
 
   // ───────────────────────────────────────── helper ─────────────────────────
   /// 인원수 → 기본 중복 한도
-  static int _pairLimitByN(int n) => n == 4 ? 4 : n <= 7 ? 3 : 2;
+  static int _pairLimitByN(int n) =>
+      n == 4
+          ? 4
+          : n <= 7
+          ? 3
+          : 2;
 
   /// 시드 한 번으로 스케줄 생성, 실패 시 null
   static List<MatchModel>? _buildOnce(
@@ -77,13 +83,13 @@ class BracketScheduler {
     int pairLimit,
     Random rand,
   ) {
-    final names   = players.map((e) => e.name).toList();
-    final remain  = {for (var n in names) n: gamesPer};
+    final names = players.map((e) => e.name).toList();
+    final remain = {for (var n in names) n: gamesPer};
     final pairCnt = <String, Map<String, int>>{};
     int pair(String a, String b) => pairCnt[a]?[b] ?? 0;
 
     final schedule = <_MatchInternal>[];
-    final slots    = <List<_MatchInternal>>[];
+    final slots = <List<_MatchInternal>>[];
 
     bool okGroup(List<String> g) {
       for (var a in g) {
@@ -108,13 +114,12 @@ class BracketScheduler {
 
     // ── 슬롯‑우선 생성 ───────────────────────────────────────────────
     while (remain.values.any((v) => v > 0)) {
-      final used   = <String>{};
-      final slot   = <_MatchInternal>[];
+      final used = <String>{};
+      final slot = <_MatchInternal>[];
 
       while (slot.length < courts) {
-        final cands = names
-            .where((n) => remain[n]! > 0 && !used.contains(n))
-            .toList();
+        final cands =
+            names.where((n) => remain[n]! > 0 && !used.contains(n)).toList();
         if (cands.length < 4) break;
 
         cands.shuffle(rand);
@@ -123,7 +128,8 @@ class BracketScheduler {
 
         for (final g in _combinations(cands, 4)) {
           if (!okGroup(g)) continue;
-          final key = overlapScore(g) * 1000 -
+          final key =
+              overlapScore(g) * 1000 -
               g.fold<int>(0, (s, p) => s + remain[p]!); // 작은 overlap, 큰 remain
           if (key < bestKey) {
             best = g;
@@ -168,14 +174,22 @@ class BracketScheduler {
     final result = <MatchModel>[];
     for (var orderIdx = 0; orderIdx < slots.length; orderIdx++) {
       for (final m in slots[orderIdx]) {
-        result.add(
-          MatchModel(
-            id: idSeq++,
-            order: orderIdx + 1,
-            teamAName: m.aName,
-            teamBName: m.bName,
-          ),
+        // 복식 경기인 경우 양 팀 모두 2명씩의 선수 할당
+        final matchModel = MatchModel(
+          id: idSeq++,
+          ord: orderIdx + 1,
+          playerA: m.teamA.p1.name,
+          playerB: m.teamB.p1.name,
+          playerC: m.teamA.p2?.name, // 두 번째 선수가 없으면 null
+          playerD: m.teamB.p2?.name, // 두 번째 선수가 없으면 null
         );
+
+        // 매치 정보 로깅
+        debugPrint(
+          '생성된 매치: ${matchModel.playerA} & ${matchModel.playerC} vs ${matchModel.playerB} & ${matchModel.playerD}',
+        );
+
+        result.add(matchModel);
       }
     }
     return result;
@@ -206,20 +220,4 @@ class _MatchInternal {
   final TeamModel teamA;
   final TeamModel teamB;
   const _MatchInternal(this.teamA, this.teamB);
-
-  String get aName {
-    if (teamA.p2 != null) {
-      return '${teamA.p1.name},${teamA.p2!.name}';
-    } else {
-      return teamA.p1.name;
-    }
-  }
-  
-  String get bName {
-    if (teamB.p2 != null) {
-      return '${teamB.p1.name},${teamB.p2!.name}';
-    } else {
-      return teamB.p1.name;
-    }
-  }
 }

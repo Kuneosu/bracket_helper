@@ -16,6 +16,8 @@ import 'package:bracket_helper/domain/repository/team_repository.dart';
 import 'package:bracket_helper/domain/repository/tournament_repository.dart';
 import 'package:bracket_helper/domain/use_case/group/add_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/add_player_to_group_use_case.dart';
+import 'package:bracket_helper/domain/use_case/match/delete_match_by_tournament_id_use_case.dart';
+import 'package:bracket_helper/domain/use_case/match/get_all_matches_use_case.dart';
 import 'package:bracket_helper/domain/use_case/player/add_player_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/create_match_use_case.dart';
 import 'package:bracket_helper/domain/use_case/team/create_team_use_case.dart';
@@ -34,7 +36,9 @@ import 'package:bracket_helper/domain/use_case/match/get_matches_in_tournament_u
 import 'package:bracket_helper/domain/use_case/group/remove_player_from_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/group/update_group_use_case.dart';
 import 'package:bracket_helper/domain/use_case/player/update_player_use_case.dart';
+import 'package:bracket_helper/domain/use_case/tournament/get_tournament_by_id_use_case.dart';
 import 'package:bracket_helper/presentation/home/home_view_model.dart';
+import 'package:bracket_helper/presentation/match/match_view_model.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_view_model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bracket_helper/domain/use_case/group/count_players_in_group_use_case.dart';
@@ -93,7 +97,7 @@ Future<void> setupDependencies() async {
     () => CreateTeamUseCase(getIt<TeamRepository>(), getIt<PlayerRepository>()),
   );
   getIt.registerLazySingleton<CreateMatchUseCase>(
-    () => CreateMatchUseCase(getIt<MatchRepository>(), getIt<TeamRepository>()),
+    () => CreateMatchUseCase(getIt<MatchRepository>()),
   );
   getIt.registerLazySingleton<CreateTournamentUseCase>(
     () => CreateTournamentUseCase(getIt<TournamentRepository>()),
@@ -143,12 +147,22 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton(
     () => CountPlayersInGroupUseCase(getIt<GroupRepository>()),
   );
+  getIt.registerLazySingleton<GetAllMatchesUseCase>(
+    () => GetAllMatchesUseCase(getIt<MatchRepository>()),
+  );
+  getIt.registerLazySingleton<GetTournamentByIdUseCase>(
+    () => GetTournamentByIdUseCase(getIt<TournamentRepository>()),
+  );
+  getIt.registerLazySingleton<DeleteMatchByTournamentIdUseCase>(
+    () => DeleteMatchByTournamentIdUseCase(getIt<MatchRepository>()),
+  );
 
   // 뷰모델 등록
   getIt.registerFactory<HomeViewModel>(
     () => HomeViewModel(
       getAllTournamentsUseCase: getIt<GetAllTournamentsUseCase>(),
       deleteTournamentUseCase: getIt<DeleteTournamentUseCase>(),
+      getAllMatchesUseCase: getIt<GetAllMatchesUseCase>(),
     ),
   );
   getIt.registerFactory<SavePlayerViewModel>(
@@ -163,6 +177,18 @@ Future<void> setupDependencies() async {
       removePlayerFromGroupUseCase: getIt<RemovePlayerFromGroupUseCase>(),
       deletePlayerUseCase: getIt<DeletePlayerUseCase>(),
       updatePlayerUseCase: getIt<UpdatePlayerUseCase>(),
+    ),
+  );
+
+  // MatchViewModel은 factory 함수로 등록하여 tournamentId를 전달받을 수 있도록 함
+  // 이제 getIt.get<MatchViewModel>() 대신 getIt.call<MatchViewModel>(param) 형태로 사용
+  getIt.registerFactoryParam<MatchViewModel, int, void>(
+    (tournamentId, _) => MatchViewModel(
+      tournamentId: tournamentId,
+      getTournamentByIdUseCase: getIt<GetTournamentByIdUseCase>(),
+      getMatchesInTournamentUseCase: getIt<GetMatchesInTournamentUseCase>(),
+      deleteMatchUseCase: getIt<DeleteMatchUseCase>(),
+      createMatchUseCase: getIt<CreateMatchUseCase>(),
     ),
   );
 }

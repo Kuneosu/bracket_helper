@@ -145,6 +145,10 @@ class SavePlayerViewModel with ChangeNotifier {
         await addPlayerToGroup(name: name, groupId: groupId);
         break;
 
+      case OnSaveMultiplePlayers(names: final names, groupId: final groupId):
+        await addMultiplePlayersToGroup(names: names, groupId: groupId);
+        break;
+
       case OnDeletePlayer(playerId: final playerId, groupId: final groupId):
         await deletePlayer(playerId: playerId, groupId: groupId);
         break;
@@ -700,6 +704,85 @@ class SavePlayerViewModel with ChangeNotifier {
     } catch (e) {
       debugPrint('SavePlayerViewModel - 선수 정보 업데이트 중 예외 발생: $e');
       _state = _state.copyWith(errorMessage: '선수 정보 업데이트 중 오류가 발생했습니다: $e');
+    }
+
+    _state = _state.copyWith(isLoading: false);
+    notifyListeners();
+  }
+
+  // 여러 선수를 한 번에 추가하는 메서드
+  Future<void> addMultiplePlayersToGroup({
+    required String names,
+    required int groupId,
+  }) async {
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
+
+    final namesList = names.split(' ')
+        .where((name) => name.trim().isNotEmpty)
+        .toList();
+    
+    if (namesList.isEmpty) {
+      _state = _state.copyWith(errorMessage: '선수 이름을 입력해주세요', isLoading: false);
+      notifyListeners();
+      return;
+    }
+
+    debugPrint('SavePlayerViewModel - 다중 선수 추가 시도: ${namesList.length}명, 그룹ID=$groupId');
+
+    int successCount = 0;
+    List<String> failedNames = [];
+
+    try {
+      for (final name in namesList) {
+        // AddPlayerToGroupUseCase 호출
+        final params = AddPlayerToGroupParams(
+          playerName: name.trim(),
+          groupId: groupId,
+        );
+
+        final result = await _addPlayerToGroupUseCase.execute(params);
+
+        // 결과 처리
+        if (result is int) {
+          // 성공 (반환값이 선수 ID)
+          debugPrint('SavePlayerViewModel - 선수 추가 성공: 이름=$name, ID=$result');
+          successCount++;
+        } else {
+          // 실패 (반환값이 에러 메시지)
+          debugPrint('SavePlayerViewModel - 선수 추가 실패: 이름=$name, $result');
+          failedNames.add(name);
+        }
+      }
+
+      // 해당 그룹의 선수 목록 캐시 초기화
+      invalidatePlayerListCache(groupId);
+
+      // 선수 수 캐시도 초기화
+      invalidatePlayerCount(groupId);
+
+      // 해당 그룹의 선수 수 다시 조회 (UI 업데이트를 위해)
+      await fetchPlayerCount(groupId);
+
+      // 추가한 선수가 속한 그룹이 현재 선택된 그룹인 경우,
+      // 자동으로 선수 목록을 갱신해 UI에 반영되도록 함
+      if (_state.selectedGroupId == groupId) {
+        debugPrint('SavePlayerViewModel - 현재 선택된 그룹에 선수 추가됨, 데이터 갱신');
+        // 선수 목록을 미리 불러와 캐시에 저장 (UI는 갱신되지 않음)
+        await getPlayersInGroup(groupId);
+      }
+
+      // 결과 메시지 생성
+      if (failedNames.isNotEmpty) {
+        _state = _state.copyWith(
+          errorMessage: '$successCount명의 선수가 추가되었으나, ${failedNames.length}명 추가 실패: ${failedNames.join(', ')}',
+        );
+      } else {
+        debugPrint('SavePlayerViewModel - 모든 선수 추가 성공: $successCount명');
+      }
+    } catch (e) {
+      debugPrint('SavePlayerViewModel - 다중 선수 추가 중 예외 발생: $e');
+      _state = _state.copyWith(errorMessage: '선수 추가 중 오류가 발생했습니다: $e');
     }
 
     _state = _state.copyWith(isLoading: false);

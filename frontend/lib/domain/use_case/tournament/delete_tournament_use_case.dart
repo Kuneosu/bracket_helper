@@ -28,7 +28,7 @@ class DeleteTournamentUseCase {
       }
 
       // 토너먼트 존재 여부 확인
-      final tournament = await _tournamentRepository.getTournament(
+      final tournament = await _tournamentRepository.fetchTournamentById(
         tournamentId,
       );
       if (tournament.isFailure) {
@@ -36,7 +36,16 @@ class DeleteTournamentUseCase {
       }
 
       // 토너먼트 삭제 요청
-      await _tournamentRepository.deleteTournament(tournamentId);
+      final deleteResult = await _tournamentRepository.deleteTournament(tournamentId);
+      
+      // 삭제 결과 확인
+      if (deleteResult.isFailure) {
+        // 디버그 로그
+        if (kDebugMode) {
+          print('DeleteTournamentUseCase: 토너먼트 삭제 실패 - ID: $tournamentId, 오류: ${deleteResult.error.message}');
+        }
+        return Result.failure(deleteResult.error);
+      }
 
       // 디버그 로그
       if (kDebugMode) {

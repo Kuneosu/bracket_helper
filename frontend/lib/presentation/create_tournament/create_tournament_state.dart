@@ -15,6 +15,7 @@ class CreateTournamentState with _$CreateTournamentState {
   final List<PlayerModel> players;
   final TournamentModel tournament;
   final List<MatchModel> matches;
+  final bool isEditMode;
 
   CreateTournamentState({
     this.isLoading = false,
@@ -23,5 +24,6 @@ class CreateTournamentState with _$CreateTournamentState {
     this.players = const [],
     required this.tournament,
     this.matches = const [],
+    this.isEditMode = false,
   });
 }

@@ -60,8 +60,9 @@ class CreateTournamentUseCase {
   ///
   /// 반환값: 성공 시 Tournament의 ID를 포함한 [Result.success],
   /// 실패 시 에러 정보를 포함한 [Result.failure]
-  Future<Result<int>> execute(CreateTournamentParams params) async {
+  Future<Result<int>> execute(TournamentModel params) async {
     try {
+      debugPrint('[토너먼트 저장 추적] 토너먼트 저장 시작');
       // 유효성 검증
       if (params.title.trim().isEmpty) {
         return Result.failure(TournamentError(message: '토너먼트 제목은 필수입니다.'));

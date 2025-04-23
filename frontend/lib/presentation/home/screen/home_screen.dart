@@ -1,7 +1,7 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/presentation/home/home_action.dart';
-import 'package:bracket_helper/presentation/home/widget/recent_tournament_card.dart';
+import 'package:bracket_helper/presentation/home/widgets/recent_tournament_card.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +10,12 @@ import 'package:go_router/go_router.dart';
 class HomeScreen extends StatelessWidget {
   final List<TournamentModel> tournaments;
   final void Function(HomeAction) onAction;
+  final VoidCallback onHelpPressed;
   const HomeScreen({
     super.key,
     required this.tournaments,
     required this.onAction,
+    required this.onHelpPressed,
   });
 
   @override
@@ -27,10 +29,11 @@ class HomeScreen extends StatelessWidget {
         centerTitle: false,
         backgroundColor: CST.primary100,
         foregroundColor: CST.white,
+        scrolledUnderElevation: 0,
         elevation: 0,
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: onHelpPressed,
             child: Text(
               "도움말",
               style: TST.normalTextBold.copyWith(color: CST.white),
@@ -85,7 +88,9 @@ class HomeScreen extends StatelessWidget {
                         child: RecentTournamentCard(
                           tournament: tournaments[index],
                           onTapCard: () {
-                            context.push(RoutePaths.match);
+                            context.push(
+                              '${RoutePaths.match}?tournamentId=${tournaments[index].id}',
+                            );
                           },
                           onTapDelete: () {
                             onAction(
