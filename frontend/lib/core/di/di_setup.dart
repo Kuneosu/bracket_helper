@@ -175,7 +175,7 @@ Future<void> setupDependencies() async {
       updatePlayerUseCase: getIt<UpdatePlayerUseCase>(),
     ),
   );
-  
+
   // MatchViewModel은 factory 함수로 등록하여 tournamentId를 전달받을 수 있도록 함
   // 이제 getIt.get<MatchViewModel>() 대신 getIt.call<MatchViewModel>(param) 형태로 사용
   getIt.registerFactoryParam<MatchViewModel, int, void>(
@@ -183,6 +183,8 @@ Future<void> setupDependencies() async {
       tournamentId: tournamentId,
       getTournamentByIdUseCase: getIt<GetTournamentByIdUseCase>(),
       getMatchesInTournamentUseCase: getIt<GetMatchesInTournamentUseCase>(),
+      deleteMatchUseCase: getIt<DeleteMatchUseCase>(),
+      createMatchUseCase: getIt<CreateMatchUseCase>(),
     ),
   );
 }

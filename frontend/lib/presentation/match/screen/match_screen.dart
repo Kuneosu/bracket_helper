@@ -174,7 +174,7 @@ class MatchScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final player = players[index];
                       final stats = playerStats[player.name];
-                      
+
                       return PlayerRankItem(
                         player: player,
                         rank: index + 1,
@@ -199,17 +199,7 @@ class MatchScreen extends StatelessWidget {
     return InkWell(
       onTap: () {
         // 정렬 액션 처리
-        switch (value) {
-          case 'name':
-            onAction(const MatchAction.sortPlayersByName());
-            break;
-          case 'points':
-            onAction(const MatchAction.sortPlayersByPoints());
-            break;
-          case 'difference':
-            onAction(const MatchAction.sortPlayersByDifference());
-            break;
-        }
+        onAction(MatchAction.sortPlayersBy(value));
       },
       borderRadius: BorderRadius.circular(20),
       child: Container(
