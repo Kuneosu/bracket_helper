@@ -1,5 +1,6 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/core/presentation/components/default_text_field.dart';
+import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
@@ -86,7 +87,9 @@ class MatchScreen extends StatelessWidget {
                     width: 150,
                   ),
                   Spacer(),
-                  DefaultButton(text: "경기 종료", onTap: () {}, width: 150),
+                  DefaultButton(text: "경기 종료", onTap: () {
+                    context.go(RoutePaths.home);
+                  }, width: 150),
                 ],
               ),
             ),
@@ -220,7 +223,7 @@ class MatchScreen extends StatelessWidget {
             physics: const ClampingScrollPhysics(),
             itemCount: matchList.length,
             itemBuilder: (context, index) {
-              return _buildMatchList(index, playerList);
+              return _buildMatchList(index, matchList[index]);
             },
           ),
         ),
@@ -278,7 +281,7 @@ class MatchScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMatchList(int index, List<PlayerModel> playerList) {
+  Widget _buildMatchList(int index, MatchModel match) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -291,14 +294,14 @@ class MatchScreen extends StatelessWidget {
           Spacer(),
           Column(
             children: [
-              Text(playerList[0].name, style: TST.mediumTextRegular),
+              Text(match.playerA!, style: TST.mediumTextRegular),
               Container(
                 width: 50,
                 height: 1,
                 color: CST.gray4,
                 margin: EdgeInsets.symmetric(vertical: 2),
               ),
-              Text(playerList[1].name, style: TST.mediumTextRegular),
+              Text(match.playerC!, style: TST.mediumTextRegular),
             ],
           ),
           Spacer(),
@@ -318,14 +321,14 @@ class MatchScreen extends StatelessWidget {
           Spacer(),
           Column(
             children: [
-              Text(playerList[2].name, style: TST.mediumTextRegular),
+              Text(match.playerB!, style: TST.mediumTextRegular),
               Container(
                 width: 50,
-                height: 1,
+                height: 1, 
                 color: CST.gray4,
                 margin: EdgeInsets.symmetric(vertical: 2),
               ),
-              Text(playerList[3].name, style: TST.mediumTextRegular),
+              Text(match.playerD!, style: TST.mediumTextRegular),
             ],
           ),
         ],

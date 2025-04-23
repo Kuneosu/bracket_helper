@@ -104,7 +104,11 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
 
                 if (context.mounted) {
                   debugPrint('매치 저장 완료 - 매치 화면으로 이동');
-                  context.go(RoutePaths.match);
+                  final tournamentId = widget.tournament.id;
+                  debugPrint('이동할 토너먼트 ID: $tournamentId');
+
+                  // 토너먼트 ID를 파라미터로 전달
+                  context.go('${RoutePaths.match}?tournamentId=$tournamentId');
                 }
               } catch (e) {
                 debugPrint('매치 저장 중 오류 발생: $e');
