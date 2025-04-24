@@ -173,6 +173,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(height: 24),
             // 저작권자 표시
             Container(
               padding: const EdgeInsets.only(bottom: 16),

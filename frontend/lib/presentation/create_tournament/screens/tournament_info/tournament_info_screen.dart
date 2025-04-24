@@ -246,16 +246,67 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
         children: [
           Text("1인당 게임수", style: TST.normalTextBold.copyWith(color: CST.gray1)),
           SizedBox(height: 8),
-          GameCounterWidget(
-            gamesPerPlayer: widget.tournament.gamesPerPlayer,
-            onAction: widget.onAction,
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            decoration: BoxDecoration(
+              color: CST.gray4,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: CST.gray3),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("4", style: TST.normalTextBold.copyWith(color: CST.gray2)),
+              ],
+            ),
+          ),
+          SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.info_outline, size: 16, color: CST.primary80),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  "현재는 1인당 4게임만 지원됩니다. 추후 업데이트 예정입니다.",
+                  style: TST.smallerTextRegular.copyWith(color: CST.primary80),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 16),
           Text("경기 형식", style: TST.normalTextBold.copyWith(color: CST.gray1)),
           SizedBox(height: 8),
-          MatchTypeToggleWidget(
-            isDoubles: widget.tournament.isDoubles,
-            onAction: widget.onAction,
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            decoration: BoxDecoration(
+              color: CST.gray4,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: CST.gray3),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.group, size: 18, color: CST.gray2),
+                SizedBox(width: 8),
+                Text(
+                  "복식",
+                  style: TST.normalTextBold.copyWith(color: CST.gray2),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.info_outline, size: 16, color: CST.primary80),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  "현재는 복식 경기만 지원됩니다. 단식은 추후 업데이트 예정입니다.",
+                  style: TST.smallerTextRegular.copyWith(color: CST.primary80),
+                ),
+              ),
+            ],
           ),
         ],
       ),
