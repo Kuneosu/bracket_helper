@@ -85,7 +85,7 @@ class CreateTournamentViewModel with ChangeNotifier {
       case ResetState():
         debugPrint('ResetState 액션 감지 - 상태 초기화 시작');
         resetState();
-        
+
       case OnDateChanged():
         debugPrint('날짜 변경: ${action.date}');
         _state = _state.copyWith(
@@ -203,28 +203,68 @@ class CreateTournamentViewModel with ChangeNotifier {
         debugPrint(
           '플레이어 수정 시작: ${action.player.id} - ${action.player.name} (현재 선수 수: ${_state.players.length})',
         );
-        final updatedPlayers =
-            _state.players.map((player) {
-              if (player.id == action.player.id) {
-                return action.player;
-              }
-              return player;
-            }).toList();
 
-        _state = _state.copyWith(players: updatedPlayers);
-        debugPrint('플레이어 수정 완료 (수정 후 선수 수: ${_state.players.length})');
+        // 버그 수정: 특정 ID의 선수만 업데이트하도록 변경
+        // 기존 선수 리스트 복사
+        final List<PlayerModel> updatedPlayers = List.from(_state.players);
+
+        // 수정할 선수의 인덱스 찾기
+        final int playerIndex = updatedPlayers.indexWhere(
+          (player) => player.id == action.player.id,
+        );
+
+        // 해당 선수가 존재하면 업데이트
+        if (playerIndex != -1) {
+          updatedPlayers[playerIndex] = action.player;
+          _state = _state.copyWith(players: updatedPlayers);
+          debugPrint('플레이어 ${action.player.id} 수정 완료: ${action.player.name}');
+        } else {
+          debugPrint('수정할 플레이어를 찾을 수 없음: ID ${action.player.id}');
+        }
+
         _notifyChanges();
       case RemovePlayer():
         debugPrint(
           '플레이어 삭제 시작: ${action.playerId} (현재 선수 수: ${_state.players.length})',
         );
-        _state = _state.copyWith(
-          players:
-              _state.players
-                  .where((player) => player.id != action.playerId)
-                  .toList(),
-        );
-        debugPrint('플레이어 삭제 완료 (삭제 후 선수 수: ${_state.players.length})');
+
+        // 버그 수정: 삭제 로직 강화
+        try {
+          // 삭제할 선수의 이름 출력 (디버깅용)
+          final playerToRemove = _state.players.firstWhere(
+            (player) => player.id == action.playerId,
+            orElse: () => PlayerModel(id: -1, name: '알 수 없음'),
+          );
+
+          if (playerToRemove.id != -1) {
+            debugPrint(
+              '삭제할 플레이어: ID ${playerToRemove.id}, 이름 ${playerToRemove.name}',
+            );
+
+            // 안전하게 새 리스트 생성 후 특정 ID를 가진 선수만 제외
+            final newPlayers =
+                _state.players
+                    .where((player) => player.id != action.playerId)
+                    .toList();
+
+            // 기존 리스트와 새 리스트의 크기 비교로 삭제 확인
+            final removed = _state.players.length - newPlayers.length;
+
+            if (removed > 0) {
+              _state = _state.copyWith(players: newPlayers);
+              debugPrint(
+                '플레이어 삭제 완료: ${playerToRemove.name} (삭제 후 선수 수: ${newPlayers.length})',
+              );
+            } else {
+              debugPrint('선수 삭제 실패: ID ${action.playerId}인 선수를 찾을 수 없음');
+            }
+          } else {
+            debugPrint('삭제할 플레이어를 찾을 수 없음: ID ${action.playerId}');
+          }
+        } catch (e) {
+          debugPrint('선수 삭제 중 오류 발생: $e');
+        }
+
         _notifyChanges();
       case FetchAllGroups():
         fetchAllGroups();
@@ -252,9 +292,11 @@ class CreateTournamentViewModel with ChangeNotifier {
       players: [],
       matches: [],
       groups: [],
+      isEditMode: false, // isEditMode도 초기화하여 편집 모드 상태를 제거
     );
     _playerListCache.clear(); // 캐시도 초기화
     _notifyChanges();
+    debugPrint('상태 초기화 완료: 편집 모드 해제');
   }
 
   Future<void> _saveMatches() async {
@@ -294,7 +336,6 @@ class CreateTournamentViewModel with ChangeNotifier {
       // 모든 Future가 완료될 때까지 기다림
       await Future.wait(futures);
       debugPrint('모든 매치 저장 작업 완료');
-
 
       // 작업 완료 후 상태 갱신
       _notifyChanges();
@@ -581,10 +622,26 @@ class CreateTournamentViewModel with ChangeNotifier {
     debugPrint('토너먼트 ID: ${tournament.id}, 제목: ${tournament.title}');
     debugPrint('선수 수: ${players.length}, 매치 수: ${matches.length}');
 
+    // 편집 모드에서 각 선수에게 새로운 고유 ID를 부여
+    // 이는 위젯 식별용으로만 사용되며, 원본 이름은 유지
+    final List<PlayerModel> playersWithUniqueIds = [];
+    int nextId = 10000; // 충분히 큰 시작 ID 사용
+    
+    for (final player in players) {
+      // ID를 고유값으로 변경하고 이름은 유지
+      playersWithUniqueIds.add(PlayerModel(
+        id: nextId++,
+        name: player.name,
+      ));
+      debugPrint('선수 ID 재할당: ${player.name} -> ID: ${nextId-1}');
+    }
+    
+    debugPrint('선수 ID 변환 완료: ${playersWithUniqueIds.length}명의 선수에게 고유 ID 할당됨');
+
     // 상태 업데이트 (isEditMode를 true로 설정)
     _state = _state.copyWith(
       tournament: tournament,
-      players: players,
+      players: playersWithUniqueIds,
       matches: matches,
       isEditMode: true, // 대진 수정 모드로 설정
     );
@@ -634,6 +691,11 @@ class CreateTournamentViewModel with ChangeNotifier {
       }
 
       debugPrint('BracketScheduler를 통한 매치 생성 시작 - 선수 ${players.length}명');
+      
+      // 선수 ID가 바뀌었으므로 이름으로 디버깅 추가
+      for (final player in players) {
+        debugPrint('매치 생성에 사용될 선수: ID ${player.id}, 이름 ${player.name}');
+      }
 
       List<MatchModel> newMatches;
 
