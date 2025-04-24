@@ -1,5 +1,5 @@
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_view_model.dart';
-import 'package:bracket_helper/presentation/create_tournament/screen/tournament_info/tournament_info_screen.dart';
+import 'package:bracket_helper/presentation/create_tournament/screens/tournament_info/tournament_info_screen.dart';
 import 'package:flutter/widgets.dart';
 
 class TournamentInfoRoot extends StatelessWidget {

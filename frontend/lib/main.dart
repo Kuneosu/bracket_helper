@@ -4,6 +4,10 @@ import 'package:bracket_helper/ui/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'dart:async';
+
+// mailto URL 처리를 위한 스트림 컨트롤러
+final StreamController<Uri> mailtoLinkStream = StreamController<Uri>.broadcast();
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

@@ -1,11 +1,11 @@
 import 'package:bracket_helper/domain/model/group_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
-import 'package:bracket_helper/presentation/save_player/components/edit_player_dialog.dart';
-import 'package:bracket_helper/presentation/save_player/components/empty_player_list_widget.dart';
-import 'package:bracket_helper/presentation/save_player/components/group_header_widget.dart';
-import 'package:bracket_helper/presentation/save_player/components/player_confirm_delete_dialog.dart';
-import 'package:bracket_helper/presentation/save_player/components/player_list_item.dart';
-import 'package:bracket_helper/presentation/save_player/components/player_search_field.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/edit_player_dialog.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/empty_player_list_widget.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/group_header_widget.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/player_confirm_delete_dialog.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/player_list_item.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/player_search_field.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:bracket_helper/ui/color_st.dart';

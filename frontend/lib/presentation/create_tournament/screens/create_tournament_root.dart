@@ -7,10 +7,10 @@ import 'package:bracket_helper/domain/use_case/tournament/create_tournament_use_
 import 'package:bracket_helper/domain/use_case/match/create_match_use_case.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_view_model.dart';
-import 'package:bracket_helper/presentation/create_tournament/screen/add_player/add_player_root.dart';
-import 'package:bracket_helper/presentation/create_tournament/screen/create_tournament_screen.dart';
-import 'package:bracket_helper/presentation/create_tournament/screen/edit_match/edit_match_root.dart';
-import 'package:bracket_helper/presentation/create_tournament/screen/tournament_info/tournament_info_root.dart';
+import 'package:bracket_helper/presentation/create_tournament/screens/add_player/add_player_root.dart';
+import 'package:bracket_helper/presentation/create_tournament/screens/create_tournament_screen.dart';
+import 'package:bracket_helper/presentation/create_tournament/screens/edit_match/edit_match_root.dart';
+import 'package:bracket_helper/presentation/create_tournament/screens/tournament_info/tournament_info_root.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
