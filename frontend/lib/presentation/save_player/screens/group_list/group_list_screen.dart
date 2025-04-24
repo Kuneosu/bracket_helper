@@ -2,10 +2,10 @@ import 'package:bracket_helper/core/presentation/components/default_button.dart'
 import 'package:bracket_helper/core/presentation/components/square_icon_menu.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/group_model.dart';
-import 'package:bracket_helper/presentation/save_player/components/empty_state_widget.dart';
-import 'package:bracket_helper/presentation/save_player/components/group_grid_item.dart';
-import 'package:bracket_helper/presentation/save_player/components/group_list_item.dart';
-import 'package:bracket_helper/presentation/save_player/components/rename_dialog.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/empty_state_widget.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/group_grid_item.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/group_list_item.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/rename_dialog.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';

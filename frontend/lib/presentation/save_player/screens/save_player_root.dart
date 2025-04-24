@@ -1,10 +1,10 @@
 import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_view_model.dart';
-import 'package:bracket_helper/presentation/save_player/screen/create_group/create_group_root.dart';
-import 'package:bracket_helper/presentation/save_player/screen/group_detail/group_detail_root.dart';
-import 'package:bracket_helper/presentation/save_player/screen/group_list/group_list_root.dart';
-import 'package:bracket_helper/presentation/save_player/screen/save_player_screen.dart';
+import 'package:bracket_helper/presentation/save_player/screens/create_group/create_group_root.dart';
+import 'package:bracket_helper/presentation/save_player/screens/group_detail/group_detail_root.dart';
+import 'package:bracket_helper/presentation/save_player/screens/group_list/group_list_root.dart';
+import 'package:bracket_helper/presentation/save_player/screens/save_player_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

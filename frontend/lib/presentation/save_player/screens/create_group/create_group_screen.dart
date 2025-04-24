@@ -1,6 +1,6 @@
-import 'package:bracket_helper/presentation/save_player/components/action_button_row.dart';
-import 'package:bracket_helper/presentation/save_player/components/color_picker_grid.dart';
-import 'package:bracket_helper/presentation/save_player/components/form_card.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/action_button_row.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/color_picker_grid.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/form_card.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

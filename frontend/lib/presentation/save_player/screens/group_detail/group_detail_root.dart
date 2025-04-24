@@ -1,6 +1,6 @@
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
-import 'package:bracket_helper/presentation/save_player/screen/group_detail/group_detail_screen.dart';
+import 'package:bracket_helper/presentation/save_player/screens/group_detail/group_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/domain/model/group_model.dart';
 

@@ -2,7 +2,7 @@ import 'package:bracket_helper/domain/model/group_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_view_model.dart';
-import 'package:bracket_helper/presentation/create_tournament/screen/add_player/add_player_screen.dart';
+import 'package:bracket_helper/presentation/create_tournament/screens/add_player/add_player_screen.dart';
 import 'package:flutter/material.dart';
 
 class AddPlayerRoot extends StatefulWidget {

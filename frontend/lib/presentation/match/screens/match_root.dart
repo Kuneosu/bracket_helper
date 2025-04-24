@@ -1,7 +1,7 @@
 import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bracket_helper/presentation/match/match_view_model.dart';
-import 'package:bracket_helper/presentation/match/screen/match_screen.dart';
+import 'package:bracket_helper/presentation/match/screens/match_screen.dart';
 import 'package:flutter/material.dart';
 
 class MatchRoot extends StatefulWidget {

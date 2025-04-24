@@ -1,6 +1,6 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
-import 'package:bracket_helper/presentation/save_player/screen/create_group/create_group_screen.dart';
+import 'package:bracket_helper/presentation/save_player/screens/create_group/create_group_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

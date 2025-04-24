@@ -1,14 +1,28 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
-import 'package:bracket_helper/presentation/create_tournament/screen/create_tournament_root.dart';
-import 'package:bracket_helper/presentation/home/screen/home_root.dart';
+import 'package:bracket_helper/presentation/create_tournament/screens/create_tournament_root.dart';
+import 'package:bracket_helper/presentation/home/screens/home_root.dart';
 import 'package:bracket_helper/presentation/main/main_screen.dart';
-import 'package:bracket_helper/presentation/match/screen/match_root.dart';
-import 'package:bracket_helper/presentation/save_player/screen/save_player_root.dart';
-import 'package:bracket_helper/presentation/setting/setting_screen.dart';
+import 'package:bracket_helper/presentation/match/screens/match_root.dart';
+import 'package:bracket_helper/presentation/save_player/screens/save_player_root.dart';
+import 'package:bracket_helper/presentation/setting/screen/setting_screen.dart';
+import 'package:bracket_helper/main.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
   initialLocation: RoutePaths.home,
+  
+  // URL 스킴 처리를 위한 리다이렉션 설정
+  redirect: (context, state) {
+    // mailto 스킴을 처리하려고 할 때
+    if (state.uri.scheme == 'mailto') {
+      // mailto 스트림으로 URI 전달
+      mailtoLinkStream.add(state.uri);
+      // 홈 화면으로 리다이렉트
+      return RoutePaths.setting;
+    }
+    return null; // 다른 스킴은 정상 처리
+  },
+  
   routes: [
     GoRoute(
       path: RoutePaths.match,
