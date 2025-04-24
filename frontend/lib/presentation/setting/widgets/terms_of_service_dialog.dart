@@ -71,6 +71,14 @@ class TermsOfServiceDialog extends StatelessWidget {
             const Divider(height: 1, thickness: 1, color: CST.gray4),
             const SizedBox(height: 16),
             Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '2025.04.24',
+                style: TST.smallTextRegular.copyWith(color: CST.gray2),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Align(
               alignment: Alignment.center,
               child: TextButton(
                 onPressed: () => Navigator.pop(context),

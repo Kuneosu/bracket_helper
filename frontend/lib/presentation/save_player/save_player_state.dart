@@ -27,6 +27,13 @@ class SavePlayerState with _$SavePlayerState {
   // 선택된 그룹 ID
   final int? selectedGroupId;
   
+  // 선수 이름으로 검색된 그룹 ID 목록
+  final List<int> playerSearchMatchedGroupIds;
+  
+  // 검색어와 일치하는 선수 이름 정보를 그룹별로 저장
+  // 키: 그룹 ID, 값: 해당 그룹에서 검색어와 일치하는 선수 이름 목록
+  final Map<int, List<String>> matchedPlayerNamesByGroup;
+  
   SavePlayerState({
     this.isLoading = false,
     this.errorMessage,
@@ -39,6 +46,8 @@ class SavePlayerState with _$SavePlayerState {
     this.searchQuery = '',
     this.isEditMode = false,
     this.selectedGroupId,
+    this.playerSearchMatchedGroupIds = const [],
+    this.matchedPlayerNamesByGroup = const {},
   });
 
   factory SavePlayerState.fromJson(Map<String, Object?> json) =>
@@ -50,16 +59,42 @@ class SavePlayerState with _$SavePlayerState {
     if (searchQuery.isEmpty) {
       return groups;
     }
-    return groups.where(
+    
+    // 그룹 이름으로 필터링한 목록
+    final groupsByName = groups.where(
       (group) => group.name.toLowerCase().contains(searchQuery.toLowerCase())
     ).toList();
+    
+    // 선수 이름 검색 결과가 있는 경우, 해당 그룹들도 포함
+    if (playerSearchMatchedGroupIds.isNotEmpty) {
+      // 그룹 이름으로 필터링된 목록과 선수 이름으로 찾은 그룹 ID 목록을 합침
+      final Set<int> groupIds = groupsByName.map((g) => g.id).toSet();
+      
+      for (final groupId in playerSearchMatchedGroupIds) {
+        // 중복되지 않는 그룹 ID만 추가
+        if (!groupIds.contains(groupId)) {
+          final group = groups.firstWhere(
+            (g) => g.id == groupId,
+            orElse: () => const GroupModel(id: 0, name: ''),
+          );
+          
+          // 유효한 그룹인 경우에만 결과에 추가
+          if (group.id != 0) {
+            groupsByName.add(group);
+          }
+        }
+      }
+    }
+    
+    return groupsByName;
   }
   
   // 디버그 정보를 문자열로 반환
   @override
   String toString() {
     return 'SavePlayerState(isGridView: $isGridView, searchQuery: "$searchQuery", '
-           'isEditMode: $isEditMode, groups: ${groups.length}, filteredGroups: ${filteredGroups.length})';
+           'isEditMode: $isEditMode, groups: ${groups.length}, filteredGroups: ${filteredGroups.length}, '
+           'playerSearchMatchedGroupIds: ${playerSearchMatchedGroupIds.length})';
   }
 
   // 선택된 그룹 가져오기

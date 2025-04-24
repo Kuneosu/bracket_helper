@@ -30,6 +30,7 @@ sealed class SavePlayerAction with _$SavePlayerAction {
   // 그룹 리스트 화면 관련 액션
   const factory SavePlayerAction.onSearchQueryChanged(String query) = OnSearchQueryChanged;
   const factory SavePlayerAction.onToggleGridView() = OnToggleGridView;
+  const factory SavePlayerAction.onSearchByPlayerName(String query) = OnSearchByPlayerName;
   
   // 일반 액션
   const factory SavePlayerAction.onRefresh() = OnRefresh;

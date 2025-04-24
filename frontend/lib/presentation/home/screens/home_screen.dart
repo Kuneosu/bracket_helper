@@ -18,6 +18,16 @@ class HomeScreen extends StatelessWidget {
     required this.onHelpPressed,
   });
 
+  // 업데이트 예정 스낵바를 표시하는 메서드
+  void _showComingSoonMessage(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('추후 업데이트 예정입니다'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,8 +75,8 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("최근 경기", style: TST.mediumTextBold),
-                  if (tournaments.isNotEmpty)
-                    Text("모두 보기 >", style: TST.smallTextRegular),
+                  // if (tournaments.isNotEmpty)
+                  //   Text("모두 보기 >", style: TST.smallTextRegular),
                 ],
               ),
             ),
@@ -83,18 +93,19 @@ class HomeScreen extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: tournaments.length,
                     itemBuilder: (context, index) {
+                      final reversedIndex = tournaments.length - 1 - index;
                       return Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: RecentTournamentCard(
-                          tournament: tournaments[index],
+                          tournament: tournaments[reversedIndex],
                           onTapCard: () {
                             context.push(
-                              '${RoutePaths.match}?tournamentId=${tournaments[index].id}',
+                              '${RoutePaths.match}?tournamentId=${tournaments[reversedIndex].id}',
                             );
                           },
                           onTapDelete: () {
                             onAction(
-                              OnTapDeleteTournament(tournaments[index].id),
+                              OnTapDeleteTournament(tournaments[reversedIndex].id),
                             );
                           },
                         ),
@@ -130,13 +141,14 @@ class HomeScreen extends StatelessWidget {
                           title: "선수 관리",
                           subtitle: "선수 정보를 등록하고 관리하세요",
                           iconData: Icons.people,
-                          onTap: () {},
+                          onTap: () => _showComingSoonMessage(context),
                           gradient: LinearGradient(
                             colors: [
                               Colors.orange.shade700,
                               Colors.orange.shade400,
                             ],
                           ),
+                          isComingSoon: true,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -145,13 +157,14 @@ class HomeScreen extends StatelessWidget {
                           title: "그룹 관리",
                           subtitle: "그룹을 만들고 선수를 추가하세요",
                           iconData: Icons.group_work,
-                          onTap: () {},
+                          onTap: () => context.go(RoutePaths.savePlayer),
                           gradient: LinearGradient(
                             colors: [
                               Colors.purple.shade700,
                               Colors.purple.shade400,
                             ],
                           ),
+                          isComingSoon: false,
                         ),
                       ),
                     ],
@@ -163,16 +176,18 @@ class HomeScreen extends StatelessWidget {
                     title: "통계 보기",
                     subtitle: "경기 결과와 플레이어 성적을 분석하세요",
                     iconData: Icons.bar_chart,
-                    onTap: () {},
+                    onTap: () => _showComingSoonMessage(context),
                     gradient: LinearGradient(
                       colors: [Colors.blue.shade700, Colors.blue.shade400],
                     ),
+                    isComingSoon: true,
                   ),
 
                   const SizedBox(height: 30),
                 ],
               ),
             ),
+            SizedBox(height: 24),
             // 저작권자 표시
             Container(
               padding: const EdgeInsets.only(bottom: 16),
@@ -226,6 +241,7 @@ class HomeScreen extends StatelessWidget {
     required VoidCallback onTap,
     required Gradient gradient,
     double height = 160,
+    bool isComingSoon = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -283,6 +299,34 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+            if (isComingSoon)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha:0.4),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha:0.6),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha:0.3),
+                        ),
+                      ),
+                      child: Text(
+                        '업데이트 예정',
+                        style: TST.normalTextBold.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -295,6 +339,7 @@ class HomeScreen extends StatelessWidget {
     required IconData iconData,
     required VoidCallback onTap,
     required Gradient gradient,
+    bool isComingSoon = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -348,6 +393,34 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+            if (isComingSoon)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha:0.4),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha:0.6),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha:0.3),
+                        ),
+                      ),
+                      child: Text(
+                        '업데이트 예정',
+                        style: TST.smallTextBold.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

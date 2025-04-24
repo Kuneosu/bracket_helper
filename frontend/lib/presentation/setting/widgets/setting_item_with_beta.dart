@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
-import 'package:bracket_helper/presentation/setting/widget/setting_item.dart';
+import 'package:bracket_helper/presentation/setting/widgets/setting_item.dart';
 
 class SettingItemWithBeta extends StatelessWidget {
   final IconData icon;
