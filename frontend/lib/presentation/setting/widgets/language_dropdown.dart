@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 
 class LanguageDropdown extends StatelessWidget {
   final ValueChanged<String?>? onChanged;
@@ -8,7 +9,7 @@ class LanguageDropdown extends StatelessWidget {
   const LanguageDropdown({
     super.key,
     this.onChanged,
-    this.value = '한국어',
+    this.value = AppStrings.korean,
   });
 
   @override
@@ -17,7 +18,7 @@ class LanguageDropdown extends StatelessWidget {
       value: value,
       underline: const SizedBox(),
       icon: const Icon(Icons.arrow_drop_down, color: CST.primary100),
-      items: ['한국어', '영어']
+      items: [AppStrings.korean, AppStrings.english]
           .map(
             (String value) =>
                 DropdownMenuItem<String>(value: value, child: Text(value)),

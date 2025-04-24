@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 
 class TermsOfServiceDialog extends StatelessWidget {
   const TermsOfServiceDialog({super.key});
@@ -22,7 +23,7 @@ class TermsOfServiceDialog extends StatelessWidget {
             Align(
               alignment: Alignment.center,
               child: Text(
-                '서비스 이용약관',
+                AppStrings.termsOfServiceTitle,
                 style: TST.mediumTextBold.copyWith(color: CST.gray1),
               ),
             ),
@@ -30,12 +31,12 @@ class TermsOfServiceDialog extends StatelessWidget {
             const Divider(height: 1, thickness: 1, color: CST.gray4),
             const SizedBox(height: 20),
             Text(
-              '제 1조 (목적)',
+              AppStrings.termsArticle1Title,
               style: TST.smallTextBold.copyWith(color: CST.gray1),
             ),
             const SizedBox(height: 8),
             Text(
-              '이 앱은 무료로 제공되며, 모든 콘텐츠는 "있는 그대로" 제공됩니다.',
+              AppStrings.termsArticle1Content,
               style: TST.smallTextRegular.copyWith(
                 color: CST.gray1,
                 height: 1.5,
@@ -43,12 +44,12 @@ class TermsOfServiceDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '제 2조 (이용제한)',
+              AppStrings.termsArticle2Title,
               style: TST.smallTextBold.copyWith(color: CST.gray1),
             ),
             const SizedBox(height: 8),
             Text(
-              '사용자는 자유롭게 앱을 사용할 수 있으나, 불법적인 목적이나 타인의 권리를 침해하는 목적으로 사용해서는 안 됩니다.',
+              AppStrings.termsArticle2Content,
               style: TST.smallTextRegular.copyWith(
                 color: CST.gray1,
                 height: 1.5,
@@ -56,12 +57,12 @@ class TermsOfServiceDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '제 3조 (면책조항)',
+              AppStrings.termsArticle3Title,
               style: TST.smallTextBold.copyWith(color: CST.gray1),
             ),
             const SizedBox(height: 8),
             Text(
-              '개발자는 이 앱의 사용으로 인해 발생하는 어떠한 직접적, 간접적, 부수적 손해에 대해서도 책임을 지지 않습니다.',
+              AppStrings.termsArticle3Content,
               style: TST.smallTextRegular.copyWith(
                 color: CST.gray1,
                 height: 1.5,
@@ -73,7 +74,7 @@ class TermsOfServiceDialog extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                '2025.04.24',
+                AppStrings.termsDate,
                 style: TST.smallTextRegular.copyWith(color: CST.gray2),
               ),
             ),
@@ -94,7 +95,7 @@ class TermsOfServiceDialog extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  '닫기',
+                  AppStrings.close,
                   style: TST.normalTextRegular.copyWith(color: CST.primary100),
                 ),
               ),

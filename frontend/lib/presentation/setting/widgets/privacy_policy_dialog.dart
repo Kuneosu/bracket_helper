@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 
 class PrivacyPolicyDialog extends StatelessWidget {
   const PrivacyPolicyDialog({super.key});
@@ -22,7 +23,7 @@ class PrivacyPolicyDialog extends StatelessWidget {
             Align(
               alignment: Alignment.center,
               child: Text(
-                '개인정보 처리방침',
+                AppStrings.privacyPolicyTitle,
                 style: TST.mediumTextBold.copyWith(color: CST.gray1),
               ),
             ),
@@ -30,7 +31,7 @@ class PrivacyPolicyDialog extends StatelessWidget {
             const Divider(height: 1, thickness: 1, color: CST.gray4),
             const SizedBox(height: 20),
             Text(
-              '이 앱은 인터넷 서버와 통신하지 않으며, 사용자의 어떤 개인정보도 수집하거나 저장하지 않습니다.',
+              AppStrings.privacyPolicyDescription1,
               style: TST.smallTextRegular.copyWith(
                 color: CST.gray1,
                 height: 1.5,
@@ -38,7 +39,7 @@ class PrivacyPolicyDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '단, 향후 광고 기능이 추가될 경우 광고 SDK를 통해 일부 정보가 수집될 수 있으며, 이에 대한 안내는 추후 별도로 제공됩니다.',
+              AppStrings.privacyPolicyDescription2,
               style: TST.smallTextRegular.copyWith(
                 color: CST.gray1,
                 height: 1.5,
@@ -50,7 +51,7 @@ class PrivacyPolicyDialog extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                '2025.04.24',
+                AppStrings.privacyPolicyDate,
                 style: TST.smallTextRegular.copyWith(color: CST.gray2),
               ),
             ),
@@ -71,7 +72,7 @@ class PrivacyPolicyDialog extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  '닫기',
+                  AppStrings.close,
                   style: TST.normalTextRegular.copyWith(color: CST.primary100),
                 ),
               ),

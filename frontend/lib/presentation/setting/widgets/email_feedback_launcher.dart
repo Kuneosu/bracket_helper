@@ -1,24 +1,11 @@
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/main.dart';
 
 class EmailFeedbackLauncher {
-  static const String _developerEmail = 'brackethelper@gmail.com';
-  static const String _subject = '[대진 도우미] 문의 및 피드백';
-  static const String _body = '''
-안녕하세요, 대진 도우미 개발자입니다.
-
-아래에 문의하실 내용이나 피드백을 자유롭게 작성해 주세요.
--------------------------------------------------
-
-앱 버전: v1.0.0
-기기 정보: 
-
--------------------------------------------------
-''';
-
   // 이 앱 패키지 이름으로 시작하는 uri 처리를 위한 리스너 설정
   static bool _isListenerRegistered = false;
 
@@ -33,8 +20,8 @@ class EmailFeedbackLauncher {
       // 이메일 URI 생성
       final Uri emailUri = Uri(
         scheme: 'mailto',
-        path: _developerEmail,
-        query: _encodeQueryParameters({'subject': _subject, 'body': _body}),
+        path: AppStrings.developerEmail,
+        query: _encodeQueryParameters({'subject': AppStrings.emailSubject, 'body': AppStrings.emailBody.replaceAll('{0}', AppStrings.currentVersion)}),
       );
 
       // 선택기 열기
@@ -104,9 +91,9 @@ class EmailFeedbackLauncher {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text(
-              '이메일 앱 실행 불가',
-              style: TextStyle(
+            title: Text(
+              AppStrings.emailAppErrorTitle,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
@@ -122,9 +109,9 @@ class EmailFeedbackLauncher {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    '죄송합니다. 현재 기본 메일앱 사용이 불가능하여 앱에서 바로 메일을 전송할 수 없습니다.',
-                    style: TextStyle(fontSize: 14, height: 1.5),
+                  Text(
+                    AppStrings.emailAppErrorContent,
+                    style: const TextStyle(fontSize: 14, height: 1.5),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -136,13 +123,13 @@ class EmailFeedbackLauncher {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          '아래 이메일로 연락주시면 빠르게 답변드리도록 하겠습니다.',
-                          style: TextStyle(fontSize: 14, height: 1.5),
+                        Text(
+                          AppStrings.emailAppErrorContact,
+                          style: const TextStyle(fontSize: 14, height: 1.5),
                         ),
                         const SizedBox(height: 8),
                         SelectableText(
-                          _developerEmail,
+                          AppStrings.developerEmail,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -170,7 +157,7 @@ class EmailFeedbackLauncher {
                   ),
                 ),
                 child: Text(
-                  '확인',
+                  AppStrings.confirm,
                   style: TST.normalTextBold.copyWith(color: CST.primary100),
                 ),
               ),

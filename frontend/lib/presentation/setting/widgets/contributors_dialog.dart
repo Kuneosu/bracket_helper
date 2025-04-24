@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/presentation/setting/widgets/contributor_item.dart';
 
 class ContributorsDialog extends StatelessWidget {
@@ -48,7 +49,7 @@ class ContributorsDialog extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                'Thanks for',
+                AppStrings.thanksFor,
                 style: TST.mediumTextBold.copyWith(color: CST.white),
               ),
             ),
@@ -98,7 +99,7 @@ class ContributorsDialog extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Text(
-                      '닫기',
+                      AppStrings.close,
                       style: TST.normalTextBold.copyWith(color: CST.primary100),
                     ),
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/presentation/setting/widgets/social_icon.dart';
 import 'package:bracket_helper/presentation/setting/widgets/email_feedback_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,7 +16,7 @@ class DeveloperInfoBottomSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('개발자 정보', style: TST.mediumTextBold),
+          Text(AppStrings.developerInfoTitle, style: TST.mediumTextBold),
           const SizedBox(height: 16),
           const CircleAvatar(
             radius: 40,
@@ -23,10 +24,10 @@ class DeveloperInfoBottomSheet extends StatelessWidget {
             child: Icon(Icons.person, size: 40, color: CST.primary100),
           ),
           const SizedBox(height: 16),
-          Text('김권수(Kuneosu)', style: TST.normalTextBold),
+          Text(AppStrings.developerName, style: TST.normalTextBold),
           const SizedBox(height: 8),
           Text(
-            '대진표 도우미 앱을 개발한 개발자입니다.\n문의나 피드백은 언제든지 환영합니다.',
+            AppStrings.developerDescription,
             style: TST.smallTextRegular.copyWith(color: CST.gray2),
             textAlign: TextAlign.center,
           ),
@@ -63,12 +64,12 @@ class DeveloperInfoBottomSheet extends StatelessWidget {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
         if (context.mounted) {
-          _showErrorSnackBar(context, '웹사이트를 열 수 없습니다.');
+          _showErrorSnackBar(context, AppStrings.cannotOpenWebsite);
         }
       }
     } catch (e) {
       if (context.mounted) {
-        _showErrorSnackBar(context, '오류가 발생했습니다: $e');
+        _showErrorSnackBar(context, AppStrings.errorOccurred.replaceAll('{0}', e.toString()));
       }
     }
   }

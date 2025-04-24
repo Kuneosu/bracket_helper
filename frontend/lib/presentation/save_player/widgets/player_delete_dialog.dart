@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class PlayerDeleteDialog extends StatelessWidget {
@@ -15,14 +16,14 @@ class PlayerDeleteDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('선수 삭제'),
-      content: Text('$playerName 선수를 삭제하시겠습니까?'),
+      title: Text(AppStrings.playerDelete),
+      content: Text('$playerName${AppStrings.playerDeleteConfirm}'),
       actions: [
-        TextButton(onPressed: onCancel, child: const Text('취소')),
+        TextButton(onPressed: onCancel, child: Text(AppStrings.cancel)),
         TextButton(
           onPressed: onConfirm,
           style: TextButton.styleFrom(foregroundColor: Colors.red),
-          child: const Text('삭제'),
+          child: Text(AppStrings.delete),
         ),
       ],
     );

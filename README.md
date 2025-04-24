@@ -74,7 +74,7 @@ Presentation ↔ ViewModel ↔ UseCase ↔ Repository ↔ Drift(DB)
 
 ## 🗓️ 버전 규칙
 
-`v <메이저>.<YYMMDD>.<빌드>`  예) `v 1.250414.19`
+`v <메이저>.<YYWEEKS>.<빌드>`  예) `v 1.2516.19`
 
 ---
 
@@ -89,7 +89,7 @@ Copyright (c) 2025 Kuneosu
 
 ## 📬 연락처
 
-- Email: **kks92155784@gmail.com**
+- Email: **brackethelper@gmail.com**
 
 > 피드백과 기여를 언제든 환영합니다!
 

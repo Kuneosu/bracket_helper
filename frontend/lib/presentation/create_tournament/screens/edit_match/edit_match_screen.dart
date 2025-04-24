@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/match_model.dart';
@@ -137,7 +138,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('등록된 매치가 없습니다.', style: TST.mediumTextRegular),
+          Text(AppStrings.noMatches, style: TST.mediumTextRegular),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -145,7 +146,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
               _buildCourtInputField(large: true),
               const SizedBox(width: 16),
               DefaultButton(
-                text: '매치 자동 생성',
+                text: AppStrings.autoGenerateMatch,
                 onTap: () {
                   debugPrint('매치 자동 생성 버튼 클릭');
                   _generateMatches();
@@ -184,7 +185,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
               ),
               const SizedBox(width: 4),
               Text(
-                '코트 수',
+                AppStrings.courtCount,
                 style:
                     large
                         ? TST.normalTextBold.copyWith(color: CST.primary100)
@@ -256,7 +257,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   Icon(Icons.people_outline, color: CST.primary100, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    "참가 인원 수: $playerCount명",
+                    AppStrings.participantsCount.replaceAll('%d', playerCount.toString()),
                     style: TST.normalTextRegular.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -273,7 +274,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    "경기 수: $matchCount경기",
+                    AppStrings.matchesCount.replaceAll('%d', matchCount.toString()),
                     style: TST.normalTextRegular.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -312,7 +313,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '코트 수',
+                    AppStrings.courtCount,
                     style: TST.smallTextBold.copyWith(color: CST.primary100),
                   ),
                 ],
@@ -380,7 +381,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      "초기화",
+                      AppStrings.reset,
                       style: TST.smallTextBold.copyWith(color: CST.primary100),
                     ),
                   ],
@@ -405,7 +406,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
       if (courts <= 0 || courts > maxCourts) {
         // UI 피드백 제공
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('코트 수는 인원 수의 1/4 이하로만 설정할 수 있습니다.')),
+          SnackBar(content: Text(AppStrings.courtNumberLimitError)),
         );
         // 기본값으로 설정
         courts = maxCourts;
@@ -432,12 +433,12 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
     final teamAName =
         isDoubles && match.playerC != null
             ? "${match.playerA ?? ''} / ${match.playerC ?? ''}"
-            : match.playerA ?? '선수 없음';
+            : match.playerA ?? AppStrings.noPlayer;
 
     final teamBName =
         isDoubles && match.playerD != null
             ? "${match.playerB ?? ''} / ${match.playerD ?? ''}"
-            : match.playerB ?? '선수 없음';
+            : match.playerB ?? AppStrings.noPlayer;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 2),
@@ -494,7 +495,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                       ),
                     ),
                     child: Text(
-                      "VS",
+                      AppStrings.versus,
                       style: TST.smallTextBold.copyWith(color: CST.primary100),
                     ),
                   ),

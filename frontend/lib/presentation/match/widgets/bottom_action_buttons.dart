@@ -1,5 +1,6 @@
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class BottomActionButtons extends StatelessWidget {
@@ -44,7 +45,7 @@ class BottomActionButtons extends StatelessWidget {
                   Icon(Icons.shuffle, color: CST.white, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    "섞어서 다시 돌리기",
+                    AppStrings.reshuffleBracket,
                     style: TST.normalTextBold.copyWith(color: CST.white),
                   ),
                 ],
@@ -69,7 +70,7 @@ class BottomActionButtons extends StatelessWidget {
                   Icon(Icons.done_all, color: CST.white, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    "경기 종료",
+                    AppStrings.finishMatch,
                     style: TST.normalTextBold.copyWith(color: CST.white),
                   ),
                 ],

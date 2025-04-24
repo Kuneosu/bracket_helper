@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,7 @@ class NoGroupsMessage extends StatelessWidget {
           Icon(Icons.group_off, size: 48, color: CST.gray3),
           const SizedBox(height: 12),
           Text(
-            '저장된 그룹이 없습니다.\n그룹을 먼저 생성하거나 새로고침하세요.',
+            AppStrings.noGroupsMessage,
             textAlign: TextAlign.center,
             style: TextStyle(color: CST.gray2),
           ),
@@ -22,4 +23,4 @@ class NoGroupsMessage extends StatelessWidget {
       ),
     );
   }
-} 
+}

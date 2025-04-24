@@ -1,4 +1,5 @@
 import 'package:bracket_helper/domain/model/player_model.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class PlayerConfirmDeleteDialog extends StatelessWidget {
@@ -50,9 +51,9 @@ class PlayerConfirmDeleteDialog extends StatelessWidget {
             const SizedBox(height: 15),
 
             // 제목
-            const Text(
-              '선수 삭제',
-              style: TextStyle(
+            Text(
+              AppStrings.playerDelete,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
@@ -63,14 +64,14 @@ class PlayerConfirmDeleteDialog extends StatelessWidget {
 
             // 내용
             Text(
-              '${player.name} 선수를 정말 삭제하시겠습니까?',
+              '${player.name}${AppStrings.playerDeleteConfirm}',
               style: const TextStyle(fontSize: 14, color: Colors.black54),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const Text(
-              '삭제된 선수는 복구할 수 없습니다.',
-              style: TextStyle(
+            Text(
+              AppStrings.playerDeleteWarning,
+              style: const TextStyle(
                 fontSize: 12,
                 color: Colors.red,
                 fontStyle: FontStyle.italic,
@@ -98,9 +99,9 @@ class PlayerConfirmDeleteDialog extends StatelessWidget {
                       vertical: 10,
                     ),
                   ),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: Text(
+                    AppStrings.cancel,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -126,9 +127,9 @@ class PlayerConfirmDeleteDialog extends StatelessWidget {
                       vertical: 10,
                     ),
                   ),
-                  child: const Text(
-                    '삭제',
-                    style: TextStyle(
+                  child: Text(
+                    AppStrings.delete,
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),

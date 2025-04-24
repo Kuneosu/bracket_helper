@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class HelpDialog extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  '도움말',
+                  AppStrings.helpDialogTitle,
                   style: TST.normalTextBold.copyWith(color: CST.primary100),
                 ),
               ],
@@ -49,18 +50,21 @@ class HelpDialog extends StatelessWidget {
 
             // 도움말 내용
             Text(
-              '대진 도우미는 배드민턴·탁구·테니스 등 생활 체육 동호회나 학교·사내 친선전을 쉽고 빠르게 운영할 수 있도록 돕는 모바일 앱입니다.',
+              AppStrings.helpDialogDescription,
               style: TST.smallTextRegular.copyWith(color: CST.gray1),
             ),
             const SizedBox(height: 15),
 
-            Text('주요 기능:', style: TST.smallTextBold.copyWith(color: CST.gray1)),
+            Text(
+              AppStrings.helpDialogFeaturesTitle, 
+              style: TST.smallTextBold.copyWith(color: CST.gray1)
+            ),
             const SizedBox(height: 8),
 
-            _buildFeatureItem('복식/단식 대진표 자동 생성'),
-            _buildFeatureItem('승/무/패 점수 설정'),
-            _buildFeatureItem('경기 진행 현황 관리'),
-            _buildFeatureItem('대진표 공유'),
+            _buildFeatureItem(AppStrings.helpDialogFeature1),
+            _buildFeatureItem(AppStrings.helpDialogFeature2),
+            _buildFeatureItem(AppStrings.helpDialogFeature3),
+            _buildFeatureItem(AppStrings.helpDialogFeature4),
 
             const SizedBox(height: 20),
 
@@ -81,7 +85,7 @@ class HelpDialog extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  '확인',
+                  AppStrings.confirm,
                   style: TST.smallTextBold.copyWith(color: CST.white),
                 ),
               ),

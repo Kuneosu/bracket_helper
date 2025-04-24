@@ -7,6 +7,7 @@ import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/presentation/match/widgets/print_match_item.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -106,7 +107,7 @@ class _BracketImageGeneratorState extends State<BracketImageGenerator> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "참가자 ${widget.players.length}명 · 경기 ${widget.matches.length}경기",
+                            AppStrings.participantsAndMatches.replaceAll('%d', widget.players.length.toString()).replaceAll('%d', widget.matches.length.toString()),
                             style: TST.smallTextRegular.copyWith(
                               color: CST.gray2,
                             ),
@@ -131,7 +132,7 @@ class _BracketImageGeneratorState extends State<BracketImageGenerator> {
                     const SizedBox(height: 16),
                     Center(
                       child: Text(
-                        "대진표 생성: 대진 도우미",
+                        AppStrings.generatedBy,
                         style: TST.smallTextRegular.copyWith(color: CST.gray2),
                         textAlign: TextAlign.center,
                       ),
@@ -157,7 +158,7 @@ class _BracketImageGeneratorState extends State<BracketImageGenerator> {
                     CircularProgressIndicator(color: CST.white),
                     const SizedBox(height: 16),
                     Text(
-                      '대진표 이미지 생성 중...',
+                      AppStrings.generatingBracketImage,
                       style: TST.smallTextRegular.copyWith(color: CST.white),
                     ),
                   ],

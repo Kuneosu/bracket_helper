@@ -4,6 +4,7 @@ import 'package:bracket_helper/presentation/save_player/widgets/color_picker_gri
 import 'package:bracket_helper/ui/color_constants.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class GroupListItem extends StatefulWidget {
@@ -146,7 +147,7 @@ class _GroupListItemState extends State<GroupListItem>
 
                     // 제목
                     Text(
-                      '그룹 삭제',
+                      AppStrings.groupDelete,
                       style: TST.normalTextBold.copyWith(color: CST.gray1),
                       textAlign: TextAlign.center,
                     ),
@@ -162,7 +163,7 @@ class _GroupListItemState extends State<GroupListItem>
                             text: '"${widget.group.name}" ',
                             style: TST.smallTextBold.copyWith(color: CST.error),
                           ),
-                          const TextSpan(text: '그룹을 삭제하시겠습니까?'),
+                          TextSpan(text: AppStrings.deleteGroupConfirm),
                         ],
                       ),
                     ),
@@ -185,7 +186,7 @@ class _GroupListItemState extends State<GroupListItem>
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              '이 작업은 되돌릴 수 없으며 그룹 내 모든 연결 정보가 삭제됩니다.',
+                              AppStrings.deleteGroupWarning,
                               style: TST.smallerTextRegular.copyWith(
                                 color: CST.error,
                               ),
@@ -216,7 +217,7 @@ class _GroupListItemState extends State<GroupListItem>
                             ),
                           ),
                           child: Text(
-                            '취소',
+                            AppStrings.cancel,
                             style: TST.smallTextBold.copyWith(color: CST.gray1),
                           ),
                         ),
@@ -242,7 +243,7 @@ class _GroupListItemState extends State<GroupListItem>
                             ),
                           ),
                           child: Text(
-                            '삭제',
+                            AppStrings.delete,
                             style: TST.smallTextBold.copyWith(color: CST.white),
                           ),
                         ),
@@ -310,7 +311,7 @@ class _GroupListItemState extends State<GroupListItem>
 
                           // 제목
                           Text(
-                            '그룹 색상 변경',
+                            AppStrings.changeGroupColor,
                             style: TST.normalTextBold.copyWith(
                               color: CST.gray1,
                             ),
@@ -352,7 +353,7 @@ class _GroupListItemState extends State<GroupListItem>
                                   ),
                                 ),
                                 child: Text(
-                                  '취소',
+                                  AppStrings.cancel,
                                   style: TST.smallTextBold.copyWith(
                                     color: CST.gray1,
                                   ),
@@ -382,7 +383,7 @@ class _GroupListItemState extends State<GroupListItem>
                                   ),
                                 ),
                                 child: Text(
-                                  '변경',
+                                  AppStrings.change,
                                   style: TST.smallTextBold.copyWith(
                                     color: CST.white,
                                   ),
@@ -553,7 +554,7 @@ class _GroupListItemState extends State<GroupListItem>
                           ? Padding(
                             padding: const EdgeInsets.only(right: 16),
                             child: DefaultButton(
-                              text: '제거',
+                              text: AppStrings.remove,
                               onTap: () {
                                 _showDeleteConfirmation(context);
                               },
@@ -599,7 +600,7 @@ class _GroupListItemState extends State<GroupListItem>
               Icon(Icons.search, size: 14, color: CST.primary60),
               const SizedBox(width: 4),
               Text(
-                '검색된 선수:',
+                AppStrings.searchedPlayers,
                 style: TST.smallerTextBold.copyWith(color: CST.primary80),
               ),
             ],

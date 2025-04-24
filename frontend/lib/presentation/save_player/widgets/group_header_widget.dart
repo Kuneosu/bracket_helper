@@ -1,5 +1,6 @@
 import 'package:bracket_helper/domain/model/group_model.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class GroupHeaderWidget extends StatelessWidget {
@@ -41,7 +42,7 @@ class GroupHeaderWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                '소속 선수: $playerCount명',
+                AppStrings.playerCountLabel.replaceAll('%d', playerCount.toString()),
                 style: TST.smallTextRegular.copyWith(color: Colors.grey[600]),
               ),
             ],
@@ -53,7 +54,7 @@ class GroupHeaderWidget extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: onAddPlayer,
             icon: const Icon(Icons.person_add),
-            label: const Text('선수 추가'),
+            label: Text(AppStrings.addPlayer),
             style: ElevatedButton.styleFrom(
               backgroundColor: groupColor,
               foregroundColor: Colors.white,

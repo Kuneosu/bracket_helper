@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
 import 'package:bracket_helper/ui/color_st.dart';
@@ -157,7 +158,7 @@ class _InlineEditablePlayerItemState extends State<InlineEditablePlayerItem> {
                                   width: 2,
                                 ),
                               ),
-                              hintText: '선수 이름 입력',
+                              hintText: AppStrings.playerNameInputHint,
                               hintStyle: TextStyle(color: CST.gray3),
                               filled: true,
                               fillColor: Colors.white,
@@ -177,7 +178,7 @@ class _InlineEditablePlayerItemState extends State<InlineEditablePlayerItem> {
                             size: 28,
                           ),
                           onPressed: _saveName,
-                          tooltip: '저장',
+                          tooltip: AppStrings.save,
                           padding: EdgeInsets.all(8),
                         ),
                         IconButton(
@@ -188,7 +189,7 @@ class _InlineEditablePlayerItemState extends State<InlineEditablePlayerItem> {
                               _nameController.text = widget.player.name;
                             });
                           },
-                          tooltip: '취소',
+                          tooltip: AppStrings.cancel,
                           padding: EdgeInsets.all(8),
                         ),
                       ],
@@ -209,7 +210,7 @@ class _InlineEditablePlayerItemState extends State<InlineEditablePlayerItem> {
                               ),
                               SizedBox(height: 2),
                               Text(
-                                '탭하여 이름 수정',
+                                AppStrings.tapToEdit,
                                 style: TST.smallTextRegular.copyWith(
                                   color: CST.gray3,
                                   fontSize: 11,
@@ -232,7 +233,7 @@ class _InlineEditablePlayerItemState extends State<InlineEditablePlayerItem> {
                               color: CST.primary100,
                             ),
                             onPressed: _toggleEditMode,
-                            tooltip: '편집',
+                            tooltip: AppStrings.toggleEdit,
                             constraints: BoxConstraints(
                               minWidth: 40,
                               minHeight: 40,
@@ -252,7 +253,7 @@ class _InlineEditablePlayerItemState extends State<InlineEditablePlayerItem> {
                               color: CST.error,
                             ),
                             onPressed: _deletePlayer,
-                            tooltip: '삭제',
+                            tooltip: AppStrings.delete,
                             constraints: BoxConstraints(
                               minWidth: 40,
                               minHeight: 40,

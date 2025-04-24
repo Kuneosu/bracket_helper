@@ -1,5 +1,6 @@
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class CustomTabBar extends StatelessWidget {
@@ -25,29 +26,29 @@ class CustomTabBar extends StatelessWidget {
         labelStyle: TST.normalTextBold,
         unselectedLabelStyle: TST.normalTextRegular,
         dividerColor: Colors.transparent,
-        tabs: const [
+        tabs: [
           Tab(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.sports_kabaddi, size: 18),
-                  SizedBox(width: 8),
-                  Text('대진표'),
+                  const Icon(Icons.sports_kabaddi, size: 18),
+                  const SizedBox(width: 8),
+                  Text(AppStrings.bracketTab),
                 ],
               ),
             ),
           ),
           Tab(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.leaderboard, size: 18),
-                  SizedBox(width: 8),
-                  Text('현재 순위'),
+                  const Icon(Icons.leaderboard, size: 18),
+                  const SizedBox(width: 8),
+                  Text(AppStrings.currentRankingTab),
                 ],
               ),
             ),

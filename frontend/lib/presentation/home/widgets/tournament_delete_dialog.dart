@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,7 @@ class TournamentDeleteDialog extends StatelessWidget {
 
             // 제목
             Text(
-              '토너먼트 삭제',
+              AppStrings.tournamentDeleteTitle,
               style: TST.normalTextBold.copyWith(color: CST.gray1),
               textAlign: TextAlign.center,
             ),
@@ -52,13 +53,13 @@ class TournamentDeleteDialog extends StatelessWidget {
 
             // 내용
             Text(
-              '이 토너먼트를 정말 삭제하시겠습니까?',
+              AppStrings.tournamentDeleteQuestion,
               style: TST.smallTextRegular.copyWith(color: CST.gray2),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              '이 작업은 되돌릴 수 없습니다.',
+              AppStrings.tournamentDeleteWarning,
               style: TST.smallTextRegular.copyWith(
                 color: CST.error,
                 fontStyle: FontStyle.italic,
@@ -87,7 +88,7 @@ class TournamentDeleteDialog extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    '취소',
+                    AppStrings.cancel,
                     style: TST.smallTextBold.copyWith(color: CST.gray1),
                   ),
                 ),
@@ -109,7 +110,7 @@ class TournamentDeleteDialog extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    '삭제',
+                    AppStrings.delete,
                     style: TST.smallTextBold.copyWith(color: CST.white),
                   ),
                 ),

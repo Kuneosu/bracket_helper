@@ -1,6 +1,7 @@
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,13 +41,13 @@ class CreateTournamentScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Column(
-            children: [Text('대진표 생성', style: TST.largeTextRegular)],
+            children: [Text(AppStrings.createBracketTitle, style: TST.largeTextRegular)],
           ),
           centerTitle: true,
           automaticallyImplyLeading: false,
           scrolledUnderElevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () async {
               // 첫 번째 화면(기본 정보)에서만 대화상자 표시
               if (currentPageIndex == 0) {
@@ -72,7 +73,11 @@ class CreateTournamentScreen extends StatelessWidget {
   }
 
   Container _buildProcessHeader() {
-    final titleList = ['기본 정보', '선수 추가', '대진표 수정'];
+    final titleList = [
+      AppStrings.basicInfo, 
+      AppStrings.addPlayers, 
+      AppStrings.editBracketTitle
+    ];
     final selectedPageIndex = currentPageIndex + 1;
     final selectedCircleColor = CST.white;
     final selectedTextStyle = TST.smallTextBold.copyWith(color: CST.white);
@@ -84,7 +89,7 @@ class CreateTournamentScreen extends StatelessWidget {
     return Container(
       color: CST.primary100,
       height: 90,
-      padding: EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,7 +120,7 @@ class CreateTournamentScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         titleList[e - 1],
                         style:
@@ -157,9 +162,9 @@ class CreateTournamentScreen extends StatelessWidget {
                   color: CST.primary100,
                   size: 28,
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Text(
-                  '대회 생성 종료',
+                  AppStrings.exitTournamentCreation,
                   style: TST.normalTextBold.copyWith(color: CST.primary100),
                 ),
               ],
@@ -169,12 +174,12 @@ class CreateTournamentScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '대회 생성을 종료하시겠습니까?',
+                  AppStrings.exitTournamentConfirm,
                   style: TST.normalTextBold.copyWith(color: CST.gray1),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  '지금까지 입력한 모든 정보는 저장되지 않습니다.',
+                  AppStrings.unsavedChangesWarning,
                   style: TST.smallTextRegular.copyWith(color: CST.gray2),
                 ),
               ],
@@ -184,29 +189,29 @@ class CreateTournamentScreen extends StatelessWidget {
                 style: TextButton.styleFrom(
                   foregroundColor: CST.white,
                   backgroundColor: CST.gray3,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('취소', style: TST.smallTextBold),
+                child: Text(AppStrings.cancel, style: TST.smallTextBold),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CST.primary100,
                   foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text('종료하기', style: TST.smallTextBold),
+                child: Text(AppStrings.exitTournament, style: TST.smallTextBold),
               ),
             ],
-            actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             buttonPadding: EdgeInsets.zero,
           ),
     );

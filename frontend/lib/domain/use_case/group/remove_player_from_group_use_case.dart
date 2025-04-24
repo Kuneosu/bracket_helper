@@ -1,6 +1,7 @@
 import 'package:bracket_helper/domain/error/app_error.dart';
 import 'package:bracket_helper/domain/error/result.dart';
 import 'package:bracket_helper/domain/repository/group_repository.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/foundation.dart';
 
 /// 그룹에서 선수 제거 UseCase
@@ -21,19 +22,19 @@ class RemovePlayerFromGroupUseCase {
       // 유효성 검증
       if (playerId <= 0) {
         return Result.failure(
-          GroupError(message: '유효하지 않은 선수 ID입니다.'),
+          GroupError(message: AppStrings.invalidPlayerId),
         );
       }
 
       if (groupId <= 0) {
         return Result.failure(
-          GroupError(message: '유효하지 않은 그룹 ID입니다.'),
+          GroupError(message: AppStrings.invalidGroupId),
         );
       }
 
       // 디버그 로그
       if (kDebugMode) {
-        print('RemovePlayerFromGroupUseCase: 그룹에서 선수 제거 시도 - 선수 ID: $playerId, 그룹 ID: $groupId');
+        print(AppStrings.removePlayerAttempt.replaceAll('{0}', playerId.toString()).replaceAll('{1}', groupId.toString()));
       }
 
       // 레포지토리 호출
@@ -42,9 +43,9 @@ class RemovePlayerFromGroupUseCase {
       // 디버그 로그
       if (kDebugMode) {
         if (result.isSuccess) {
-          print('RemovePlayerFromGroupUseCase: 그룹에서 선수 제거 성공 - 영향받은 행: ${result.value}');
+          print(AppStrings.removePlayerSuccess.replaceAll('{0}', result.value.toString()));
         } else {
-          print('RemovePlayerFromGroupUseCase: 그룹에서 선수 제거 실패 - ${result.error}');
+          print(AppStrings.removePlayerFail.replaceAll('{0}', result.error.toString()));
         }
       }
 
@@ -52,12 +53,12 @@ class RemovePlayerFromGroupUseCase {
     } catch (e) {
       // 디버그 로그
       if (kDebugMode) {
-        print('RemovePlayerFromGroupUseCase: 예외 발생 - $e');
+        print(AppStrings.exceptionOccurred.replaceAll('{0}', e.toString()));
       }
 
       return Result.failure(
         GroupError(
-          message: '그룹에서 선수를 제거하는 중 오류가 발생했습니다.',
+          message: AppStrings.removePlayerError,
           cause: e,
         ),
       );
@@ -71,7 +72,7 @@ class GroupError extends AppError {
   
   factory GroupError.playerNotFound({String? detail}) {
     return GroupError(
-      message: '선수를 찾을 수 없습니다${detail != null ? ": $detail" : ""}',
+      message: '${AppStrings.playerNotFound}${detail != null ? ": $detail" : ""}',
     );
   }
 } 

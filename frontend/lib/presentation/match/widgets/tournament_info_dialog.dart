@@ -1,6 +1,7 @@
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class TournamentInfoDialog extends StatelessWidget {
@@ -52,7 +53,7 @@ class TournamentInfoDialog extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  '토너먼트 정보',
+                  AppStrings.tournamentInfo,
                   style: TST.normalTextBold.copyWith(color: CST.primary100),
                 ),
               ],
@@ -60,11 +61,13 @@ class TournamentInfoDialog extends StatelessWidget {
             const SizedBox(height: 20),
 
             // 토너먼트 정보 내용
-            _buildInfoItem(Icons.title, '제목', tournament.title),
+            _buildInfoItem(Icons.title, AppStrings.titleLabel, tournament.title),
             const SizedBox(height: 12),
-            _buildInfoItem(Icons.people, '참가자 수', '$playersCount명'),
+            _buildInfoItem(Icons.people, AppStrings.participantsCountLabel, 
+                AppStrings.participantsCountValue.replaceAll('%d', playersCount.toString())),
             const SizedBox(height: 12),
-            _buildInfoItem(Icons.sports_tennis, '경기 수', '$matchesCount경기'),
+            _buildInfoItem(Icons.sports_tennis, AppStrings.matchesCountLabel, 
+                AppStrings.matchesCountValue.replaceAll('%d', matchesCount.toString())),
             
             const SizedBox(height: 24),
             
@@ -85,7 +88,7 @@ class TournamentInfoDialog extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  '닫기',
+                  AppStrings.close,
                   style: TST.smallTextBold.copyWith(color: CST.white),
                 ),
               ),

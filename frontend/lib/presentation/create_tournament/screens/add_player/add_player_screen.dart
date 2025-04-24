@@ -9,6 +9,7 @@ import 'package:bracket_helper/presentation/create_tournament/widgets/add_player
 import 'package:bracket_helper/presentation/create_tournament/widgets/index.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -238,7 +239,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
     final bool isValidPlayerCount = playerCount >= 4 && playerCount <= 32;
     final String playerCountWarning =
         !isValidPlayerCount
-            ? (playerCount < 4 ? "최소 4명의 선수가 필요합니다." : "최대 32명까지 등록 가능합니다.")
+            ? (playerCount < 4 ? AppStrings.minPlayersRequired : AppStrings.maxPlayersAllowed)
             : "";
 
     return Column(
@@ -258,7 +259,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
                   children: [
                     Icon(Icons.person, size: 18),
                     SizedBox(width: 8),
-                    Text('선수 목록'),
+                    Text(AppStrings.playerList),
                   ],
                 ),
               ),
@@ -268,7 +269,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
                   children: [
                     Icon(Icons.group, size: 18),
                     SizedBox(width: 8),
-                    Text('저장된 선수'),
+                    Text(AppStrings.savedPlayers),
                   ],
                 ),
               ),
@@ -344,7 +345,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
               // 선수 수가 유효하지 않을 때 스낵바로 안내
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text("선수는 4~32명으로 구성해야 합니다"),
+                  content: Text(AppStrings.playersRequired),
                   backgroundColor: Colors.red,
                   duration: const Duration(seconds: 2),
                 ),
@@ -383,7 +384,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
               Icon(Icons.people, size: 16, color: CST.primary100),
               SizedBox(width: 8),
               Text(
-                '현재 선수 목록 (${widget.players.length}명)',
+                '${AppStrings.currentPlayerList} (${widget.players.length}명)',
                 style: TST.mediumTextBold.copyWith(color: CST.primary100),
               ),
             ],
