@@ -9,6 +9,7 @@ import 'package:bracket_helper/presentation/save_player/widgets/player_search_fi
 import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:bracket_helper/ui/color_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class GroupDetailScreen extends StatelessWidget {
@@ -71,7 +72,7 @@ class GroupDetailScreen extends StatelessWidget {
               // 선수 목록 헤더
               Row(
                 children: [
-                  Text('선수 목록', style: TST.mediumTextBold),
+                  Text(AppStrings.playerList, style: TST.mediumTextBold),
                   const Spacer(),
                 ],
               ),

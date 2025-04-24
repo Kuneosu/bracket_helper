@@ -1,5 +1,6 @@
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class PlayerSearchField extends StatefulWidget {
@@ -64,7 +65,7 @@ class _PlayerSearchFieldState extends State<PlayerSearchField> {
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: '선수 이름으로 검색',
+              hintText: AppStrings.searchPlayerByName,
               prefixIcon: Icon(Icons.search, color: widget.groupColor),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
@@ -100,7 +101,7 @@ class _PlayerSearchFieldState extends State<PlayerSearchField> {
                 Padding(
                   padding: const EdgeInsets.only(left: 8, bottom: 4),
                   child: Text(
-                    '검색 결과 (${_filteredPlayers.length}명)',
+                    AppStrings.searchResults.replaceAll('%d', _filteredPlayers.length.toString()),
                     style: TST.smallTextBold,
                   ),
                 ),

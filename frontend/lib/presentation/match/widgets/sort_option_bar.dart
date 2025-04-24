@@ -1,5 +1,6 @@
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class SortOptionBar extends StatelessWidget {
@@ -24,10 +25,10 @@ class SortOptionBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text('정렬:', style: TST.smallTextBold),
-          _buildSortOption('이름', 'name'),
-          _buildSortOption('승점', 'points'),
-          _buildSortOption('득실', 'difference'),
+          Text(AppStrings.sortBy, style: TST.smallTextBold),
+          _buildSortOption(AppStrings.name, 'name'),
+          _buildSortOption(AppStrings.points, 'points'),
+          _buildSortOption(AppStrings.goalDifference, 'difference'),
         ],
       ),
     );

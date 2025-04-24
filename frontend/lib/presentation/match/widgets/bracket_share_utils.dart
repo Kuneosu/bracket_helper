@@ -5,6 +5,7 @@ import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/presentation/match/widgets/bracket_image_generator.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -21,9 +22,9 @@ class BracketShareUtils {
     try {
       // 로딩 표시
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('대진표 이미지를 생성 중입니다...'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(AppStrings.generatingBracketImageMessage),
+          duration: const Duration(seconds: 2),
         ),
       );
 
@@ -41,7 +42,7 @@ class BracketShareUtils {
       if (result == null) {
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('이미지 생성이 취소되었습니다.')),
+          SnackBar(content: Text(AppStrings.imageCancelled)),
         );
         return;
       }
@@ -56,10 +57,11 @@ class BracketShareUtils {
       await file.writeAsBytes(result);
 
       // 공유하기
+      final String shareTitle = AppStrings.bracketShareTitle.replaceAll('%s', tournament.title);
       await SharePlus.instance.share(
         ShareParams(
-          text: '${tournament.title} 대진표',
-          subject: '${tournament.title} 대진표',
+          text: shareTitle,
+          subject: shareTitle,
           files: [XFile(file.path)],
         ),
       );
@@ -68,7 +70,7 @@ class BracketShareUtils {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('대진표 공유 중 오류가 발생했습니다: $e'),
+          content: Text(AppStrings.bracketShareError.replaceAll('%s', e.toString())),
           backgroundColor: Colors.red,
         ),
       );

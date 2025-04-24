@@ -5,6 +5,7 @@ import 'package:bracket_helper/presentation/create_tournament/create_tournament_
 import 'package:bracket_helper/presentation/create_tournament/widgets/index.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -33,7 +34,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
     _titleController = TextEditingController(text: widget.tournament.title);
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
     );
     _animation = CurvedAnimation(
       parent: _animationController,
@@ -92,7 +93,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -100,30 +101,30 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                       Row(
                         children: [
                           Text(
-                            "대회 정보 입력",
+                            AppStrings.tournamentInfoInput,
                             style: TST.headerTextBold.copyWith(
                               color: CST.primary100,
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           IconButton(
-                            icon: Icon(Icons.refresh, color: CST.primary100),
-                            tooltip: '초기화',
+                            icon: const Icon(Icons.refresh, color: CST.primary100),
+                            tooltip: AppStrings.reset,
                             onPressed: () {
                               _showResetConfirmationDialog(context);
                             },
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       _buildTitleSection(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       _buildDateSection(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       _buildScoreSection(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       _buildGameSettingsSection(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -140,28 +141,28 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
 
   Widget _buildTitleSection() {
     return SectionCardWidget(
-      title: "대회명",
+      title: AppStrings.tournamentName,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextField(
             controller: _titleController,
             decoration: InputDecoration(
-              hintText: '대회명을 입력해주세요',
+              hintText: AppStrings.enterTournamentName,
               hintStyle: TST.mediumTextRegular.copyWith(color: CST.gray3),
               border: OutlineInputBorder(
-                borderSide: BorderSide(color: CST.gray3),
+                borderSide: const BorderSide(color: CST.gray3),
                 borderRadius: BorderRadius.circular(8),
               ),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: CST.gray3),
+                borderSide: const BorderSide(color: CST.gray3),
                 borderRadius: BorderRadius.circular(8),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: CST.primary100, width: 2),
+                borderSide: const BorderSide(color: CST.primary100, width: 2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              prefixIcon: Icon(Icons.emoji_events, color: CST.primary100),
+              prefixIcon: const Icon(Icons.emoji_events, color: CST.primary100),
               filled: true,
               fillColor: Colors.white,
             ),
@@ -169,14 +170,14 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
               widget.onAction(CreateTournamentAction.onTitleChanged(value));
             },
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Row(
             children: [
-              Icon(Icons.info_outline, size: 16, color: CST.gray2),
-              SizedBox(width: 4),
+              const Icon(Icons.info_outline, size: 16, color: CST.gray2),
+              const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  "대회명을 입력하지 않으면 '[날짜] 대회'로 자동 설정됩니다.",
+                  AppStrings.tournamentNameAutoSetInfo,
                   style: TST.smallerTextRegular.copyWith(color: CST.gray2),
                 ),
               ),
@@ -189,7 +190,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
 
   Widget _buildDateSection() {
     return SectionCardWidget(
-      title: "대회 날짜",
+      title: AppStrings.tournamentDate,
       content: DefaultDatePicker(
         initialDate: widget.tournament.date,
         onDateSelected: (date) {
@@ -202,12 +203,12 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
 
   Widget _buildScoreSection() {
     return SectionCardWidget(
-      title: "승점 입력",
+      title: AppStrings.scoreInput,
       content: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           ScoreInputWidget(
-            label: "승",
+            label: AppStrings.win,
             color: CST.success,
             initialValue: widget.tournament.winPoint.toString(),
             onChanged:
@@ -216,7 +217,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                 ),
           ),
           ScoreInputWidget(
-            label: "무",
+            label: AppStrings.draw,
             color: CST.gray2,
             initialValue: widget.tournament.drawPoint.toString(),
             onChanged:
@@ -225,7 +226,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                 ),
           ),
           ScoreInputWidget(
-            label: "패",
+            label: AppStrings.lose,
             color: CST.error,
             initialValue: widget.tournament.losePoint.toString(),
             onChanged:
@@ -240,14 +241,14 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
 
   Widget _buildGameSettingsSection() {
     return SectionCardWidget(
-      title: "경기 설정",
+      title: AppStrings.gameSettings,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("1인당 게임수", style: TST.normalTextBold.copyWith(color: CST.gray1)),
-          SizedBox(height: 8),
+          Text(AppStrings.gamesPerPlayer, style: TST.normalTextBold.copyWith(color: CST.gray1)),
+          const SizedBox(height: 8),
           Container(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
               color: CST.gray4,
               borderRadius: BorderRadius.circular(8),
@@ -260,24 +261,24 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
               ],
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.info_outline, size: 16, color: CST.primary80),
-              SizedBox(width: 4),
+              const Icon(Icons.info_outline, size: 16, color: CST.primary80),
+              const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  "현재는 1인당 4게임만 지원됩니다. 추후 업데이트 예정입니다.",
+                  AppStrings.gamesPerPlayerInfo,
                   style: TST.smallerTextRegular.copyWith(color: CST.primary80),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 16),
-          Text("경기 형식", style: TST.normalTextBold.copyWith(color: CST.gray1)),
-          SizedBox(height: 8),
+          const SizedBox(height: 16),
+          Text(AppStrings.gameFormat, style: TST.normalTextBold.copyWith(color: CST.gray1)),
+          const SizedBox(height: 8),
           Container(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
               color: CST.gray4,
               borderRadius: BorderRadius.circular(8),
@@ -286,23 +287,23 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.group, size: 18, color: CST.gray2),
-                SizedBox(width: 8),
+                const Icon(Icons.group, size: 18, color: CST.gray2),
+                const SizedBox(width: 8),
                 Text(
-                  "복식",
+                  AppStrings.doubles,
                   style: TST.normalTextBold.copyWith(color: CST.gray2),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.info_outline, size: 16, color: CST.primary80),
-              SizedBox(width: 4),
+              const Icon(Icons.info_outline, size: 16, color: CST.primary80),
+              const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  "현재는 복식 경기만 지원됩니다. 단식은 추후 업데이트 예정입니다.",
+                  AppStrings.gameFormatInfo,
                   style: TST.smallerTextRegular.copyWith(color: CST.primary80),
                 ),
               ),
@@ -315,7 +316,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
 
   Widget _buildButtons() {
     return NavigationButtonsWidget(
-      previousText: '종료',
+      previousText: AppStrings.exit,
       onPrevious: () async {
         // 안전한 컨텍스트 사용
         final ctx = _safeContext ?? context;
@@ -353,14 +354,14 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
             ),
             title: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.warning_amber_rounded,
                   color: CST.primary100,
                   size: 28,
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Text(
-                  '대회 생성 종료',
+                  AppStrings.exitTournamentCreation,
                   style: TST.normalTextBold.copyWith(color: CST.primary100),
                 ),
               ],
@@ -370,12 +371,12 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '대회 생성을 종료하시겠습니까?',
+                  AppStrings.exitTournamentConfirm,
                   style: TST.normalTextBold.copyWith(color: CST.gray1),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  '지금까지 입력한 모든 정보는 저장되지 않습니다.',
+                  AppStrings.unsavedChangesWarning,
                   style: TST.smallTextRegular.copyWith(color: CST.gray2),
                 ),
               ],
@@ -385,29 +386,29 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                 style: TextButton.styleFrom(
                   foregroundColor: CST.white,
                   backgroundColor: CST.gray3,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('취소', style: TST.smallTextBold),
+                child: Text(AppStrings.cancel, style: TST.smallTextBold),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CST.primary100,
                   foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text('종료하기', style: TST.smallTextBold),
+                child: Text(AppStrings.exitTournament, style: TST.smallTextBold),
               ),
             ],
-            actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             buttonPadding: EdgeInsets.zero,
           ),
     );
@@ -426,10 +427,10 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
             ),
             title: Row(
               children: [
-                Icon(Icons.refresh, color: CST.primary100, size: 28),
-                SizedBox(width: 12),
+                const Icon(Icons.refresh, color: CST.primary100, size: 28),
+                const SizedBox(width: 12),
                 Text(
-                  '입력 초기화',
+                  AppStrings.resetInput,
                   style: TST.normalTextBold.copyWith(color: CST.primary100),
                 ),
               ],
@@ -439,12 +440,12 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '모든 입력을 초기화하시겠습니까?',
+                  AppStrings.resetConfirm,
                   style: TST.normalTextBold.copyWith(color: CST.gray1),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  '입력한 모든 정보가 지워집니다.',
+                  AppStrings.resetWarning,
                   style: TST.smallTextRegular.copyWith(color: CST.gray2),
                 ),
               ],
@@ -454,20 +455,20 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                 style: TextButton.styleFrom(
                   foregroundColor: CST.white,
                   backgroundColor: CST.gray3,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('취소', style: TST.smallTextBold),
+                child: Text(AppStrings.cancel, style: TST.smallTextBold),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CST.primary100,
                   foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -476,10 +477,10 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                   widget.onAction(CreateTournamentAction.resetState());
                   Navigator.of(context).pop(true);
                 },
-                child: Text('초기화', style: TST.smallTextBold),
+                child: Text(AppStrings.resetButton, style: TST.smallTextBold),
               ),
             ],
-            actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             buttonPadding: EdgeInsets.zero,
           ),
     );

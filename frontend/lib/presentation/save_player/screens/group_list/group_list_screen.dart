@@ -8,6 +8,7 @@ import 'package:bracket_helper/presentation/save_player/widgets/rename_dialog.da
 import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
@@ -132,7 +133,7 @@ class _GroupListScreenState extends State<GroupListScreen>
                         Row(
                           children: [
                             Text(
-                              '그룹 목록 (${filteredGroups.length})',
+                              '${AppStrings.groupList} (${filteredGroups.length})',
                               style: TST.mediumTextBold,
                             ),
                             const Spacer(),
@@ -174,7 +175,7 @@ class _GroupListScreenState extends State<GroupListScreen>
                           child: TextField(
                             controller: _searchController,
                             decoration: InputDecoration(
-                              hintText: '그룹 또는 선수 이름으로 검색...',
+                              hintText: AppStrings.searchHint,
                               hintStyle: TST.smallTextRegular.copyWith(
                                 color: CST.gray3,
                               ),
@@ -244,7 +245,7 @@ class _GroupListScreenState extends State<GroupListScreen>
                       horizontal: 20,
                     ),
                     child: DefaultButton(
-                      text: '변경사항 저장',
+                      text: AppStrings.saveChanges,
                       onTap: () {
                         widget.onAction(SavePlayerAction.onToggleEditMode());
                       },
@@ -279,7 +280,7 @@ class _GroupListScreenState extends State<GroupListScreen>
                           opacity: value.clamp(0.0, 1.0),
                           child: _buildMenuItemButton(
                             icon: Icons.settings,
-                            label: '관리',
+                            label: AppStrings.manage,
                             onTap: () {
                               _toggleMenu();
                               widget.onAction(
@@ -307,7 +308,7 @@ class _GroupListScreenState extends State<GroupListScreen>
                           opacity: value.clamp(0.0, 1.0),
                           child: _buildMenuItemButton(
                             icon: Icons.add_circle,
-                            label: '그룹 생성',
+                            label: AppStrings.createGroupButton,
                             onTap: () {
                               _toggleMenu();
                               context.push(
@@ -369,8 +370,8 @@ class _GroupListScreenState extends State<GroupListScreen>
   Widget _buildEmptyState() {
     return EmptyStateWidget(
       icon: Icons.group_off,
-      title: '검색 결과가 없습니다',
-      message: '다른 검색어를 입력하거나 그룹을 생성해보세요',
+      title: AppStrings.noSearchResults,
+      message: AppStrings.searchResultsHelp,
     );
   }
 

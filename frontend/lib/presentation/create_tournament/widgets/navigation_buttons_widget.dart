@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +18,8 @@ class NavigationButtonsWidget extends StatelessWidget {
     super.key,
     required this.onPrevious,
     required this.onNext,
-    this.previousText = '이전',
-    this.nextText = '다음',
+    this.previousText = AppStrings.previous,
+    this.nextText = AppStrings.next,
     this.isNextDisabled = false,
     this.previousIcon = Icons.arrow_back_rounded,
     this.nextIcon = Icons.arrow_forward_rounded,

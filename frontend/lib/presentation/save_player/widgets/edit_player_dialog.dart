@@ -1,5 +1,6 @@
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/ui/color_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class EditPlayerDialog extends StatelessWidget {
@@ -57,9 +58,9 @@ class EditPlayerDialog extends StatelessWidget {
               const SizedBox(height: 15),
 
               // 제목
-              const Text(
-                '선수 정보 수정',
-                style: TextStyle(
+              Text(
+                AppStrings.editPlayerTitle,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -72,8 +73,8 @@ class EditPlayerDialog extends StatelessWidget {
               TextFormField(
                 controller: nameController,
                 decoration: InputDecoration(
-                  labelText: '선수 이름',
-                  hintText: '이름을 입력하세요',
+                  labelText: AppStrings.playerNameLabel,
+                  hintText: AppStrings.enterNameHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -81,7 +82,7 @@ class EditPlayerDialog extends StatelessWidget {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return '선수 이름을 입력해주세요';
+                    return AppStrings.nameValidationError;
                   }
                   return null;
                 },
@@ -108,9 +109,9 @@ class EditPlayerDialog extends StatelessWidget {
                         vertical: 10,
                       ),
                     ),
-                    child: const Text(
-                      '취소',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    child: Text(
+                      AppStrings.cancelButton,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -138,9 +139,9 @@ class EditPlayerDialog extends StatelessWidget {
                         vertical: 10,
                       ),
                     ),
-                    child: const Text(
-                      '저장',
-                      style: TextStyle(
+                    child: Text(
+                      AppStrings.saveButton,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),

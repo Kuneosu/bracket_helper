@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 
 class ThemeDropdown extends StatelessWidget {
   final ValueChanged<String?>? onChanged;
@@ -8,7 +9,7 @@ class ThemeDropdown extends StatelessWidget {
   const ThemeDropdown({
     super.key,
     this.onChanged,
-    this.value = '라이트',
+    this.value = AppStrings.themeLight,
   });
 
   @override
@@ -17,7 +18,7 @@ class ThemeDropdown extends StatelessWidget {
       value: value,
       underline: const SizedBox(),
       icon: const Icon(Icons.arrow_drop_down, color: CST.primary100),
-      items: ['라이트', '다크', '시스템']
+      items: [AppStrings.themeLight, AppStrings.themeDark, AppStrings.themeSystem]
           .map(
             (String value) =>
                 DropdownMenuItem<String>(value: value, child: Text(value)),

@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
@@ -40,14 +41,14 @@ class SettingItemWithBeta extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              '준비중',
+              AppStrings.beta,
               style: TST.smallerTextBold.copyWith(color: CST.white),
             ),
           ),
         ),
         Positioned.fill(
           child: Container(
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.5),
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
             child: const SizedBox(),
           ),

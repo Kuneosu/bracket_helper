@@ -1,5 +1,6 @@
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class HeaderSection extends StatelessWidget {
@@ -39,7 +40,7 @@ class HeaderSection extends StatelessWidget {
                   Icon(Icons.people, size: 16, color: CST.primary100),
                   const SizedBox(width: 8),
                   Text(
-                    "참가 인원: $playersCount명",
+                    AppStrings.participantsCount.replaceAll('%d', playersCount.toString()),
                     style: TST.normalTextBold.copyWith(color: CST.gray1),
                   ),
                 ],
@@ -50,7 +51,7 @@ class HeaderSection extends StatelessWidget {
                   Icon(Icons.emoji_events, size: 16, color: CST.primary100),
                   const SizedBox(width: 8),
                   Text(
-                    "경기 수: $matchesCount경기",
+                    AppStrings.matchesCount.replaceAll('%d', matchesCount.toString()),
                     style: TST.normalTextBold.copyWith(color: CST.gray1),
                   ),
                 ],
@@ -60,13 +61,13 @@ class HeaderSection extends StatelessWidget {
           const Spacer(),
           _buildActionButton(
             icon: Icons.edit, 
-            label: "대진 수정", 
+            label: AppStrings.editBracket, 
             onTap: onEditBracketPressed,
           ),
           const SizedBox(width: 10),
           _buildActionButton(
             icon: Icons.share,
-            label: "대진 공유",
+            label: AppStrings.shareBracket,
             onTap: onShareBracketPressed,
           ),
         ],

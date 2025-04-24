@@ -1,6 +1,7 @@
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class PlayerListItem extends StatelessWidget {
@@ -108,14 +109,14 @@ class PlayerListItem extends StatelessWidget {
                 },
                 itemBuilder: (context) => [
                   if (onEdit != null)
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'edit',
-                      child: Text('수정'),
+                      child: Text(AppStrings.edit),
                     ),
                   if (onDelete != null)
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'delete',
-                      child: Text('삭제'),
+                      child: Text(AppStrings.delete),
                     ),
                 ],
               )

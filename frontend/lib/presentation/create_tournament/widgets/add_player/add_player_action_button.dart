@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
@@ -20,14 +21,14 @@ class AddPlayerActionButton extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: selectedCount > 0
           ? DefaultButton(
-              text: '선택한 선수 추가하기 ($selectedCount명)',
+              text: AppStrings.addSelectedPlayers.replaceAll('%d', selectedCount.toString()),
               onTap: onTap,
               color: CST.primary100,
               textStyle: TST.normalTextBold.copyWith(color: Colors.white),
               height: 50,
             )
           : DefaultButton(
-              text: '선택한 선수 추가하기 (0명)',
+              text: AppStrings.addNoPlayers,
               onTap: () {}, // 빈 함수
               color: CST.gray3,
               textStyle: TST.normalTextBold.copyWith(color: Colors.white),

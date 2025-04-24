@@ -11,6 +11,7 @@ import 'package:bracket_helper/presentation/match/widgets/rank_tab_content.dart'
 import 'package:bracket_helper/presentation/match/widgets/tournament_info_dialog.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class MatchScreen extends StatelessWidget {
@@ -39,7 +40,7 @@ class MatchScreen extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            '로딩 중...',
+            AppStrings.loading,
             style: TST.mediumTextBold.copyWith(color: CST.white),
           ),
           backgroundColor: CST.primary100,
@@ -51,7 +52,7 @@ class MatchScreen extends StatelessWidget {
               CircularProgressIndicator(color: CST.primary100),
               const SizedBox(height: 16),
               Text(
-                '대진표를 불러오고 있습니다...',
+                AppStrings.loadingBracket,
                 style: TST.smallTextRegular.copyWith(color: CST.gray2),
               ),
             ],
@@ -83,7 +84,7 @@ class MatchScreen extends StatelessWidget {
                 );
               },
               icon: Icon(Icons.info_outline, color: CST.white),
-              tooltip: '토너먼트 정보',
+              tooltip: AppStrings.tournamentInfo,
             ),
           ],
         ),

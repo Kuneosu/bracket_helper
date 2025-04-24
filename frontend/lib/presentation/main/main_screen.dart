@@ -1,5 +1,6 @@
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -28,12 +29,12 @@ class MainScreen extends StatelessWidget {
               Icon(Icons.exit_to_app, color: CST.primary100),
               const SizedBox(width: 8),
               Text(
-                '앱 종료',
+                AppStrings.exitApp,
                 style: TST.mediumTextBold.copyWith(color: CST.primary100),
               ),
             ],
           ),
-          content: Text('앱을 종료하시겠습니까?', style: TST.normalTextRegular),
+          content: Text(AppStrings.exitConfirm, style: TST.normalTextRegular),
           contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
           actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           actions: [
@@ -47,7 +48,7 @@ class MainScreen extends StatelessWidget {
                 ),
                 minimumSize: const Size(100, 40),
               ),
-              child: Text('취소', style: TST.normalTextBold),
+              child: Text(AppStrings.cancel, style: TST.normalTextBold),
             ),
             ElevatedButton(
               onPressed: () {
@@ -62,7 +63,7 @@ class MainScreen extends StatelessWidget {
                 ),
                 minimumSize: const Size(100, 40),
               ),
-              child: Text('종료', style: TST.normalTextBold),
+              child: Text(AppStrings.exit, style: TST.normalTextBold),
             ),
           ],
         );
@@ -100,21 +101,21 @@ class MainScreen extends StatelessWidget {
           labelTextStyle: WidgetStateProperty.all(
             TST.smallTextRegular.copyWith(color: CST.black),
           ),
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              selectedIcon: Icon(Icons.home, color: CST.primary100),
-              icon: Icon(Icons.home, color: CST.gray3),
-              label: '홈',
+              selectedIcon: const Icon(Icons.home, color: CST.primary100),
+              icon: const Icon(Icons.home, color: CST.gray3),
+              label: AppStrings.home,
             ),
             NavigationDestination(
-              selectedIcon: Icon(Icons.person, color: CST.primary100),
-              icon: Icon(Icons.person, color: CST.gray3),
-              label: '그룹 관리',
+              selectedIcon: const Icon(Icons.person, color: CST.primary100),
+              icon: const Icon(Icons.person, color: CST.gray3),
+              label: AppStrings.groupManagement,
             ),
             NavigationDestination(
-              selectedIcon: Icon(Icons.settings, color: CST.primary100),
-              icon: Icon(Icons.settings, color: CST.gray3),
-              label: '설정',
+              selectedIcon: const Icon(Icons.settings, color: CST.primary100),
+              icon: const Icon(Icons.settings, color: CST.gray3),
+              label: AppStrings.settings,
             ),
           ],
         ),

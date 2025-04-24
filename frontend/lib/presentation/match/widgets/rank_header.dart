@@ -1,5 +1,6 @@
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class RankHeader extends StatelessWidget {
@@ -18,13 +19,13 @@ class RankHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(flex: 1, child: _buildRankHeader('순위')),
-          Expanded(flex: 2, child: _buildRankHeader('이름')),
-          Expanded(flex: 1, child: _buildRankHeader('승')),
-          Expanded(flex: 1, child: _buildRankHeader('무')),
-          Expanded(flex: 1, child: _buildRankHeader('패')),
-          Expanded(flex: 1, child: _buildRankHeader('승점')),
-          Expanded(flex: 1, child: _buildRankHeader('득실')),
+          Expanded(flex: 1, child: _buildRankHeader(AppStrings.rank)),
+          Expanded(flex: 2, child: _buildRankHeader(AppStrings.name)),
+          Expanded(flex: 1, child: _buildRankHeader(AppStrings.win)),
+          Expanded(flex: 1, child: _buildRankHeader(AppStrings.draw)),
+          Expanded(flex: 1, child: _buildRankHeader(AppStrings.lose)),
+          Expanded(flex: 1, child: _buildRankHeader(AppStrings.points)),
+          Expanded(flex: 1, child: _buildRankHeader(AppStrings.goalDifference)),
         ],
       ),
     );

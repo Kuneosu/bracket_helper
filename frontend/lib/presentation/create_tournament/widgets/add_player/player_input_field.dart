@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_action.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:flutter/material.dart';
@@ -6,10 +7,7 @@ import 'package:flutter/material.dart';
 class PlayerInputField extends StatefulWidget {
   final Function(CreateTournamentAction) onAction;
 
-  const PlayerInputField({
-    super.key,
-    required this.onAction,
-  });
+  const PlayerInputField({super.key, required this.onAction});
 
   @override
   State<PlayerInputField> createState() => _PlayerInputFieldState();
@@ -63,8 +61,8 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
               child: TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: '선수 이름',
-                  hintText: '선수 이름 입력',
+                  labelText: AppStrings.playerNameInputLabel,
+                  hintText: AppStrings.playerNameInputHint,
                   floatingLabelBehavior: FloatingLabelBehavior.auto,
                   labelStyle: TextStyle(color: CST.gray2),
                   floatingLabelStyle: TextStyle(
@@ -77,10 +75,7 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: CST.primary100,
-                      width: 2,
-                    ),
+                    borderSide: BorderSide(color: CST.primary100, width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -90,10 +85,7 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
                     horizontal: 16,
                     vertical: 16,
                   ),
-                  prefixIcon: Icon(
-                    Icons.person_add,
-                    color: CST.primary80,
-                  ),
+                  prefixIcon: Icon(Icons.person_add, color: CST.primary80),
                 ),
               ),
             ),
@@ -127,7 +119,7 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  '여러 선수는 공백으로 구분해서 입력할 수 있습니다. (예: 홍길동 김철수)',
+                  AppStrings.playerNameInputInfo,
                   style: TextStyle(fontSize: 11, color: CST.gray3),
                   softWrap: true,
                 ),
@@ -138,4 +130,4 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
       ],
     );
   }
-} 
+}

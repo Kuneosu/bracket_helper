@@ -2,6 +2,7 @@ import 'package:bracket_helper/presentation/save_player/widgets/action_button_ro
 import 'package:bracket_helper/presentation/save_player/widgets/color_picker_grid.dart';
 import 'package:bracket_helper/presentation/save_player/widgets/form_card.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,7 +38,7 @@ class CreateGroupScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 16),
                     child: Text(
-                      '그룹 정보를 입력해주세요',
+                      AppStrings.enterGroupInfo,
                       style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                     ),
                   ),
@@ -45,7 +46,7 @@ class CreateGroupScreen extends StatelessWidget {
                   // 그룹명 입력 섹션 (순서 변경)
                   FormCard(
                     icon: Icons.group,
-                    title: '그룹명',
+                    title: AppStrings.groupName,
                     content: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -55,7 +56,7 @@ class CreateGroupScreen extends StatelessWidget {
                             onAction(SavePlayerAction.onGroupNameChanged(text));
                           },
                           decoration: InputDecoration(
-                            hintText: '그룹명을 입력해주세요',
+                            hintText: AppStrings.enterGroupName,
                             filled: true,
                             fillColor: Colors.grey[100],
                             border: OutlineInputBorder(
@@ -79,7 +80,7 @@ class CreateGroupScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '최대 20자까지 입력 가능합니다',
+                              AppStrings.maxChars,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey[600],
@@ -96,8 +97,8 @@ class CreateGroupScreen extends StatelessWidget {
                   // 그룹 색상 선택 섹션
                   FormCard(
                     icon: Icons.style,
-                    title: '그룹 색상',
-                    subtitle: '그룹을 대표할 색상을 선택하세요',
+                    title: AppStrings.groupColor,
+                    subtitle: AppStrings.selectGroupColor,
                     content: ColorPickerGrid(
                       selectedColor: selectedColor,
                       onColorSelected: (color) {
@@ -110,8 +111,8 @@ class CreateGroupScreen extends StatelessWidget {
 
                   // 버튼 섹션
                   ActionButtonRow(
-                    cancelText: '생성 취소',
-                    confirmText: '그룹 생성하기',
+                    cancelText: AppStrings.cancelCreation,
+                    confirmText: AppStrings.createGroup,
                     onCancel: () => context.pop(),
                     onConfirm: () {
                       onAction(

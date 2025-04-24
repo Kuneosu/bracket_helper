@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 
 class ActionButtonRow extends StatelessWidget {
   final String cancelText;
@@ -18,8 +19,8 @@ class ActionButtonRow extends StatelessWidget {
   /// [padding] 버튼의 패딩 (기본값: vertical 16)
   const ActionButtonRow({
     super.key,
-    this.cancelText = '취소',
-    this.confirmText = '확인',
+    this.cancelText = AppStrings.cancelButton,
+    this.confirmText = AppStrings.confirmButton,
     required this.onCancel,
     required this.onConfirm,
     this.isConfirmEnabled = true,

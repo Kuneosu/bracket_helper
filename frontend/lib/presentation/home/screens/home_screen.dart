@@ -6,6 +6,7 @@ import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 
 class HomeScreen extends StatelessWidget {
   final List<TournamentModel> tournaments;
@@ -22,7 +23,7 @@ class HomeScreen extends StatelessWidget {
   void _showComingSoonMessage(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('추후 업데이트 예정입니다'),
+        content: Text(AppStrings.comingSoonMessage),
         duration: Duration(seconds: 2),
       ),
     );
@@ -33,7 +34,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "대진 도우미",
+          AppStrings.appTitle,
           style: TST.largeTextBold.copyWith(color: CST.white),
         ),
         centerTitle: false,
@@ -45,7 +46,7 @@ class HomeScreen extends StatelessWidget {
           TextButton(
             onPressed: onHelpPressed,
             child: Text(
-              "도움말",
+              AppStrings.help,
               style: TST.normalTextBold.copyWith(color: CST.white),
             ),
           ),
@@ -74,9 +75,9 @@ class HomeScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("최근 경기", style: TST.mediumTextBold),
+                  Text(AppStrings.recentMatches, style: TST.mediumTextBold),
                   // if (tournaments.isNotEmpty)
-                  //   Text("모두 보기 >", style: TST.smallTextRegular),
+                  //   Text(AppStrings.viewAll, style: TST.smallTextRegular),
                 ],
               ),
             ),
@@ -119,12 +120,12 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("서비스", style: TST.mediumTextBold),
+                  Text(AppStrings.services, style: TST.mediumTextBold),
                   const SizedBox(height: 16),
 
                   _buildFeatureCard(
-                    title: "대진표 생성하기",
-                    subtitle: "복식/단식 매칭을 쉽게 관리하세요",
+                    title: AppStrings.createBracket,
+                    subtitle: AppStrings.createBracketDesc,
                     iconData: Icons.sports_tennis,
                     onTap: () => onAction(const OnTapCreateTournament()),
                     gradient: LinearGradient(
@@ -138,8 +139,8 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _buildSmallFeatureCard(
-                          title: "선수 관리",
-                          subtitle: "선수 정보를 등록하고 관리하세요",
+                          title: AppStrings.playerManagement,
+                          subtitle: AppStrings.playerManagementDesc,
                           iconData: Icons.people,
                           onTap: () => _showComingSoonMessage(context),
                           gradient: LinearGradient(
@@ -154,8 +155,8 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildSmallFeatureCard(
-                          title: "그룹 관리",
-                          subtitle: "그룹을 만들고 선수를 추가하세요",
+                          title: AppStrings.groupManagement,
+                          subtitle: AppStrings.groupManagementDesc,
                           iconData: Icons.group_work,
                           onTap: () => context.go(RoutePaths.savePlayer),
                           gradient: LinearGradient(
@@ -173,8 +174,8 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   _buildFeatureCard(
-                    title: "통계 보기",
-                    subtitle: "경기 결과와 플레이어 성적을 분석하세요",
+                    title: AppStrings.viewStatistics,
+                    subtitle: AppStrings.viewStatisticsDesc,
                     iconData: Icons.bar_chart,
                     onTap: () => _showComingSoonMessage(context),
                     gradient: LinearGradient(
@@ -193,7 +194,7 @@ class HomeScreen extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 16),
               alignment: Alignment.center,
               child: Text(
-                '© 2025 Kuneosu. All rights reserved.',
+                AppStrings.copyright,
                 style: TST.smallTextRegular.copyWith(
                   color: CST.gray2,
                   fontSize: 12,
@@ -221,12 +222,12 @@ class HomeScreen extends StatelessWidget {
           Icon(Icons.sports_tennis, size: 40, color: CST.gray3),
           const SizedBox(height: 12),
           Text(
-            "아직 진행한 경기가 없습니다",
+            AppStrings.noTournaments,
             style: TST.normalTextRegular.copyWith(color: CST.gray2),
           ),
           const SizedBox(height: 8),
           Text(
-            "새 대진표를 생성해보세요!",
+            AppStrings.createNewTournament,
             style: TST.smallTextRegular.copyWith(color: CST.gray2),
           ),
         ],
@@ -320,7 +321,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '업데이트 예정',
+                        AppStrings.comingSoon,
                         style: TST.normalTextBold.copyWith(color: Colors.white),
                       ),
                     ),
@@ -414,7 +415,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '업데이트 예정',
+                        AppStrings.comingSoon,
                         style: TST.smallTextBold.copyWith(color: Colors.white),
                       ),
                     ),

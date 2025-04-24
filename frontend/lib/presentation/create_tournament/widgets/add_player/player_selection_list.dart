@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,10 @@ class PlayerSelectionList extends StatelessWidget {
           children: [
             Icon(Icons.touch_app, size: 40, color: CST.primary60),
             const SizedBox(height: 16),
-            Text('위에서 그룹을 선택하세요', style: TextStyle(color: CST.gray2)),
+            Text(
+              AppStrings.selectGroupToAddPlayers,
+              style: TextStyle(color: CST.gray2),
+            ),
           ],
         ),
       );
@@ -43,7 +47,10 @@ class PlayerSelectionList extends StatelessWidget {
           children: [
             Icon(Icons.person_off, size: 40, color: CST.gray3),
             const SizedBox(height: 16),
-            Text('이 그룹에는 선수가 없습니다.', style: TextStyle(color: CST.gray2)),
+            Text(
+              AppStrings.noPlayersInGroup,
+              style: TextStyle(color: CST.gray2),
+            ),
           ],
         ),
       );
@@ -64,7 +71,9 @@ class PlayerSelectionList extends StatelessWidget {
         final isSelected = selectedPlayers.containsKey(player.id);
 
         // 오직 이름으로만 비교
-        final isAlreadyAdded = tournamentPlayers.any((p) => p.name == player.name);
+        final isAlreadyAdded = tournamentPlayers.any(
+          (p) => p.name == player.name,
+        );
 
         // 디버깅용 로그
         if (index < 5) {
@@ -77,7 +86,9 @@ class PlayerSelectionList extends StatelessWidget {
               orElse: () => PlayerModel(id: -1, name: ''),
             );
             if (matchedPlayer.id != -1) {
-              debugPrint('  이름이 일치하는 선수: ${matchedPlayer.name}, ID: ${matchedPlayer.id}');
+              debugPrint(
+                '  이름이 일치하는 선수: ${matchedPlayer.name}, ID: ${matchedPlayer.id}',
+              );
             }
           }
         }
@@ -103,8 +114,8 @@ class PlayerSelectionList extends StatelessWidget {
               border: Border.all(
                 color:
                     isAlreadyAdded
-                    ? CST.gray3
-                    : isSelected
+                        ? CST.gray3
+                        : isSelected
                         ? CST.primary100
                         : CST.gray2,
                 width: 2,
@@ -112,23 +123,23 @@ class PlayerSelectionList extends StatelessWidget {
             ),
             child:
                 isSelected
-                ? Icon(Icons.check, color: Colors.white, size: 16)
-                : null,
+                    ? Icon(Icons.check, color: Colors.white, size: 16)
+                    : null,
           ),
           enabled: !isAlreadyAdded,
           subtitle:
               isAlreadyAdded
-              ? Row(
-                  children: [
-                    Icon(Icons.info_outline, size: 12, color: CST.gray3),
-                    const SizedBox(width: 4),
-                    Text(
-                      '이미 추가됨',
-                      style: TextStyle(color: CST.gray3, fontSize: 12),
-                    ),
-                  ],
-                )
-              : null,
+                  ? Row(
+                    children: [
+                      Icon(Icons.info_outline, size: 12, color: CST.gray3),
+                      const SizedBox(width: 4),
+                      Text(
+                        AppStrings.alreadyAdded,
+                        style: TextStyle(color: CST.gray3, fontSize: 12),
+                      ),
+                    ],
+                  )
+                  : null,
           tileColor: isSelected ? CST.primary20 : Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
           onTap: isAlreadyAdded ? null : () => onToggleSelection(player),

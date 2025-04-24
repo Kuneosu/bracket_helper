@@ -1,5 +1,6 @@
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
 class GroupRenameDialog extends StatelessWidget {
@@ -54,7 +55,7 @@ class GroupRenameDialog extends StatelessWidget {
 
             // 제목
             Text(
-              '그룹 이름 변경',
+              AppStrings.changeGroupName,
               style: TST.normalTextBold.copyWith(color: CST.gray1),
               textAlign: TextAlign.center,
             ),
@@ -66,14 +67,14 @@ class GroupRenameDialog extends StatelessWidget {
               text: TextSpan(
                 style: TST.smallTextRegular.copyWith(color: CST.gray2),
                 children: [
-                  const TextSpan(text: '그룹 이름을 '),
+                  TextSpan(text: AppStrings.changeGroupNamePrefix),
                   TextSpan(
                     text: '"$newName"',
                     style: TST.smallTextBold.copyWith(
                       color: CST.primary100,
                     ),
                   ),
-                  const TextSpan(text: '으로 변경하시겠습니까?'),
+                  TextSpan(text: AppStrings.changeGroupNameSuffix),
                 ],
               ),
             ),
@@ -99,7 +100,7 @@ class GroupRenameDialog extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    '취소',
+                    AppStrings.cancel,
                     style: TST.smallTextBold.copyWith(color: CST.gray1),
                   ),
                 ),
@@ -125,7 +126,7 @@ class GroupRenameDialog extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    '변경',
+                    AppStrings.change,
                     style: TST.smallTextBold.copyWith(color: CST.white),
                   ),
                 ),
