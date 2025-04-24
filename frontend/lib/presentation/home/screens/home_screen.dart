@@ -93,18 +93,19 @@ class HomeScreen extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: tournaments.length,
                     itemBuilder: (context, index) {
+                      final reversedIndex = tournaments.length - 1 - index;
                       return Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: RecentTournamentCard(
-                          tournament: tournaments[index],
+                          tournament: tournaments[reversedIndex],
                           onTapCard: () {
                             context.push(
-                              '${RoutePaths.match}?tournamentId=${tournaments[index].id}',
+                              '${RoutePaths.match}?tournamentId=${tournaments[reversedIndex].id}',
                             );
                           },
                           onTapDelete: () {
                             onAction(
-                              OnTapDeleteTournament(tournaments[index].id),
+                              OnTapDeleteTournament(tournaments[reversedIndex].id),
                             );
                           },
                         ),
