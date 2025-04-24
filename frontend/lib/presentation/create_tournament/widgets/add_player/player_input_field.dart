@@ -87,6 +87,7 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
                   ),
                   prefixIcon: Icon(Icons.person_add, color: CST.primary80),
                 ),
+                onSubmitted: (_) => _addPlayer(),
               ),
             ),
             SizedBox(width: 8),
