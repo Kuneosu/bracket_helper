@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
-import 'package:bracket_helper/presentation/setting/widget/setting_item.dart';
-import 'package:bracket_helper/presentation/setting/widget/setting_item_with_beta.dart';
-import 'package:bracket_helper/presentation/setting/widget/section_title.dart';
-import 'package:bracket_helper/presentation/setting/widget/theme_dropdown.dart';
-import 'package:bracket_helper/presentation/setting/widget/language_dropdown.dart';
-import 'package:bracket_helper/presentation/setting/widget/developer_info_bottom_sheet.dart';
-import 'package:bracket_helper/presentation/setting/widget/contributors_dialog.dart';
-import 'package:bracket_helper/presentation/setting/widget/email_feedback_launcher.dart';
-import 'package:bracket_helper/presentation/setting/widget/privacy_policy_dialog.dart';
-import 'package:bracket_helper/presentation/setting/widget/terms_of_service_dialog.dart';
+import 'package:bracket_helper/presentation/setting/widgets/setting_item.dart';
+import 'package:bracket_helper/presentation/setting/widgets/setting_item_with_beta.dart';
+import 'package:bracket_helper/presentation/setting/widgets/section_title.dart';
+import 'package:bracket_helper/presentation/setting/widgets/theme_dropdown.dart';
+import 'package:bracket_helper/presentation/setting/widgets/language_dropdown.dart';
+import 'package:bracket_helper/presentation/setting/widgets/developer_info_bottom_sheet.dart';
+import 'package:bracket_helper/presentation/setting/widgets/contributors_dialog.dart';
+import 'package:bracket_helper/presentation/setting/widgets/email_feedback_launcher.dart';
+import 'package:bracket_helper/presentation/setting/widgets/privacy_policy_dialog.dart';
+import 'package:bracket_helper/presentation/setting/widgets/terms_of_service_dialog.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});

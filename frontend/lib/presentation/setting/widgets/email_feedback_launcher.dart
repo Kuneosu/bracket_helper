@@ -137,7 +137,7 @@ class EmailFeedbackLauncher {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          '아래 이메일로 연락주시면 빠르게 답변드리도록 하겠습니다:',
+                          '아래 이메일로 연락주시면 빠르게 답변드리도록 하겠습니다.',
                           style: TextStyle(fontSize: 14, height: 1.5),
                         ),
                         const SizedBox(height: 8),

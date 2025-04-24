@@ -75,8 +75,8 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("최근 경기", style: TST.mediumTextBold),
-                  if (tournaments.isNotEmpty)
-                    Text("모두 보기 >", style: TST.smallTextRegular),
+                  // if (tournaments.isNotEmpty)
+                  //   Text("모두 보기 >", style: TST.smallTextRegular),
                 ],
               ),
             ),
@@ -275,30 +275,7 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(iconData, color: Colors.white, size: 32),
-                      if (isComingSoon)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '업데이트 예정',
-                            style: TST.smallTextBold.copyWith(
-                              color: Colors.white,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+                  Icon(iconData, color: Colors.white, size: 32),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -325,7 +302,7 @@ class HomeScreen extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha:0.4),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
@@ -335,10 +312,10 @@ class HomeScreen extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withValues(alpha:0.6),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
+                          color: Colors.white.withValues(alpha:0.3),
                         ),
                       ),
                       child: Text(
@@ -396,30 +373,7 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(iconData, color: Colors.white, size: 24),
-                      if (isComingSoon)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            '업데이트 예정',
-                            style: TST.smallTextBold.copyWith(
-                              color: Colors.white,
-                              fontSize: 8,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+                  Icon(iconData, color: Colors.white, size: 24),
                   const Spacer(),
                   Text(
                     title,
@@ -442,7 +396,7 @@ class HomeScreen extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha:0.4),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
@@ -452,10 +406,10 @@ class HomeScreen extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withValues(alpha:0.6),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
+                          color: Colors.white.withValues(alpha:0.3),
                         ),
                       ),
                       child: Text(

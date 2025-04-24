@@ -4,7 +4,7 @@ import 'package:bracket_helper/presentation/home/screens/home_root.dart';
 import 'package:bracket_helper/presentation/main/main_screen.dart';
 import 'package:bracket_helper/presentation/match/screens/match_root.dart';
 import 'package:bracket_helper/presentation/save_player/screens/save_player_root.dart';
-import 'package:bracket_helper/presentation/setting/screen/setting_screen.dart';
+import 'package:bracket_helper/presentation/setting/screens/setting_screen.dart';
 import 'package:bracket_helper/main.dart';
 import 'package:go_router/go_router.dart';
 

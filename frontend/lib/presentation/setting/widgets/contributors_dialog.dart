@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
-import 'package:bracket_helper/presentation/setting/widget/contributor_item.dart';
+import 'package:bracket_helper/presentation/setting/widgets/contributor_item.dart';
 
 class ContributorsDialog extends StatelessWidget {
   const ContributorsDialog({super.key});

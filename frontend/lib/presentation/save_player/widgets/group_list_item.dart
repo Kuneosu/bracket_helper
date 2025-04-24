@@ -1,5 +1,7 @@
 import 'package:bracket_helper/core/presentation/components/default_button.dart';
 import 'package:bracket_helper/domain/model/group_model.dart';
+import 'package:bracket_helper/presentation/save_player/widgets/color_picker_grid.dart';
+import 'package:bracket_helper/ui/color_constants.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -310,82 +312,16 @@ class _GroupListItemState extends State<GroupListItem>
                           ),
                           const SizedBox(height: 15),
 
-                          // 색상 선택 영역
-                          Wrap(
+                          // 색상 선택 영역 - ColorPickerGrid 위젯 사용
+                          ColorPickerGrid(
+                            selectedColor: selectedColor,
+                            onColorSelected: (color) {
+                              setState(() => selectedColor = color);
+                            },
+                            // 그룹 색상 목록 사용
+                            colors: ColorConstants.defaultColors,
+                            colorSize: 40,
                             spacing: 10,
-                            runSpacing: 10,
-                            alignment: WrapAlignment.center,
-                            children: [
-                              // 기본 색상 목록
-                              _buildColorOption(CST.primary100, selectedColor, (
-                                color,
-                              ) {
-                                setState(() => selectedColor = color);
-                              }),
-                              _buildColorOption(CST.primary80, selectedColor, (
-                                color,
-                              ) {
-                                setState(() => selectedColor = color);
-                              }),
-                              _buildColorOption(CST.primary60, selectedColor, (
-                                color,
-                              ) {
-                                setState(() => selectedColor = color);
-                              }),
-                              _buildColorOption(
-                                CST.secondary100,
-                                selectedColor,
-                                (color) {
-                                  setState(() => selectedColor = color);
-                                },
-                              ),
-                              _buildColorOption(
-                                CST.secondary80,
-                                selectedColor,
-                                (color) {
-                                  setState(() => selectedColor = color);
-                                },
-                              ),
-                              _buildColorOption(
-                                CST.secondary60,
-                                selectedColor,
-                                (color) {
-                                  setState(() => selectedColor = color);
-                                },
-                              ),
-                              _buildColorOption(Colors.purple, selectedColor, (
-                                color,
-                              ) {
-                                setState(() => selectedColor = color);
-                              }),
-                              _buildColorOption(Colors.teal, selectedColor, (
-                                color,
-                              ) {
-                                setState(() => selectedColor = color);
-                              }),
-                              _buildColorOption(Colors.green, selectedColor, (
-                                color,
-                              ) {
-                                setState(() => selectedColor = color);
-                              }),
-                              _buildColorOption(Colors.red, selectedColor, (
-                                color,
-                              ) {
-                                setState(() => selectedColor = color);
-                              }),
-                              _buildColorOption(
-                                Colors.deepOrange,
-                                selectedColor,
-                                (color) {
-                                  setState(() => selectedColor = color);
-                                },
-                              ),
-                              _buildColorOption(Colors.brown, selectedColor, (
-                                color,
-                              ) {
-                                setState(() => selectedColor = color);
-                              }),
-                            ],
                           ),
                           const SizedBox(height: 25),
 
@@ -455,42 +391,6 @@ class _GroupListItemState extends State<GroupListItem>
             ),
       );
     });
-  }
-
-  // 색상 선택 옵션 위젯
-  Widget _buildColorOption(
-    Color color,
-    Color selectedColor,
-    Function(Color) onSelect,
-  ) {
-    final bool isSelected = color.toARGB32() == selectedColor.toARGB32();
-
-    return GestureDetector(
-      onTap: () => onSelect(color),
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: isSelected ? Colors.white : Colors.transparent,
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.5),
-              blurRadius: isSelected ? 8 : 3,
-              spreadRadius: isSelected ? 1 : 0,
-            ),
-          ],
-        ),
-        child:
-            isSelected
-                ? const Icon(Icons.check, color: Colors.white, size: 20)
-                : null,
-      ),
-    );
   }
 
   @override

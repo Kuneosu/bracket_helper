@@ -1,3 +1,4 @@
+import 'package:bracket_helper/ui/color_constants.dart';
 import 'package:flutter/material.dart';
 
 class ColorPickerGrid extends StatelessWidget {
@@ -26,27 +27,7 @@ class ColorPickerGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 선택 가능한 색상 목록 (colors가 null일 경우 기본 색상 목록 사용)
-    final colorList = colors ?? [
-      Colors.red,
-      Colors.pink,
-      Colors.purple,
-      Colors.deepPurple,
-      Colors.indigo,
-      Colors.blue,
-      Colors.lightBlue,
-      Colors.cyan,
-      Colors.teal,
-      Colors.green,
-      Colors.lightGreen,
-      Colors.lime,
-      Colors.yellow,
-      Colors.amber,
-      Colors.orange,
-      Colors.deepOrange,
-      Colors.brown,
-      Colors.grey,
-      Colors.blueGrey,
-    ];
+    final colorList = colors ?? ColorConstants.defaultColors;
 
     return Wrap(
       spacing: spacing,

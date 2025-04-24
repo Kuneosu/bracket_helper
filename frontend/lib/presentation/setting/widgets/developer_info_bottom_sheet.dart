@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
-import 'package:bracket_helper/presentation/setting/widget/social_icon.dart';
-import 'package:bracket_helper/presentation/setting/widget/email_feedback_launcher.dart';
+import 'package:bracket_helper/presentation/setting/widgets/social_icon.dart';
+import 'package:bracket_helper/presentation/setting/widgets/email_feedback_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DeveloperInfoBottomSheet extends StatelessWidget {
