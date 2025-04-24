@@ -18,6 +18,16 @@ class HomeScreen extends StatelessWidget {
     required this.onHelpPressed,
   });
 
+  // 업데이트 예정 스낵바를 표시하는 메서드
+  void _showComingSoonMessage(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('추후 업데이트 예정입니다'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,13 +140,14 @@ class HomeScreen extends StatelessWidget {
                           title: "선수 관리",
                           subtitle: "선수 정보를 등록하고 관리하세요",
                           iconData: Icons.people,
-                          onTap: () {},
+                          onTap: () => _showComingSoonMessage(context),
                           gradient: LinearGradient(
                             colors: [
                               Colors.orange.shade700,
                               Colors.orange.shade400,
                             ],
                           ),
+                          isComingSoon: true,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -145,13 +156,14 @@ class HomeScreen extends StatelessWidget {
                           title: "그룹 관리",
                           subtitle: "그룹을 만들고 선수를 추가하세요",
                           iconData: Icons.group_work,
-                          onTap: () {},
+                          onTap: () => context.go(RoutePaths.savePlayer),
                           gradient: LinearGradient(
                             colors: [
                               Colors.purple.shade700,
                               Colors.purple.shade400,
                             ],
                           ),
+                          isComingSoon: false,
                         ),
                       ),
                     ],
@@ -163,10 +175,11 @@ class HomeScreen extends StatelessWidget {
                     title: "통계 보기",
                     subtitle: "경기 결과와 플레이어 성적을 분석하세요",
                     iconData: Icons.bar_chart,
-                    onTap: () {},
+                    onTap: () => _showComingSoonMessage(context),
                     gradient: LinearGradient(
                       colors: [Colors.blue.shade700, Colors.blue.shade400],
                     ),
+                    isComingSoon: true,
                   ),
 
                   const SizedBox(height: 30),
@@ -227,6 +240,7 @@ class HomeScreen extends StatelessWidget {
     required VoidCallback onTap,
     required Gradient gradient,
     double height = 160,
+    bool isComingSoon = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -261,7 +275,30 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(iconData, color: Colors.white, size: 32),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(iconData, color: Colors.white, size: 32),
+                      if (isComingSoon)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '업데이트 예정',
+                            style: TST.smallTextBold.copyWith(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -284,6 +321,34 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+            if (isComingSoon)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                        ),
+                      ),
+                      child: Text(
+                        '업데이트 예정',
+                        style: TST.normalTextBold.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -296,6 +361,7 @@ class HomeScreen extends StatelessWidget {
     required IconData iconData,
     required VoidCallback onTap,
     required Gradient gradient,
+    bool isComingSoon = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -330,7 +396,30 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(iconData, color: Colors.white, size: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(iconData, color: Colors.white, size: 24),
+                      if (isComingSoon)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '업데이트 예정',
+                            style: TST.smallTextBold.copyWith(
+                              color: Colors.white,
+                              fontSize: 8,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                   const Spacer(),
                   Text(
                     title,
@@ -349,6 +438,34 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+            if (isComingSoon)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                        ),
+                      ),
+                      child: Text(
+                        '업데이트 예정',
+                        style: TST.smallTextBold.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
