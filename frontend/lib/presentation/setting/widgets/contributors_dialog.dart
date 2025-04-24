@@ -63,6 +63,7 @@ class ContributorsDialog extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
                 child: Column(
                   children: const [
+                    ContributorItem(name: '최은윤', role: '소중한 의견과 격려'),
                     ContributorItem(name: '하은이아빠', role: '소중한 의견과 격려'),
                     ContributorItem(name: '최은미', role: '소중한 의견과 격려'),
                     ContributorItem(name: '송치혁', role: '소중한 의견과 격려'),
