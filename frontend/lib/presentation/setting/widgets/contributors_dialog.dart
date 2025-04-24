@@ -62,14 +62,14 @@ class ContributorsDialog extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
                 child: Column(
                   children: const [
-                    ContributorItem(name: '하은이아빠', role: '앱 피드백'),
-                    ContributorItem(name: '최은미', role: '앱 피드백'),
-                    ContributorItem(name: '송치혁', role: '앱 피드백'),
-                    ContributorItem(name: '김봉준', role: '앱 피드백'),
-                    ContributorItem(name: '조소희', role: '앱 피드백'),
-                    ContributorItem(name: '김정수', role: '앱 피드백'),
-                    ContributorItem(name: '김지연', role: '앱 피드백'),
-                    ContributorItem(name: '마코클럽', role: '앱 피드백'),
+                    ContributorItem(name: '하은이아빠', role: '소중한 의견과 격려'),
+                    ContributorItem(name: '최은미', role: '소중한 의견과 격려'),
+                    ContributorItem(name: '송치혁', role: '소중한 의견과 격려'),
+                    ContributorItem(name: '김봉준', role: '소중한 의견과 격려'),
+                    ContributorItem(name: '조소희', role: '소중한 의견과 격려'),
+                    ContributorItem(name: '김정수', role: '소중한 의견과 격려'),
+                    ContributorItem(name: '김지연', role: '소중한 의견과 격려'),
+                    ContributorItem(name: '마코클럽', role: '실제 사용 및 피드백 제공'),
                   ],
                 ),
               ),
@@ -80,9 +80,7 @@ class ContributorsDialog extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             decoration: const BoxDecoration(
-              border: Border(
-                top: BorderSide(color: CST.gray4, width: 1),
-              ),
+              border: Border(top: BorderSide(color: CST.gray4, width: 1)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

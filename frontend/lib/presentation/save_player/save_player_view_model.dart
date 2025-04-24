@@ -541,9 +541,39 @@ class SavePlayerViewModel with ChangeNotifier {
     debugPrint('SavePlayerViewModel - 선수 추가 시도: 이름=$name, 그룹ID=$groupId');
 
     try {
-      // AddPlayerToGroupUseCase 호출
+      // 먼저 현재 그룹의 선수 목록을 가져와서 이름 중복 확인
+      List<PlayerModel> currentPlayers = [];
+      if (_playerListCache.containsKey(groupId)) {
+        currentPlayers = _playerListCache[groupId]!;
+      } else {
+        // 캐시에 없으면 DB에서 조회
+        final result = await _getGroupUseCase.execute(groupId);
+        if (result.isSuccess) {
+          currentPlayers = result.value.players
+              .map((player) => PlayerModel(id: player.id, name: player.name))
+              .toList();
+        }
+      }
+
+      // 동일한 이름의 선수 확인
+      final baseName = name.trim();
+      String uniqueName = baseName;
+      
+      // 동일한 이름이거나 "이름 2", "이름 3" 패턴의 선수 찾기
+      final samePlayers = currentPlayers.where((player) =>
+          player.name == baseName ||
+          (player.name.startsWith(baseName) && 
+           RegExp(r'^$baseName \d+$').hasMatch(player.name))).toList();
+      
+      if (samePlayers.isNotEmpty) {
+        // 중복된 이름이 있으면 숫자 붙이기
+        uniqueName = '$baseName ${samePlayers.length + 1}';
+        debugPrint('SavePlayerViewModel - 중복된 이름 발견: $baseName → $uniqueName로 변경됨');
+      }
+
+      // 수정된 이름으로 AddPlayerToGroupUseCase 호출
       final params = AddPlayerToGroupParams(
-        playerName: name.trim(),
+        playerName: uniqueName,
         groupId: groupId,
       );
 
@@ -730,14 +760,53 @@ class SavePlayerViewModel with ChangeNotifier {
 
     debugPrint('SavePlayerViewModel - 다중 선수 추가 시도: ${namesList.length}명, 그룹ID=$groupId');
 
+    // 먼저 현재 그룹의 선수 목록을 가져와서 이름 중복 확인
+    List<PlayerModel> currentPlayers = [];
+    try {
+      if (_playerListCache.containsKey(groupId)) {
+        currentPlayers = _playerListCache[groupId]!;
+      } else {
+        // 캐시에 없으면 DB에서 조회
+        final result = await _getGroupUseCase.execute(groupId);
+        if (result.isSuccess) {
+          currentPlayers = result.value.players
+              .map((player) => PlayerModel(id: player.id, name: player.name))
+              .toList();
+        }
+      }
+    } catch (e) {
+      debugPrint('SavePlayerViewModel - 선수 목록 조회 중 예외 발생: $e');
+    }
+
     int successCount = 0;
     List<String> failedNames = [];
 
     try {
+      // 이미 추가된 선수 이름 목록 (새로 추가되는 선수도 포함하여 갱신)
+      List<String> existingNames = currentPlayers.map((p) => p.name).toList();
+
       for (final name in namesList) {
+        final baseName = name.trim();
+        String uniqueName = baseName;
+        
+        // 동일한 이름의 선수 확인 (이미 있는 선수 + 이 배치에서 추가된 선수)
+        final sameNameCount = existingNames.where((existingName) =>
+            existingName == baseName ||
+            (existingName.startsWith(baseName) && 
+             RegExp(r'^$baseName \d+$').hasMatch(existingName))).length;
+        
+        if (sameNameCount > 0) {
+          // 중복된 이름이 있으면 숫자 붙이기
+          uniqueName = '$baseName ${sameNameCount + 1}';
+          debugPrint('SavePlayerViewModel - 중복된 이름 발견: $baseName → $uniqueName로 변경됨');
+        }
+        
+        // 이름 목록에 추가 (다음 반복에서 중복 체크용)
+        existingNames.add(uniqueName);
+
         // AddPlayerToGroupUseCase 호출
         final params = AddPlayerToGroupParams(
-          playerName: name.trim(),
+          playerName: uniqueName,
           groupId: groupId,
         );
 
@@ -746,12 +815,12 @@ class SavePlayerViewModel with ChangeNotifier {
         // 결과 처리
         if (result is int) {
           // 성공 (반환값이 선수 ID)
-          debugPrint('SavePlayerViewModel - 선수 추가 성공: 이름=$name, ID=$result');
+          debugPrint('SavePlayerViewModel - 선수 추가 성공: 이름=$uniqueName, ID=$result');
           successCount++;
         } else {
           // 실패 (반환값이 에러 메시지)
-          debugPrint('SavePlayerViewModel - 선수 추가 실패: 이름=$name, $result');
-          failedNames.add(name);
+          debugPrint('SavePlayerViewModel - 선수 추가 실패: 이름=$uniqueName, $result');
+          failedNames.add(uniqueName);
         }
       }
 
