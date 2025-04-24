@@ -19,6 +19,7 @@ class GroupListScreen extends StatefulWidget {
   final String searchQuery;
   final Function(SavePlayerAction) onAction;
   final Function(int) getPlayerCount;
+  final Function(int) getMatchedPlayerNames;
 
   const GroupListScreen({
     super.key,
@@ -28,6 +29,7 @@ class GroupListScreen extends StatefulWidget {
     required this.searchQuery,
     required this.onAction,
     required this.getPlayerCount,
+    required this.getMatchedPlayerNames,
   });
 
   @override
@@ -103,17 +105,8 @@ class _GroupListScreenState extends State<GroupListScreen>
 
   @override
   Widget build(BuildContext context) {
-    // 검색어에 따라 필터링된 그룹 목록
-    final filteredGroups =
-        widget.searchQuery.isEmpty
-            ? widget.groups
-            : widget.groups
-                .where(
-                  (group) => group.name.toLowerCase().contains(
-                    widget.searchQuery.toLowerCase(),
-                  ),
-                )
-                .toList();
+    // 검색어에 따라 필터링된 그룹 목록 (ViewModel에서 처리된 결과 사용)
+    final filteredGroups = widget.groups;
 
     return Stack(
       children: [
@@ -181,7 +174,7 @@ class _GroupListScreenState extends State<GroupListScreen>
                           child: TextField(
                             controller: _searchController,
                             decoration: InputDecoration(
-                              hintText: '그룹 검색...',
+                              hintText: '그룹 또는 선수 이름으로 검색...',
                               hintStyle: TST.smallTextRegular.copyWith(
                                 color: CST.gray3,
                               ),
@@ -403,6 +396,12 @@ class _GroupListScreenState extends State<GroupListScreen>
           debugPrint(
             'GroupListScreen - 그룹 ${group.id}(${group.name}): 선수 $playerCount명 표시',
           );
+          
+          // 검색어와 일치하는 선수 이름 목록 가져오기
+          List<String>? matchedPlayerNames;
+          if (widget.searchQuery.isNotEmpty) {
+            matchedPlayerNames = widget.getMatchedPlayerNames(group.id);
+          }
 
           return AnimationConfiguration.staggeredList(
             position: index,
@@ -413,6 +412,8 @@ class _GroupListScreenState extends State<GroupListScreen>
                 child: GroupListItem(
                   group: group,
                   playerCount: playerCount,
+                  matchedPlayerNames: matchedPlayerNames,
+                  searchQuery: widget.searchQuery,
                   onTap: () {
                     // 그룹 ID 선택하고 상세 화면으로 이동
                     widget.onAction(SavePlayerAction.onSelectGroup(group.id));

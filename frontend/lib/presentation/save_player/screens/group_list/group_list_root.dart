@@ -55,20 +55,29 @@ class _GroupListRootState extends State<GroupListRoot> {
     return ListenableBuilder(
       listenable: widget.viewModel,
       builder: (context, _) {
+        // filteredGroups 속성을 사용하여 검색어에 맞는 그룹만 표시
+        final filteredGroups = widget.viewModel.state.filteredGroups;
+        
         debugPrint(
           'GroupListRoot rebuild: isGridView=${widget.viewModel.state.isGridView}, '
           'searchQuery="${widget.viewModel.state.searchQuery}", '
           'isEditMode=${widget.viewModel.state.isEditMode}, '
-          'groups=${widget.groups.length}',
+          'groups=${widget.groups.length}, '
+          'filteredGroups=${filteredGroups.length}, '
+          'playerSearchMatchedGroupIds=${widget.viewModel.state.playerSearchMatchedGroupIds.length}',
         );
 
         return GroupListScreen(
-          groups: widget.groups,
+          groups: filteredGroups, // 필터링된 그룹 목록 전달
           isGridView: widget.viewModel.state.isGridView,
           searchQuery: widget.viewModel.state.searchQuery,
           isEditMode: widget.viewModel.state.isEditMode,
           getPlayerCount: (groupId) {
             return widget.viewModel.getPlayerCountSync(groupId);
+          },
+          getMatchedPlayerNames: (groupId) {
+            // 매치된 선수 이름 목록 가져오기
+            return widget.viewModel.state.matchedPlayerNamesByGroup[groupId] ?? [];
           },
           onAction: (action) {
             debugPrint('GroupListRoot - 액션 수신: $action');

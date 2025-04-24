@@ -14,6 +14,10 @@ class GroupListItem extends StatefulWidget {
   final void Function(String)? onRename;
   final void Function(Color)? onUpdateColor;
   final bool isEditMode;
+  // 검색어와 일치하는 선수 이름 목록
+  final List<String>? matchedPlayerNames;
+  // 현재 검색어
+  final String searchQuery;
 
   const GroupListItem({
     super.key,
@@ -24,6 +28,8 @@ class GroupListItem extends StatefulWidget {
     this.onRename,
     this.onUpdateColor,
     this.isEditMode = false,
+    this.matchedPlayerNames,
+    this.searchQuery = '',
   });
 
   @override
@@ -408,6 +414,10 @@ class _GroupListItemState extends State<GroupListItem>
 
   Widget _buildCardContent() {
     final Color groupColor = widget.group.color ?? CST.primary60;
+    // 검색어와 일치하는 선수 정보가 있는지 확인
+    final hasMatchedPlayers = widget.matchedPlayerNames != null && 
+                             widget.matchedPlayerNames!.isNotEmpty && 
+                             widget.searchQuery.isNotEmpty;
 
     return Material(
       color: Colors.transparent,
@@ -451,114 +461,199 @@ class _GroupListItemState extends State<GroupListItem>
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 그룹 색상 원형 표시
-                  Container(
-                    width: 80,
-                    height: 80,
-                    padding: const EdgeInsets.all(15),
-                    child: InkWell(
-                      onTap:
-                          widget.isEditMode && widget.onUpdateColor != null
-                              ? () => _showColorPickerDialog(context)
-                              : null,
-                      customBorder: const CircleBorder(),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: groupColor,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: groupColor.withValues(alpha: 0.5),
-                              blurRadius: 8,
-                              spreadRadius: 0,
-                              offset: Offset(0, 2),
+                  Row(
+                    children: [
+                      // 그룹 색상 원형 표시
+                      Container(
+                        width: 80,
+                        height: 80,
+                        padding: const EdgeInsets.all(15),
+                        child: InkWell(
+                          onTap:
+                              widget.isEditMode && widget.onUpdateColor != null
+                                  ? () => _showColorPickerDialog(context)
+                                  : null,
+                          customBorder: const CircleBorder(),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: groupColor,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: groupColor.withValues(alpha: 0.5),
+                                  blurRadius: 8,
+                                  spreadRadius: 0,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
                             ),
-                          ],
+                            child:
+                                widget.isEditMode && widget.onUpdateColor != null
+                                    ? Center(
+                                      child: Icon(
+                                        Icons.color_lens,
+                                        color: Colors.white.withValues(alpha: 0.7),
+                                        size: 20,
+                                      ),
+                                    )
+                                    : null,
+                          ),
                         ),
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      // 그룹 이름 - 편집 모드에서는 텍스트 필드로 변경
+                      Expanded(
                         child:
-                            widget.isEditMode && widget.onUpdateColor != null
-                                ? Center(
-                                  child: Icon(
-                                    Icons.color_lens,
-                                    color: Colors.white.withValues(alpha: 0.7),
-                                    size: 20,
+                            widget.isEditMode
+                                ? InkWell(
+                                  onTap: () {
+                                    // 포커스 설정하여 키보드 표시
+                                    _nameFocusNode.requestFocus();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: CST.primary60),
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: CST.primary20,
+                                    ),
+                                    child: TextField(
+                                      controller: _nameController,
+                                      focusNode: _nameFocusNode,
+                                      style: TST.mediumTextBold.copyWith(
+                                        color: CST.primary100,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        contentPadding: EdgeInsets.zero,
+                                      ),
+                                      onEditingComplete: _onRenameComplete,
+                                    ),
                                   ),
                                 )
-                                : null,
+                                : Text(
+                                  widget.group.name,
+                                  style: TST.mediumTextBold,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                       ),
-                    ),
-                  ),
 
-                  const SizedBox(width: 12),
+                      const SizedBox(width: 12),
 
-                  // 그룹 이름 - 편집 모드에서는 텍스트 필드로 변경
-                  Expanded(
-                    child:
-                        widget.isEditMode
-                            ? InkWell(
+                      // 편집 모드일 때 제거 버튼, 아닐 때 플레이어 수 표시
+                      widget.isEditMode
+                          ? Padding(
+                            padding: const EdgeInsets.only(right: 16),
+                            child: DefaultButton(
+                              text: '제거',
                               onTap: () {
-                                // 포커스 설정하여 키보드 표시
-                                _nameFocusNode.requestFocus();
+                                _showDeleteConfirmation(context);
                               },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: CST.primary60),
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: CST.primary20,
-                                ),
-                                child: TextField(
-                                  controller: _nameController,
-                                  focusNode: _nameFocusNode,
-                                  style: TST.mediumTextBold.copyWith(
-                                    color: CST.primary100,
-                                  ),
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero,
-                                  ),
-                                  onEditingComplete: _onRenameComplete,
-                                ),
-                              ),
-                            )
-                            : Text(
-                              widget.group.name,
-                              style: TST.mediumTextBold,
-                              overflow: TextOverflow.ellipsis,
+                              color: CST.error,
+                              width: 60,
+                              height: 36,
+                              textStyle: TST.smallTextBold,
                             ),
+                          )
+                          : Padding(
+                            padding: const EdgeInsets.only(right: 16),
+                            child: _buildPlayerCountBadge(),
+                          ),
+                    ],
                   ),
-
-                  const SizedBox(width: 12),
-
-                  // 편집 모드일 때 제거 버튼, 아닐 때 플레이어 수 표시
-                  widget.isEditMode
-                      ? Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: DefaultButton(
-                          text: '제거',
-                          onTap: () {
-                            _showDeleteConfirmation(context);
-                          },
-                          color: CST.error,
-                          width: 60,
-                          height: 36,
-                          textStyle: TST.smallTextBold,
-                        ),
-                      )
-                      : Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: _buildPlayerCountBadge(),
-                      ),
+                  
+                  // 매치된 선수 이름 표시
+                  if (hasMatchedPlayers) _buildMatchedPlayerInfo(),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+  
+  // 매치된 선수 정보를 표시하는 위젯
+  Widget _buildMatchedPlayerInfo() {
+    if (widget.matchedPlayerNames == null || widget.matchedPlayerNames!.isEmpty || widget.searchQuery.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    
+    final searchQuery = widget.searchQuery.toLowerCase();
+    
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.search, size: 14, color: CST.primary60),
+              const SizedBox(width: 4),
+              Text(
+                '검색된 선수:',
+                style: TST.smallerTextBold.copyWith(color: CST.primary80),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: widget.matchedPlayerNames!.map((name) {
+              // 검색어에 해당하는 부분 강조 표시
+              final int index = name.toLowerCase().indexOf(searchQuery);
+              if (index >= 0) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: CST.primary20,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: CST.primary40),
+                  ),
+                  child: RichText(
+                    text: TextSpan(
+                      style: TST.smallerTextRegular.copyWith(color: CST.gray2),
+                      children: [
+                        TextSpan(text: name.substring(0, index)),
+                        TextSpan(
+                          text: name.substring(index, index + searchQuery.length),
+                          style: TST.smallerTextBold.copyWith(
+                            color: CST.primary100,
+                            backgroundColor: CST.primary40.withOpacity(0.3),
+                          ),
+                        ),
+                        TextSpan(text: name.substring(index + searchQuery.length)),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                // 검색어가 name에 없는 경우 (대소문자 구분 문제 등)
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: CST.primary20,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: CST.primary40),
+                  ),
+                  child: Text(
+                    name,
+                    style: TST.smallerTextRegular.copyWith(color: CST.gray2),
+                  ),
+                );
+              }
+            }).toList(),
+          ),
+        ],
       ),
     );
   }

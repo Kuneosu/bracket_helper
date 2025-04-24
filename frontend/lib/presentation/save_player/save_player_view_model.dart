@@ -163,6 +163,17 @@ class SavePlayerViewModel with ChangeNotifier {
 
       case OnSearchQueryChanged(query: final query):
         updateSearchQuery(query);
+        // 검색어가 변경되면 선수 이름으로도 검색 수행
+        if (query.isNotEmpty) {
+          await searchByPlayerName(query);
+        } else {
+          // 검색어가 비었을 때는 선수 이름 검색 결과 초기화
+          clearPlayerNameSearchResults();
+        }
+        break;
+
+      case OnSearchByPlayerName(query: final query):
+        await searchByPlayerName(query);
         break;
 
       case OnToggleGridView():
@@ -856,5 +867,82 @@ class SavePlayerViewModel with ChangeNotifier {
 
     _state = _state.copyWith(isLoading: false);
     notifyListeners();
+  }
+
+  // 선수 이름으로 그룹 검색
+  Future<void> searchByPlayerName(String query) async {
+    if (query.isEmpty) {
+      clearPlayerNameSearchResults();
+      return;
+    }
+    
+    debugPrint('SavePlayerViewModel - 선수 이름으로 그룹 검색 시작: "$query"');
+    
+    // 검색 결과를 저장할 Set (중복 방지)
+    final Set<int> matchedGroupIds = {};
+    // 그룹별로 매치된 선수 이름을 저장할 Map
+    final Map<int, List<String>> matchedPlayerNamesByGroup = {};
+    
+    try {
+      // 모든 그룹을 순회하며 선수 목록을 확인
+      for (final group in _state.groups) {
+        // 캐시된 선수 목록이 있으면 사용
+        List<PlayerModel> players;
+        
+        if (_playerListCache.containsKey(group.id)) {
+          players = _playerListCache[group.id]!;
+        } else {
+          // 캐시에 없으면 그룹의 선수 목록 조회
+          final result = await _getGroupUseCase.execute(group.id);
+          if (result.isSuccess) {
+            players = result.value.players
+                .map((player) => PlayerModel(id: player.id, name: player.name))
+                .toList();
+            
+            // 조회한 선수 목록을 캐시에 저장
+            _playerListCache[group.id] = players;
+          } else {
+            continue; // 조회 실패시 다음 그룹으로
+          }
+        }
+        
+        // 검색어와 일치하는 선수 이름 찾기
+        final lowerQuery = query.toLowerCase();
+        final matchingPlayers = players
+            .where((player) => player.name.toLowerCase().contains(lowerQuery))
+            .map((player) => player.name)
+            .toList();
+        
+        // 매치된 선수가 있으면 결과에 추가
+        if (matchingPlayers.isNotEmpty) {
+          matchedGroupIds.add(group.id);
+          matchedPlayerNamesByGroup[group.id] = matchingPlayers;
+          debugPrint('SavePlayerViewModel - 선수 이름 매칭 그룹 발견: 그룹 ID ${group.id} (${group.name}), 매치된 선수: ${matchingPlayers.join(', ')}');
+        }
+      }
+      
+      // 검색 결과 상태 업데이트
+      _state = _state.copyWith(
+        playerSearchMatchedGroupIds: matchedGroupIds.toList(),
+        matchedPlayerNamesByGroup: matchedPlayerNamesByGroup,
+      );
+      notifyListeners();
+      
+      debugPrint('SavePlayerViewModel - 선수 이름 검색 완료: ${matchedGroupIds.length}개 그룹 매칭');
+    } catch (e) {
+      debugPrint('SavePlayerViewModel - 선수 이름 검색 중 예외 발생: $e');
+    }
+  }
+
+  // 선수 이름 검색 결과 초기화
+  void clearPlayerNameSearchResults() {
+    if (_state.playerSearchMatchedGroupIds.isNotEmpty || _state.matchedPlayerNamesByGroup.isNotEmpty) {
+      _state = _state.copyWith(
+        playerSearchMatchedGroupIds: [],
+        matchedPlayerNamesByGroup: {},
+      );
+      notifyListeners();
+      debugPrint('SavePlayerViewModel - 선수 이름 검색 결과 초기화됨');
+    }
   }
 }
