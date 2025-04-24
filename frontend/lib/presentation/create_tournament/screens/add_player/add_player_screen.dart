@@ -184,6 +184,12 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
 
     // 디버깅 정보
     debugPrint('총 ${processedPlayerIds.length}명의 선수가 처리되었습니다. 실제 추가된 선수: $successCount명');
+    
+    // 선수 목록 탭으로 자동 이동 (탭 인덱스 0은 선수 목록 탭)
+    if (successCount > 0) {
+      _tabController.animateTo(0);
+      debugPrint('선수 추가 후 선수 목록 탭으로 자동 이동');
+    }
   }
 
   // 현재 선택된 그룹의 선수 목록을 가져오는 헬퍼 메서드
