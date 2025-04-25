@@ -1,4 +1,4 @@
-package com.example.bracket_helper
+package com.kuneosu.bracket_helper
 
 import io.flutter.embedding.android.FlutterActivity
 
