@@ -12,6 +12,9 @@ class HomeScreen extends StatelessWidget {
   final List<TournamentModel> tournaments;
   final void Function(HomeAction) onAction;
   final VoidCallback onHelpPressed;
+  // 스낵바가 현재 표시 중인지 추적하는 변수
+  static bool _isSnackBarVisible = false;
+  
   const HomeScreen({
     super.key,
     required this.tournaments,
@@ -21,12 +24,21 @@ class HomeScreen extends StatelessWidget {
 
   // 업데이트 예정 스낵바를 표시하는 메서드
   void _showComingSoonMessage(BuildContext context) {
+    // 스낵바가 이미 표시 중이면 무시
+    if (_isSnackBarVisible) return;
+    
+    // 스낵바 표시 중 상태로 설정
+    _isSnackBarVisible = true;
+    
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(AppStrings.comingSoonMessage),
-        duration: Duration(seconds: 2),
+        duration: Duration(seconds: 1),
       ),
-    );
+    ).closed.then((_) {
+      // 스낵바가 닫히면 상태 업데이트
+      _isSnackBarVisible = false;
+    });
   }
 
   @override

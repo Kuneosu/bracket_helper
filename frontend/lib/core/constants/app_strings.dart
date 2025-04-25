@@ -61,8 +61,8 @@ class AppStrings {
   // 디스플레이 설정
   static const String themeSettings = '테마 설정';
   static const String themeOptions = '라이트 / 다크 / 시스템';
-  static const String languageSettings = '언어';
-  static const String languageOptions = '한국어 / 영어';
+  static const String languageSettings = '언어 설정';
+  static const String languageOptions = '한국어 / English';
   
   // 앱 정보 설정
   static const String appVersion = '앱 버전';
