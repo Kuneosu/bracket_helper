@@ -5,11 +5,13 @@ import 'package:bracket_helper/ui/text_st.dart';
 class ContributorItem extends StatelessWidget {
   final String name;
   final String role;
+  final Color? color;
 
   const ContributorItem({
     super.key,
     required this.name,
     required this.role,
+    this.color,
   });
 
   @override
@@ -73,7 +75,7 @@ class ContributorItem extends StatelessWidget {
           Icon(
             Icons.favorite,
             size: 16,
-            color: CST.secondary100.withValues(alpha:0.7),
+            color: color ?? CST.secondary100.withValues(alpha:0.7),
           ),
         ],
       ),

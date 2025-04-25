@@ -285,6 +285,7 @@ class AppStrings {
   // 대회 정보 입력 화면
   static const String tournamentInfoInput = '대회 정보 입력';
   static const String reset = '초기화';
+  static const String reGenerate = '재생성';
   static const String tournamentName = '대회명';
   static const String enterTournamentName = '대회명을 입력해주세요';
   static const String tournamentNameAutoSetInfo = "대회명을 입력하지 않으면 '[날짜] 대회'로 자동 설정됩니다.";

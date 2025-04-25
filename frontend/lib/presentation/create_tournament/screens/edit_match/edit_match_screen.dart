@@ -381,7 +381,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      AppStrings.reset,
+                      AppStrings.reGenerate,
                       style: TST.smallTextBold.copyWith(color: CST.primary100),
                     ),
                   ],
