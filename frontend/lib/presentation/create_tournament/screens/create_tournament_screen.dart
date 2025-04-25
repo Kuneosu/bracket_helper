@@ -38,35 +38,38 @@ class CreateTournamentScreen extends StatelessWidget {
           _navigateToPreviousPage(context);
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Column(
-            children: [Text(AppStrings.createBracketTitle, style: TST.largeTextRegular)],
-          ),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          scrolledUnderElevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () async {
-              // 첫 번째 화면(기본 정보)에서만 대화상자 표시
-              if (currentPageIndex == 0) {
-                final shouldExit = await _showExitConfirmationDialog(context);
-                if (shouldExit && context.mounted) {
-                  // 종료 콜백 호출
-                  _dispatchOnDiscardAction();
-                  context.go(RoutePaths.home);
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Column(
+              children: [Text(AppStrings.createBracketTitle, style: TST.largeTextRegular)],
+            ),
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            scrolledUnderElevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () async {
+                // 첫 번째 화면(기본 정보)에서만 대화상자 표시
+                if (currentPageIndex == 0) {
+                  final shouldExit = await _showExitConfirmationDialog(context);
+                  if (shouldExit && context.mounted) {
+                    // 종료 콜백 호출
+                    _dispatchOnDiscardAction();
+                    context.go(RoutePaths.home);
+                  }
+                } else {
+                  // 다른 페이지에서는 이전 페이지로 이동
+                  _navigateToPreviousPage(context);
                 }
-              } else {
-                // 다른 페이지에서는 이전 페이지로 이동
-                _navigateToPreviousPage(context);
-              }
-            },
+              },
+            ),
           ),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [_buildProcessHeader(), Expanded(child: body)],
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [_buildProcessHeader(), Expanded(child: body)],
+          ),
         ),
       ),
     );
