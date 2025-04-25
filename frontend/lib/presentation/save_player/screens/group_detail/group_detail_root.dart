@@ -198,7 +198,7 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
       widget.onAction(action);
 
       // 약간의 지연 후 데이터 갱신
-      Future.delayed(const Duration(milliseconds: 100), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
           debugPrint('GroupDetailRoot: 액션 처리 후 데이터 새로고침');
           _refreshData();
@@ -430,7 +430,7 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                                           // 모든 선수가 추가된 후 데이터 새로고침
                                           if (mounted) {
                                             Future.delayed(
-                                              const Duration(milliseconds: 100),
+                                              const Duration(milliseconds: 500),
                                               () {
                                                 if (mounted) {
                                                   debugPrint(
@@ -486,7 +486,11 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
       // 다이얼로그가 닫힌 후 데이터 새로고침
       if (mounted) {
         debugPrint('GroupDetailRoot: 다이얼로그 종료 후 데이터 새로고침');
-        _refreshData();
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            _refreshData();
+          }
+        });
       }
     });
   }
