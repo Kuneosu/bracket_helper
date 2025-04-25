@@ -56,6 +56,7 @@ class SettingScreen extends StatelessWidget {
           SettingItemWithBeta(
             icon: Icons.update,
             title: AppStrings.checkForUpdates,
+            trailing: const SizedBox(),
             onTap: () {
               // 업데이트 확인 기능 구현
             },
@@ -71,6 +72,7 @@ class SettingScreen extends StatelessWidget {
             icon: Icons.star_outline,
             title: AppStrings.rateUs,
             subtitle: AppStrings.rateUsSubtitle,
+            trailing: const SizedBox(),
             onTap: () {
               // 평가하기 기능 구현
             },
