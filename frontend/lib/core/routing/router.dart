@@ -6,7 +6,11 @@ import 'package:bracket_helper/presentation/match/screens/match_root.dart';
 import 'package:bracket_helper/presentation/save_player/screens/save_player_root.dart';
 import 'package:bracket_helper/presentation/setting/screens/setting_screen.dart';
 import 'package:bracket_helper/main.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+// route-aware 위젯을 지원하기 위한 RouteObserver
+final routeObserver = RouteObserver<PageRoute>();
 
 final router = GoRouter(
   initialLocation: RoutePaths.home,
@@ -20,8 +24,19 @@ final router = GoRouter(
       // 홈 화면으로 리다이렉트
       return RoutePaths.setting;
     }
+    
+    // 홈 화면에서 그룹 관리로 이동하는 경우, 탭 인덱스를 변경하는 대신 
+    // 동일한 라우트를 사용하도록 처리 (중복 인스턴스 방지)
+    if (state.uri.path == RoutePaths.savePlayer && state.uri.queryParameters.containsKey('refresh')) {
+      // 이미 올바른 경로에 있으므로 리다이렉션은 필요 없음
+      return null;
+    }
+    
     return null; // 다른 스킴은 정상 처리
   },
+  
+  // 네비게이션 관찰자 추가
+  observers: [routeObserver],
   
   routes: [
     GoRoute(

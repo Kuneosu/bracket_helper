@@ -13,8 +13,8 @@ class HomeScreen extends StatelessWidget {
   final void Function(HomeAction) onAction;
   final VoidCallback onHelpPressed;
   // 스낵바가 현재 표시 중인지 추적하는 변수
-  static bool _isSnackBarVisible = false;
-  
+  // static bool _isSnackBarVisible = false;
+
   const HomeScreen({
     super.key,
     required this.tournaments,
@@ -22,24 +22,27 @@ class HomeScreen extends StatelessWidget {
     required this.onHelpPressed,
   });
 
-  // 업데이트 예정 스낵바를 표시하는 메서드
-  void _showComingSoonMessage(BuildContext context) {
-    // 스낵바가 이미 표시 중이면 무시
-    if (_isSnackBarVisible) return;
-    
-    // 스낵바 표시 중 상태로 설정
-    _isSnackBarVisible = true;
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(AppStrings.comingSoonMessage),
-        duration: Duration(seconds: 1),
-      ),
-    ).closed.then((_) {
-      // 스낵바가 닫히면 상태 업데이트
-      _isSnackBarVisible = false;
-    });
-  }
+  // // 업데이트 예정 스낵바를 표시하는 메서드
+  // void _showComingSoonMessage(BuildContext context) {
+  //   // 스낵바가 이미 표시 중이면 무시
+  //   if (_isSnackBarVisible) return;
+
+  //   // 스낵바 표시 중 상태로 설정
+  //   _isSnackBarVisible = true;
+
+  //   ScaffoldMessenger.of(context)
+  //       .showSnackBar(
+  //         const SnackBar(
+  //           content: Text(AppStrings.comingSoonMessage),
+  //           duration: Duration(seconds: 1),
+  //         ),
+  //       )
+  //       .closed
+  //       .then((_) {
+  //         // 스낵바가 닫히면 상태 업데이트
+  //         _isSnackBarVisible = false;
+  //       });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +121,9 @@ class HomeScreen extends StatelessWidget {
                           },
                           onTapDelete: () {
                             onAction(
-                              OnTapDeleteTournament(tournaments[reversedIndex].id),
+                              OnTapDeleteTournament(
+                                tournaments[reversedIndex].id,
+                              ),
                             );
                           },
                         ),
@@ -149,28 +154,31 @@ class HomeScreen extends StatelessWidget {
 
                   Row(
                     children: [
+                      // Expanded(
+                      //   child: _buildSmallFeatureCard(
+                      //     title: AppStrings.playerManagement,
+                      //     subtitle: AppStrings.playerManagementDesc,
+                      //     iconData: Icons.people,
+                      //     onTap: () => _showComingSoonMessage(context),
+                      //     gradient: LinearGradient(
+                      //       colors: [
+                      //         Colors.orange.shade700,
+                      //         Colors.orange.shade400,
+                      //       ],
+                      //     ),
+                      //     isComingSoon: true,
+                      //   ),
+                      // ),
+                      // const SizedBox(width: 12),
                       Expanded(
-                        child: _buildSmallFeatureCard(
-                          title: AppStrings.playerManagement,
-                          subtitle: AppStrings.playerManagementDesc,
-                          iconData: Icons.people,
-                          onTap: () => _showComingSoonMessage(context),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.orange.shade700,
-                              Colors.orange.shade400,
-                            ],
-                          ),
-                          isComingSoon: true,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildSmallFeatureCard(
+                        child: _buildFeatureCard(
                           title: AppStrings.groupManagement,
                           subtitle: AppStrings.groupManagementDesc,
                           iconData: Icons.group_work,
-                          onTap: () => context.go(RoutePaths.savePlayer),
+                          onTap: () {
+                            // 메인 탭 네비게이션의 그룹 관리 탭(인덱스 1)으로 이동
+                            context.go(RoutePaths.savePlayer);
+                          },
                           gradient: LinearGradient(
                             colors: [
                               Colors.purple.shade700,
@@ -183,19 +191,18 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  // const SizedBox(height: 16),
 
-                  _buildFeatureCard(
-                    title: AppStrings.viewStatistics,
-                    subtitle: AppStrings.viewStatisticsDesc,
-                    iconData: Icons.bar_chart,
-                    onTap: () => _showComingSoonMessage(context),
-                    gradient: LinearGradient(
-                      colors: [Colors.blue.shade700, Colors.blue.shade400],
-                    ),
-                    isComingSoon: true,
-                  ),
-
+                  // _buildFeatureCard(
+                  //   title: AppStrings.viewStatistics,
+                  //   subtitle: AppStrings.viewStatisticsDesc,
+                  //   iconData: Icons.bar_chart,
+                  //   onTap: () => _showComingSoonMessage(context),
+                  //   gradient: LinearGradient(
+                  //     colors: [Colors.blue.shade700, Colors.blue.shade400],
+                  //   ),
+                  //   isComingSoon: true,
+                  // ),
                   const SizedBox(height: 30),
                 ],
               ),
@@ -316,7 +323,7 @@ class HomeScreen extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha:0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
@@ -326,10 +333,10 @@ class HomeScreen extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha:0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha:0.3),
+                          color: Colors.white.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Text(
@@ -346,97 +353,97 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSmallFeatureCard({
-    required String title,
-    required String subtitle,
-    required IconData iconData,
-    required VoidCallback onTap,
-    required Gradient gradient,
-    bool isComingSoon = false,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        height: 120,
-        decoration: BoxDecoration(
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -15,
-              bottom: -15,
-              child: Icon(
-                iconData,
-                size: 80,
-                color: Colors.white.withValues(alpha: 0.2),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(iconData, color: Colors.white, size: 24),
-                  const Spacer(),
-                  Text(
-                    title,
-                    style: TST.smallTextBold.copyWith(color: Colors.white),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TST.smallTextRegular.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 12,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            if (isComingSoon)
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha:0.4),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha:0.6),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha:0.3),
-                        ),
-                      ),
-                      child: Text(
-                        AppStrings.comingSoon,
-                        style: TST.smallTextBold.copyWith(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _buildSmallFeatureCard({
+  //   required String title,
+  //   required String subtitle,
+  //   required IconData iconData,
+  //   required VoidCallback onTap,
+  //   required Gradient gradient,
+  //   bool isComingSoon = false,
+  // }) {
+  //   return GestureDetector(
+  //     onTap: onTap,
+  //     child: Container(
+  //       width: double.infinity,
+  //       height: 120,
+  //       decoration: BoxDecoration(
+  //         gradient: gradient,
+  //         borderRadius: BorderRadius.circular(16),
+  //         boxShadow: [
+  //           BoxShadow(
+  //             color: Colors.black.withValues(alpha: 0.1),
+  //             blurRadius: 8,
+  //             offset: const Offset(0, 3),
+  //           ),
+  //         ],
+  //       ),
+  //       child: Stack(
+  //         children: [
+  //           Positioned(
+  //             right: -15,
+  //             bottom: -15,
+  //             child: Icon(
+  //               iconData,
+  //               size: 80,
+  //               color: Colors.white.withValues(alpha: 0.2),
+  //             ),
+  //           ),
+  //           Padding(
+  //             padding: const EdgeInsets.all(12),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 Icon(iconData, color: Colors.white, size: 24),
+  //                 const Spacer(),
+  //                 Text(
+  //                   title,
+  //                   style: TST.smallTextBold.copyWith(color: Colors.white),
+  //                 ),
+  //                 const SizedBox(height: 2),
+  //                 Text(
+  //                   subtitle,
+  //                   style: TST.smallTextRegular.copyWith(
+  //                     color: Colors.white.withValues(alpha: 0.9),
+  //                     fontSize: 12,
+  //                   ),
+  //                   maxLines: 1,
+  //                   overflow: TextOverflow.ellipsis,
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //           if (isComingSoon)
+  //             Positioned.fill(
+  //               child: Container(
+  //                 decoration: BoxDecoration(
+  //                   color: Colors.black.withValues(alpha: 0.4),
+  //                   borderRadius: BorderRadius.circular(16),
+  //                 ),
+  //                 child: Center(
+  //                   child: Container(
+  //                     padding: const EdgeInsets.symmetric(
+  //                       horizontal: 12,
+  //                       vertical: 6,
+  //                     ),
+  //                     decoration: BoxDecoration(
+  //                       color: Colors.black.withValues(alpha: 0.6),
+  //                       borderRadius: BorderRadius.circular(16),
+  //                       border: Border.all(
+  //                         color: Colors.white.withValues(alpha: 0.3),
+  //                       ),
+  //                     ),
+  //                     child: Text(
+  //                       AppStrings.comingSoon,
+  //                       style: TST.smallTextBold.copyWith(color: Colors.white),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }
