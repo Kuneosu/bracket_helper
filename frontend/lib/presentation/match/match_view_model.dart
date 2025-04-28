@@ -244,7 +244,6 @@ class MatchViewModel with ChangeNotifier {
 
   // 점수 업데이트 함수
   Future<void> updateScore(int matchId, int? scoreA, int? scoreB) async {
-    // TODO: 실제 점수 업데이트 로직 구현 필요
     debugPrint('매치 ID $matchId 점수 업데이트: A=$scoreA, B=$scoreB');
 
     // 프로토타입 구현 - 실제로는 API 호출이 필요함
@@ -478,7 +477,6 @@ class MatchViewModel with ChangeNotifier {
 
   // 토너먼트 종료 처리
   Future<void> finishTournament() async {
-    // TODO: 토너먼트 종료 로직 구현
     debugPrint('토너먼트 ID $tournamentId 종료 요청됨');
     // 프로토타입 구현 - 실제로는 API 호출이 필요함
   }
