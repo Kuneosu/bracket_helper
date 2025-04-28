@@ -31,19 +31,20 @@ class BracketShareUtils {
       // 별도의 화면으로 이동하여 이미지 생성 및 공유
       final result = await Navigator.of(context).push<Uint8List?>(
         MaterialPageRoute(
-          builder: (context) => BracketImageGenerator(
-            tournament: tournament,
-            matches: matches,
-            players: players,
-          ),
+          builder:
+              (context) => BracketImageGenerator(
+                tournament: tournament,
+                matches: matches,
+                players: players,
+              ),
         ),
       );
 
       if (result == null) {
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.imageCancelled)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(AppStrings.imageCancelled)));
         return;
       }
 
@@ -57,24 +58,35 @@ class BracketShareUtils {
       await file.writeAsBytes(result);
 
       // 공유하기
-      final String shareTitle = AppStrings.bracketShareTitle.replaceAll('%s', tournament.title);
-      await SharePlus.instance.share(
-        ShareParams(
-          text: shareTitle,
-          subject: shareTitle,
-          files: [XFile(file.path)],
-        ),
+      final String shareTitle = AppStrings.bracketShareTitle.replaceAll(
+        '%s',
+        tournament.title,
       );
+      if (!context.mounted) return;
+      final shareContext = Navigator.of(context).context;
+      final box = shareContext.findRenderObject() as RenderBox?;
+      if (box != null) {
+        await SharePlus.instance.share(
+          ShareParams(
+            text: shareTitle,
+            subject: shareTitle,
+            files: [XFile(file.path)],
+            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size,
+          ),
+        );
+      }
     } catch (e) {
       // 에러 처리
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppStrings.bracketShareError.replaceAll('%s', e.toString())),
+          content: Text(
+            AppStrings.bracketShareError.replaceAll('%s', e.toString()),
+          ),
           backgroundColor: Colors.red,
         ),
       );
       debugPrint('Error sharing bracket: $e');
     }
   }
-} 
+}

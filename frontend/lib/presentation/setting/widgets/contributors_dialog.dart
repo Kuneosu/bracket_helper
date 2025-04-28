@@ -63,16 +63,32 @@ class ContributorsDialog extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
                 child: Column(
                   children: const [
-                    ContributorItem(name: '최은윤', role: '소중한 의견과 격려'),
+                    ContributorItem(
+                      name: '최은윤',
+                      role: '무조건적인 지지',
+                      color: Color(0xFFe8e0ff),
+                    ),
                     ContributorItem(name: '하은이아빠', role: '소중한 의견과 격려'),
                     ContributorItem(name: '최은미', role: '소중한 의견과 격려'),
                     ContributorItem(name: '송치혁', role: '소중한 의견과 격려'),
                     ContributorItem(name: '김봉준', role: '소중한 의견과 격려'),
                     ContributorItem(name: '조소희', role: '소중한 의견과 격려'),
                     ContributorItem(name: '김정수', role: '소중한 의견과 격려'),
-                    ContributorItem(name: '김지연', role: '소중한 의견과 격려', color: Colors.deepPurpleAccent),
-                    ContributorItem(name: '박유정', role: '마코여신', color: Colors.pinkAccent),
-                    ContributorItem(name: '마코클럽', role: '실제 사용 및 피드백 제공', color: Color(0xFF129575),),
+                    ContributorItem(
+                      name: '김지연',
+                      role: '소중한 의견과 격려',
+                      color: Colors.deepPurpleAccent,
+                    ),
+                    ContributorItem(
+                      name: '박유정',
+                      role: '마코여신',
+                      color: Colors.pinkAccent,
+                    ),
+                    ContributorItem(
+                      name: '마코클럽',
+                      role: '실제 사용 및 피드백 제공',
+                      color: Color(0xFF129575),
+                    ),
                   ],
                 ),
               ),

@@ -1,7 +1,7 @@
 class AppStrings {
 
   static const String appTitle = '대진 도우미';
-  static const String currentVersion = '0.2516.1';
+  static const String currentVersion = '0.2517.1';
 
   // 홈 화면
   static const String help = '도움말';
