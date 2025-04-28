@@ -27,6 +27,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
   late TextEditingController _titleController;
   late AnimationController _animationController;
   late Animation<double> _animation;
+  final FocusNode _titleFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -41,7 +42,15 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
       curve: Curves.easeInOut,
     );
     _animationController.forward();
+    _titleFocusNode.addListener(_onFocusChange);
     debugPrint('TournamentInfoScreen - initState 호출');
+  }
+
+  void _onFocusChange() {
+    if (!_titleFocusNode.hasFocus) {
+      // 포커스가 빠져나갈 때만 상태 업데이트
+      widget.onAction(CreateTournamentAction.onTitleChanged(_titleController.text));
+    }
   }
 
   @override
@@ -63,6 +72,8 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
   void dispose() {
     _titleController.dispose();
     _animationController.dispose();
+    _titleFocusNode.removeListener(_onFocusChange);
+    _titleFocusNode.dispose();
     debugPrint('TournamentInfoScreen - dispose 호출');
     super.dispose();
   }
@@ -147,6 +158,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
         children: [
           TextField(
             controller: _titleController,
+            focusNode: _titleFocusNode,
             decoration: InputDecoration(
               hintText: AppStrings.enterTournamentName,
               hintStyle: TST.mediumTextRegular.copyWith(color: CST.gray3),
@@ -166,7 +178,11 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
               filled: true,
               fillColor: Colors.white,
             ),
-            onChanged: (value) {
+            enableIMEPersonalizedLearning: true,
+            enableInteractiveSelection: true,
+            enableSuggestions: true,
+            keyboardType: TextInputType.text,
+            onSubmitted: (value) {
               widget.onAction(CreateTournamentAction.onTitleChanged(value));
             },
           ),
@@ -334,6 +350,11 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
         // 안전한 컨텍스트 사용
         final ctx = _safeContext ?? context;
         if (!mounted || !ctx.mounted) return;
+
+        // 현재 TextField에 포커스가 있다면 강제로 포커스 해제하여 텍스트 업데이트
+        if (_titleFocusNode.hasFocus) {
+          FocusScope.of(context).unfocus();
+        }
 
         // 프로세스 진행 상태만 업데이트
         debugPrint('TournamentInfoScreen - 다음 버튼 클릭');
