@@ -629,7 +629,7 @@ class _GroupListItemState extends State<GroupListItem>
                           text: name.substring(index, index + searchQuery.length),
                           style: TST.smallerTextBold.copyWith(
                             color: CST.primary100,
-                            backgroundColor: CST.primary40.withOpacity(0.3),
+                            backgroundColor: CST.primary40.withValues(alpha: 0.3),
                           ),
                         ),
                         TextSpan(text: name.substring(index + searchQuery.length)),

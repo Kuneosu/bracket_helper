@@ -15,12 +15,13 @@ class SavePlayerRoot extends StatefulWidget {
   State<SavePlayerRoot> createState() => _SavePlayerRootState();
 }
 
-class _SavePlayerRootState extends State<SavePlayerRoot> {
+class _SavePlayerRootState extends State<SavePlayerRoot> with RouteAware {
   late final SavePlayerViewModel _viewModel;
   String _title = '';
   late Widget _body;
   bool _showBackButton = false;
   Color? _appBarColor;
+  String _currentPath = '';
 
   @override
   void initState() {
@@ -37,10 +38,14 @@ class _SavePlayerRootState extends State<SavePlayerRoot> {
   void _setupScreenContent() {
     // 현재 URL에서 마지막 경로 부분을 추출
     final location = GoRouterState.of(context).matchedLocation;
+    
+    // 경로가 변경된 경우에만 처리
+    final isPathChanged = _currentPath != location;
+    _currentPath = location;
 
     // 경로 및 선택된 그룹 ID 로깅
     debugPrint(
-      'SavePlayerRoot - 현재 경로: $location, 선택된 그룹 ID: ${_viewModel.state.selectedGroupId}',
+      'SavePlayerRoot - 현재 경로: $location, 선택된 그룹 ID: ${_viewModel.state.selectedGroupId}, 경로 변경: $isPathChanged',
     );
 
     // 선택된 색상 계산 (기본값: 파란색)
@@ -57,14 +62,23 @@ class _SavePlayerRootState extends State<SavePlayerRoot> {
     );
 
     if (location.endsWith(RoutePaths.groupList)) {
+      // 그룹 목록 화면
       _title = '그룹 목록';
+      
+      // 경로가 변경되었고, 이전에 그룹 생성 화면이었다면 데이터 새로고침
+      if (isPathChanged && _currentPath.contains(RoutePaths.createGroup)) {
+        debugPrint('SavePlayerRoot - 그룹 생성 화면에서 돌아옴: 데이터 새로고침');
+        _refreshAllData();
+      }
+      
       _body = GroupListRoot(
         groups: _viewModel.state.groups,
         viewModel: _viewModel,
       );
       _showBackButton = false;
       _appBarColor = null; // 그룹 목록에서는 기본 색상 사용
-    } else if (location.contains('group-detail')) {
+    } else if (location.contains('/group-detail/')) {
+      // 그룹 상세 화면
       // URL에서 그룹 ID 추출 (URL 패턴: /save-player/group-detail/123)
       final pathSegments = location.split('/');
       final groupIdStr = pathSegments.length >= 4 ? pathSegments[3] : null;
@@ -99,6 +113,13 @@ class _SavePlayerRootState extends State<SavePlayerRoot> {
       _showBackButton = false;
       _appBarColor = null; // 기본 화면에서는 기본 색상 사용
     }
+  }
+
+  // 모든 데이터 새로고침
+  void _refreshAllData() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _viewModel.refreshAllData();
+    });
   }
 
   // 그룹 색상 로드

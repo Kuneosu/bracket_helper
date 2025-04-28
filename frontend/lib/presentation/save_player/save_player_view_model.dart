@@ -63,29 +63,45 @@ class SavePlayerViewModel with ChangeNotifier {
   Future<void> fetchAllGroups() async {
     // 현재 선택된 그룹 ID 저장
     final currentSelectedGroupId = _state.selectedGroupId;
+    
+    debugPrint('fetchAllGroups 시작: 현재 선택된 그룹 ID=$currentSelectedGroupId, 현재 그룹 수=${_state.groups.length}');
 
     _state = _state.copyWith(isLoading: true);
     notifyListeners();
 
-    final result = await _getAllGroupsUseCase.execute();
-    if (result.isSuccess) {
-      // 선택된 그룹 ID를 유지하며 그룹 목록 업데이트
-      _state = _state.copyWith(
-        groups: result.value,
-        selectedGroupId: currentSelectedGroupId,
-      );
-      debugPrint(
-        'fetchAllGroups: 그룹 목록 ${result.value.length}개 로드, 선택된 그룹 ID 유지: $currentSelectedGroupId',
-      );
+    try {
+      final result = await _getAllGroupsUseCase.execute();
+      if (result.isSuccess) {
+        final newGroups = result.value;
+        // 선택된 그룹 ID를 유지하며 그룹 목록 업데이트
+        _state = _state.copyWith(
+          groups: newGroups,
+          selectedGroupId: currentSelectedGroupId,
+        );
+        
+        debugPrint(
+          'fetchAllGroups 성공: ${newGroups.length}개 그룹 로드, 선택된 그룹 ID 유지: $currentSelectedGroupId',
+        );
+        
+        if (newGroups.isNotEmpty) {
+          debugPrint(
+            '그룹 목록: ${newGroups.map((g) => "${g.id}:${g.name}").join(", ")}',
+          );
+        }
 
-      // 그룹 목록을 불러온 후 각 그룹별 선수 수 조회 및 캐시 업데이트
-      await _updatePlayerCounts();
-    } else {
-      _state = _state.copyWith(errorMessage: result.error.message);
+        // 그룹 목록을 불러온 후 각 그룹별 선수 수 조회 및 캐시 업데이트
+        await _updatePlayerCounts();
+      } else {
+        debugPrint('fetchAllGroups 실패: ${result.error.message}');
+        _state = _state.copyWith(errorMessage: result.error.message);
+      }
+    } catch (e) {
+      debugPrint('fetchAllGroups 중 예외 발생: $e');
+      _state = _state.copyWith(errorMessage: '그룹 목록을 가져오는 중 오류가 발생했습니다: $e');
+    } finally {
+      _state = _state.copyWith(isLoading: false);
+      notifyListeners();
     }
-
-    _state = _state.copyWith(isLoading: false);
-    notifyListeners();
   }
 
   // 그룹별 선수 수 조회 및 캐시 업데이트 (내부 메서드)
@@ -247,26 +263,98 @@ class SavePlayerViewModel with ChangeNotifier {
     _state = _state.copyWith(isLoading: true);
     notifyListeners();
 
-    // AddGroupUseCase 호출
-    final result = await _addGroupUseCase.execute(
-      groupName: name,
-      colorValue: color.toARGB32(),
-    );
+    debugPrint('SavePlayerViewModel - 그룹 저장 시작: 이름=$name, 색상=$color');
 
-    if (result.isSuccess) {
-      // 그룹 추가 후 캐시 초기화
-      invalidateAllCaches();
-      // 그룹 목록 다시 로드
-      await fetchAllGroups();
-    } else {
-      // 에러 처리
-      _state = _state.copyWith(
-        errorMessage: '그룹 저장에 실패했습니다: ${result.error.message}',
+    try {
+      // AddGroupUseCase 호출
+      final result = await _addGroupUseCase.execute(
+        groupName: name,
+        colorValue: color.toARGB32(),
       );
+  
+      if (result.isSuccess) {
+        final newGroup = result.value;
+        debugPrint('SavePlayerViewModel - 그룹 저장 성공: ID=${newGroup.id}, 이름=${newGroup.name}');
+        
+        // 그룹 추가 후 캐시 초기화
+        invalidateAllCaches();
+        
+        // 검색어가 있는 경우 검색 관련 상태 초기화 (새 그룹을 볼 수 있도록)
+        if (_state.searchQuery.isNotEmpty) {
+          debugPrint('SavePlayerViewModel - 검색어가 있어 검색 상태 초기화');
+          _state = _state.copyWith(
+            searchQuery: '',
+            playerSearchMatchedGroupIds: [],
+            matchedPlayerNamesByGroup: {},
+          );
+        }
+        
+        // 새로 생성된 그룹을 현재 그룹 목록에 직접 추가 (UI 즉시 갱신을 위해)
+        final updatedGroups = [..._state.groups, newGroup];
+        debugPrint('SavePlayerViewModel - 새 그룹 추가 후 그룹 수: ${updatedGroups.length}');
+        
+        // 상태 업데이트 및 UI 갱신
+        _state = _state.copyWith(
+          groups: updatedGroups,
+          isLoading: false,
+        );
+        notifyListeners();
+        
+        // DB에서 전체 그룹 목록 다시 로드 (화면 이동 시 최신 데이터 보장)
+        // 별도 비동기 호출로 처리하여 UI 블로킹 방지
+        _loadLatestGroups();
+      } else {
+        // 에러 처리
+        debugPrint('SavePlayerViewModel - 그룹 저장 실패: ${result.error.message}');
+        _state = _state.copyWith(
+          errorMessage: '그룹 저장에 실패했습니다: ${result.error.message}',
+          isLoading: false,
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('SavePlayerViewModel - 그룹 저장 중 예외 발생: $e');
+      _state = _state.copyWith(
+        errorMessage: '그룹 저장 중 오류가 발생했습니다: $e',
+        isLoading: false,
+      );
+      notifyListeners();
     }
-
-    _state = _state.copyWith(isLoading: false);
-    notifyListeners();
+  }
+  
+  // 그룹 목록을 최신으로 갱신하는 별도 메서드 (백그라운드 실행)
+  Future<void> _loadLatestGroups() async {
+    try {
+      debugPrint('SavePlayerViewModel - _loadLatestGroups: 백그라운드에서 그룹 목록 갱신 시작');
+      
+      // DB에서 최신 그룹 데이터 로드
+      final result = await _getAllGroupsUseCase.execute();
+      if (!result.isSuccess) {
+        debugPrint('SavePlayerViewModel - 그룹 목록 갱신 실패: ${result.error.message}');
+        return;
+      }
+      
+      final latestGroups = result.value;
+      debugPrint('SavePlayerViewModel - 최신 그룹 목록 로드 완료: ${latestGroups.length}개');
+      
+      // 현재 선택된 그룹 ID 저장
+      final currentSelectedGroupId = _state.selectedGroupId;
+      
+      // 상태 업데이트 및 UI 갱신
+      _state = _state.copyWith(
+        groups: latestGroups,
+        selectedGroupId: currentSelectedGroupId,
+      );
+      
+      // 선수 수 캐시 업데이트
+      await _updatePlayerCounts();
+      
+      // UI 갱신
+      notifyListeners();
+      debugPrint('SavePlayerViewModel - _loadLatestGroups: 그룹 목록 갱신 및 UI 업데이트 완료');
+    } catch (e) {
+      debugPrint('SavePlayerViewModel - _loadLatestGroups 예외 발생: $e');
+    }
   }
 
   // 그룹 내 선수 수 조회 (캐시 데이터만 사용하는 동기 메서드)
@@ -526,13 +614,23 @@ class SavePlayerViewModel with ChangeNotifier {
   Future<void> refreshAllData() async {
     debugPrint('SavePlayerViewModel - 모든 데이터 새로고침 시작');
 
-    // 캐시 초기화
-    invalidateAllCaches();
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
 
-    // 그룹 목록 새로고침
-    await fetchAllGroups();
-
-    debugPrint('SavePlayerViewModel - 모든 데이터 새로고침 완료');
+    try {
+      // 캐시 초기화
+      invalidateAllCaches();
+  
+      // 그룹 목록 새로고침
+      await fetchAllGroups();
+  
+      debugPrint('SavePlayerViewModel - 모든 데이터 새로고침 완료');
+    } catch (e) {
+      debugPrint('SavePlayerViewModel - 데이터 새로고침 중 오류 발생: $e');
+    } finally {
+      _state = _state.copyWith(isLoading: false);
+      notifyListeners();
+    }
   }
 
   // 그룹에 선수 추가하기
