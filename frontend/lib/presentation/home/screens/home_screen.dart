@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
   final VoidCallback onHelpPressed;
   // 스낵바가 현재 표시 중인지 추적하는 변수
   static bool _isSnackBarVisible = false;
-  
+
   const HomeScreen({
     super.key,
     required this.tournaments,
@@ -26,19 +26,22 @@ class HomeScreen extends StatelessWidget {
   void _showComingSoonMessage(BuildContext context) {
     // 스낵바가 이미 표시 중이면 무시
     if (_isSnackBarVisible) return;
-    
+
     // 스낵바 표시 중 상태로 설정
     _isSnackBarVisible = true;
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(AppStrings.comingSoonMessage),
-        duration: Duration(seconds: 1),
-      ),
-    ).closed.then((_) {
-      // 스낵바가 닫히면 상태 업데이트
-      _isSnackBarVisible = false;
-    });
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+          const SnackBar(
+            content: Text(AppStrings.comingSoonMessage),
+            duration: Duration(seconds: 1),
+          ),
+        )
+        .closed
+        .then((_) {
+          // 스낵바가 닫히면 상태 업데이트
+          _isSnackBarVisible = false;
+        });
   }
 
   @override
@@ -118,7 +121,9 @@ class HomeScreen extends StatelessWidget {
                           },
                           onTapDelete: () {
                             onAction(
-                              OnTapDeleteTournament(tournaments[reversedIndex].id),
+                              OnTapDeleteTournament(
+                                tournaments[reversedIndex].id,
+                              ),
                             );
                           },
                         ),
@@ -149,24 +154,24 @@ class HomeScreen extends StatelessWidget {
 
                   Row(
                     children: [
+                      // Expanded(
+                      //   child: _buildSmallFeatureCard(
+                      //     title: AppStrings.playerManagement,
+                      //     subtitle: AppStrings.playerManagementDesc,
+                      //     iconData: Icons.people,
+                      //     onTap: () => _showComingSoonMessage(context),
+                      //     gradient: LinearGradient(
+                      //       colors: [
+                      //         Colors.orange.shade700,
+                      //         Colors.orange.shade400,
+                      //       ],
+                      //     ),
+                      //     isComingSoon: true,
+                      //   ),
+                      // ),
+                      // const SizedBox(width: 12),
                       Expanded(
-                        child: _buildSmallFeatureCard(
-                          title: AppStrings.playerManagement,
-                          subtitle: AppStrings.playerManagementDesc,
-                          iconData: Icons.people,
-                          onTap: () => _showComingSoonMessage(context),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.orange.shade700,
-                              Colors.orange.shade400,
-                            ],
-                          ),
-                          isComingSoon: true,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildSmallFeatureCard(
+                        child: _buildFeatureCard(
                           title: AppStrings.groupManagement,
                           subtitle: AppStrings.groupManagementDesc,
                           iconData: Icons.group_work,
@@ -183,19 +188,18 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  // const SizedBox(height: 16),
 
-                  _buildFeatureCard(
-                    title: AppStrings.viewStatistics,
-                    subtitle: AppStrings.viewStatisticsDesc,
-                    iconData: Icons.bar_chart,
-                    onTap: () => _showComingSoonMessage(context),
-                    gradient: LinearGradient(
-                      colors: [Colors.blue.shade700, Colors.blue.shade400],
-                    ),
-                    isComingSoon: true,
-                  ),
-
+                  // _buildFeatureCard(
+                  //   title: AppStrings.viewStatistics,
+                  //   subtitle: AppStrings.viewStatisticsDesc,
+                  //   iconData: Icons.bar_chart,
+                  //   onTap: () => _showComingSoonMessage(context),
+                  //   gradient: LinearGradient(
+                  //     colors: [Colors.blue.shade700, Colors.blue.shade400],
+                  //   ),
+                  //   isComingSoon: true,
+                  // ),
                   const SizedBox(height: 30),
                 ],
               ),
@@ -316,7 +320,7 @@ class HomeScreen extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha:0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
@@ -326,10 +330,10 @@ class HomeScreen extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha:0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha:0.3),
+                          color: Colors.white.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Text(
@@ -410,7 +414,7 @@ class HomeScreen extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha:0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
@@ -420,10 +424,10 @@ class HomeScreen extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha:0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha:0.3),
+                          color: Colors.white.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Text(
