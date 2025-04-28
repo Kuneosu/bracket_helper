@@ -1,5 +1,4 @@
 import 'package:bracket_helper/domain/model/group_model.dart';
-import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_view_model.dart';
 import 'package:bracket_helper/presentation/save_player/screens/group_list/group_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +21,7 @@ class GroupListRoot extends StatefulWidget {
 class _GroupListRootState extends State<GroupListRoot> with WidgetsBindingObserver {
   bool _isFirstLoad = true;
   int _lastGroupCount = 0;
+  bool _resumedFromBackground = false;
 
   @override
   void initState() {
@@ -41,14 +41,22 @@ class _GroupListRootState extends State<GroupListRoot> with WidgetsBindingObserv
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // 앱이 다시 화면에 표시될 때 데이터 새로고침
     if (state == AppLifecycleState.resumed) {
-      debugPrint('GroupListRoot - 앱이 포그라운드로 돌아옴: 데이터 새로고침');
-      _refreshData();
+      _resumedFromBackground = true;
+      debugPrint('GroupListRoot - 앱이 포그라운드로 돌아옴: 데이터 새로고침 플래그 설정');
     }
   }
   
   @override
   void didUpdateWidget(GroupListRoot oldWidget) {
     super.didUpdateWidget(oldWidget);
+    
+    // 배경에서 돌아온 후 첫 업데이트에서 강제 새로고침
+    if (_resumedFromBackground) {
+      debugPrint('GroupListRoot - 백그라운드에서 복귀 후 첫 업데이트: 데이터 새로고침');
+      _resumedFromBackground = false;
+      _refreshData();
+      return;
+    }
     
     // 그룹 목록 개수가 변경되었는지 체크
     if (widget.groups.length != _lastGroupCount) {
@@ -93,66 +101,38 @@ class _GroupListRootState extends State<GroupListRoot> with WidgetsBindingObserv
     });
   }
 
-  // 새로고침 처리 메서드
-  void _handleRefresh() {
-    debugPrint('GroupListRoot - 새로고침 요청 처리 시작');
-    // 모든 데이터 새로고침
-    widget.viewModel.refreshAllData();
-    debugPrint('GroupListRoot - 새로고침 요청 처리 완료');
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
-    // 상태 로깅
-    debugPrint('GroupListRoot - build 호출: widget.groups=${widget.groups.length}, viewModel.state.groups=${widget.viewModel.state.groups.length}');
+    // 화면 재구성 시 항상 최신 데이터 확인
+    if (_resumedFromBackground) {
+      debugPrint('GroupListRoot - build: 백그라운드에서 돌아옴, 데이터 새로고침');
+      _resumedFromBackground = false;
+      Future.microtask(() => _refreshData());
+    }
     
     return ListenableBuilder(
       listenable: widget.viewModel,
       builder: (context, _) {
-        debugPrint('GroupListRoot - ListenableBuilder 호출: ${widget.viewModel.state.groups.length}개 그룹');
-      
-        // 그룹 목록 - viewModel의 filteredGroups 사용 (검색 필터링 적용)
         final filteredGroups = widget.viewModel.state.filteredGroups;
-        final searchQuery = widget.viewModel.state.searchQuery;
         final isGridView = widget.viewModel.state.isGridView;
         final isEditMode = widget.viewModel.state.isEditMode;
+        final searchQuery = widget.viewModel.state.searchQuery;
         
-        // debugPrint로 상태 로깅
-        debugPrint(
-          'GroupListRoot build: isGridView=$isGridView, '
-          'searchQuery="$searchQuery", '
-          'isEditMode=$isEditMode, '
-          'groups=${widget.viewModel.state.groups.length}, '
-          'filteredGroups=${filteredGroups.length}'
-        );
-        
-        // getPlayerCount 함수 참조 - GroupListScreen으로 전달
-        final getPlayerCount = widget.viewModel.getPlayerCountSync;
-        
-        // 검색어에 일치하는 선수 이름 가져오는 함수
-        getMatchedPlayerNames(int groupId) {
-          // 해당 그룹의 매치된 선수 이름 목록 반환
-          return widget.viewModel.state.matchedPlayerNamesByGroup[groupId] ?? [];
-        }
+        debugPrint('GroupListRoot - build: 필터링된 그룹 개수 ${filteredGroups.length}');
         
         return GroupListScreen(
-          groups: filteredGroups, // viewModel의 필터링된 그룹 목록 사용
+          groups: filteredGroups,
           isGridView: isGridView,
           isEditMode: isEditMode,
           searchQuery: searchQuery,
-          onAction: (action) {
-            // onRefresh 액션인 경우 로컬 메서드 호출
-            if (action is OnRefresh) {
-              _handleRefresh();
-            } else {
-              // 그 외 액션은 ViewModel로 전달
-              widget.viewModel.onAction(action);
-            }
-          },
-          getPlayerCount: getPlayerCount,
-          getMatchedPlayerNames: getMatchedPlayerNames,
+          onAction: widget.viewModel.onAction,
+          getPlayerCount: widget.viewModel.getPlayerCountSync,
+          getMatchedPlayerNames: (groupId) => 
+              widget.viewModel.state.matchedPlayerNamesByGroup[groupId] ?? [],
         );
-      }
+      },
     );
   }
 }

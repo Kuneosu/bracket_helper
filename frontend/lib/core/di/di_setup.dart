@@ -165,7 +165,9 @@ Future<void> setupDependencies() async {
       getAllMatchesUseCase: getIt<GetAllMatchesUseCase>(),
     ),
   );
-  getIt.registerFactory<SavePlayerViewModel>(
+  
+  // SavePlayerViewModel을 싱글톤으로 등록하여 항상 동일한 인스턴스 사용
+  getIt.registerLazySingleton<SavePlayerViewModel>(
     () => SavePlayerViewModel(
       getAllGroupsUseCase: getIt<GetAllGroupsUseCase>(),
       addGroupUseCase: getIt<AddGroupUseCase>(),

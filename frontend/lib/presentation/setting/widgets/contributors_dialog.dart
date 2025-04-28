@@ -76,7 +76,7 @@ class ContributorsDialog extends StatelessWidget {
                     ContributorItem(name: '김정수', role: '소중한 의견과 격려'),
                     ContributorItem(
                       name: '김지연',
-                      role: '소중한 의견과 격려',
+                      role: '개발자 벗, iOS 출시 비용 지원',
                       color: Colors.deepPurpleAccent,
                     ),
                     ContributorItem(
