@@ -5,6 +5,7 @@
 > **아마추어 스포츠·소규모 대회를 위한 오프라인 대진표 빌더 & 매니저**
 
 ---
+![Play Store 그래픽 이미지](https://github.com/user-attachments/assets/d5009d9e-04c8-4847-82cd-c6dbc429a808)
 
 ## ✨ 프로젝트 개요
 
@@ -35,7 +36,15 @@
 
 ## 📸 스크린샷
 
-> 추후 추가 예정입니다.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/4284f765-e228-4f64-921a-4ed2b29b016b" width="200"/>
+  <img src="https://github.com/user-attachments/assets/bcb39271-f7d2-4a0d-8166-1c7a3cb8c558" width="200"/>
+  <img src="https://github.com/user-attachments/assets/f8855037-319c-4bae-903e-fe23175b0739" width="200"/>
+  <img src="https://github.com/user-attachments/assets/6b9873d8-afd6-4207-8512-b447b33c44ba" width="200"/>
+  <img src="https://github.com/user-attachments/assets/dd8c571d-27bd-418e-964a-990adedd173d" width="200"/>
+  <img src="https://github.com/user-attachments/assets/80924cc7-7486-4726-9175-9a53c8d08b04" width="200"/>
+  <img src="https://github.com/user-attachments/assets/f1e62972-c1c9-4507-9494-34c6088d7c05" width="200"/>
+</p>
 
 ---
 
