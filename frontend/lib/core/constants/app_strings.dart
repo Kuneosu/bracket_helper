@@ -68,6 +68,7 @@ class AppStrings {
   static const String appVersion = '앱 버전';
   
   static const String checkForUpdates = '업데이트 확인';
+  static const String checkForUpdatesSubtitle = '최신 버전으로 업데이트하세요';
   
   // 고객 지원 설정
   static const String inquiryAndFeedback = '문의 및 피드백';
