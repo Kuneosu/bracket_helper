@@ -1,13 +1,15 @@
 #!/bin/bash
 
-# iOS 폴더로 이동
+set -e  # 오류 발생 시 스크립트 즉시 중단
+
+# 현재 위치는 ios/ci_scripts, 상위로 이동
+cd ../..
+
+# Flutter 패키지 가져오기
+flutter/bin/flutter pub get
+
+# iOS 디렉토리로 이동
 cd ios
 
-# CocoaPods 설치 (brew로 설치할 필요 없음, 그냥 pod install만 실행)
+# CocoaPods 설치
 pod install
-
-# 프로젝트 루트로 돌아가기
-cd ..
-
-# Flutter 패키지 설치
-flutter pub get
