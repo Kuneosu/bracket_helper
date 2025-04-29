@@ -10,6 +10,8 @@ import 'package:bracket_helper/presentation/setting/widgets/email_feedback_launc
 import 'package:bracket_helper/presentation/setting/widgets/privacy_policy_dialog.dart';
 import 'package:bracket_helper/presentation/setting/widgets/terms_of_service_dialog.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'dart:io' show Platform;
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -54,14 +56,38 @@ class SettingScreen extends StatelessWidget {
             title: AppStrings.appVersion,
             subtitle: AppStrings.currentVersion,
           ),
-          // SettingItemWithBeta(
-          //   icon: Icons.update,
-          //   title: AppStrings.checkForUpdates,
-          //   trailing: const SizedBox(),
-          //   onTap: () {
-          //     // 업데이트 확인 기능 구현
-          //   },
-          // ),
+          SettingItem(
+            icon: Icons.update,
+            title: AppStrings.checkForUpdates,
+            subtitle: AppStrings.checkForUpdatesSubtitle,
+            onTap: () async {
+              try {
+                final Uri url = Platform.isIOS
+                    ? Uri.parse('https://apps.apple.com/app/id6745153734') // iOS 앱스토어 ID
+                    : Uri.parse('https://play.google.com/store/apps/details?id=com.kuneosu.bracket_helper'); // 패키지명 기준
+                
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                } else {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('스토어 페이지를 열 수 없습니다.'),
+                      ),
+                    );
+                  }
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('오류가 발생했습니다: $e'),
+                    ),
+                  );
+                }
+              }
+            },
+          ),
           SectionTitle(title: AppStrings.customerSupportSection),
           SettingItem(
             icon: Icons.email_outlined,
