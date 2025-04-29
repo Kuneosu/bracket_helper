@@ -228,6 +228,25 @@ class _MatchScreenState extends State<MatchScreen> {
                 onShareBracketPressed: () => widget.onAction(const MatchAction.captureAndShareBracket()),
                 shareButtonKey: shareButtonKey,
               ),
+              // 경기 점수 저장 관련 안내 메시지 추가
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                color: CST.primary20,
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, color: CST.primary100, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        "입력한 점수는 '경기 종료' 버튼을 눌러야 저장됩니다. 대진표를 수정하면 기존 점수가 초기화됩니다.",
+                        style: TST.smallTextRegular.copyWith(color: CST.primary100),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16,),
               const CustomTabBar(),
               Expanded(
                 child: TabBarView(

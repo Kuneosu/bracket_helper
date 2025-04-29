@@ -191,6 +191,7 @@ Future<void> setupDependencies() async {
       getMatchesInTournamentUseCase: getIt<GetMatchesInTournamentUseCase>(),
       deleteMatchUseCase: getIt<DeleteMatchUseCase>(),
       createMatchUseCase: getIt<CreateMatchUseCase>(),
+      matchRepository: getIt<MatchRepository>(),
     ),
   );
 }

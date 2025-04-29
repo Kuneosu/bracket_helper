@@ -2,6 +2,7 @@ import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
+import 'package:bracket_helper/domain/repository/match_repository.dart';
 import 'package:bracket_helper/domain/use_case/match/create_match_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/delete_match_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/get_matches_in_tournament_use_case.dart';
@@ -45,6 +46,7 @@ class MatchViewModel with ChangeNotifier {
   final GetMatchesInTournamentUseCase _getMatchesInTournamentUseCase;
   final DeleteMatchUseCase _deleteMatchUseCase;
   final CreateMatchUseCase _createMatchUseCase;
+  final MatchRepository _matchRepository;
   MatchState _state = MatchState(
     tournament: TournamentModel(id: 0, title: '', date: DateTime.now()),
   );
@@ -60,10 +62,12 @@ class MatchViewModel with ChangeNotifier {
     required GetMatchesInTournamentUseCase getMatchesInTournamentUseCase,
     required DeleteMatchUseCase deleteMatchUseCase,
     required CreateMatchUseCase createMatchUseCase,
+    required MatchRepository matchRepository,
   }) : _getTournamentByIdUseCase = getTournamentByIdUseCase,
        _getMatchesInTournamentUseCase = getMatchesInTournamentUseCase,
        _deleteMatchUseCase = deleteMatchUseCase,
-       _createMatchUseCase = createMatchUseCase {
+       _createMatchUseCase = createMatchUseCase,
+       _matchRepository = matchRepository {
     init();
   }
 
@@ -468,7 +472,7 @@ class MatchViewModel with ChangeNotifier {
         shuffleBracket();
         break;
       case FinishTournament():
-        context.go(RoutePaths.home);
+        finishTournament(context);
         break;
       case SortPlayersBy():
         setSortOption(action.sortOption);
@@ -505,8 +509,38 @@ class MatchViewModel with ChangeNotifier {
   }
 
   // 토너먼트 종료 처리
-  Future<void> finishTournament() async {
+  Future<void> finishTournament(BuildContext context) async {
     debugPrint('토너먼트 ID $tournamentId 종료 요청됨');
-    // 프로토타입 구현 - 실제로는 API 호출이 필요함
+    
+    // 메모리에 있는 모든 매치의 점수를 데이터베이스에 저장
+    try {
+      // 모든 매치에 대해 점수를 DB에 저장
+      for (final match in _state.matches) {
+        if (match.scoreA != null && match.scoreB != null) {
+          debugPrint('매치 ID ${match.id} 점수 저장: A=${match.scoreA}, B=${match.scoreB}');
+          
+          // MatchRepository를 통해 DB에 점수 업데이트
+          final result = await _matchRepository.updateScore(
+            matchId: match.id,
+            scoreA: match.scoreA,
+            scoreB: match.scoreB,
+          );
+          
+          if (!result.isSuccess) {
+            debugPrint('매치 ID ${match.id} 점수 저장 실패: ${result.error.message}');
+          }
+        }
+      }
+      
+      debugPrint('모든 매치 점수 저장 완료');
+      
+      if(!context.mounted) return;
+      // 홈 화면으로 이동
+      context.go(RoutePaths.home);
+    } catch (e) {
+      debugPrint('매치 점수 저장 중 오류 발생: $e');
+      // 오류가 발생해도 홈 화면으로 이동
+      context.go(RoutePaths.home);
+    }
   }
 }
