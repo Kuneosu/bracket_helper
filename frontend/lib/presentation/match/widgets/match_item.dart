@@ -98,6 +98,7 @@ class MatchItem extends StatelessWidget {
             child: DefaultTextField(
               textAlign: TextAlign.center, 
               hintText: '0',
+              isNumberField: true,
               onChanged: (value) {
                 final score = int.tryParse(value);
                 onAction(MatchAction.updateScore(
@@ -106,7 +107,7 @@ class MatchItem extends StatelessWidget {
                   scoreB: match.scoreB,
                 ));
               },
-              initialValue: match.scoreA?.toString() ?? '',
+              initialValue: match.scoreA?.toString() ?? '0',
             ),
           ),
           // VS 표시
@@ -131,6 +132,7 @@ class MatchItem extends StatelessWidget {
             child: DefaultTextField(
               textAlign: TextAlign.center, 
               hintText: '0',
+              isNumberField: true,
               onChanged: (value) {
                 final score = int.tryParse(value);
                 onAction(MatchAction.updateScore(
@@ -139,7 +141,7 @@ class MatchItem extends StatelessWidget {
                   scoreB: score,
                 ));
               },
-              initialValue: match.scoreB?.toString() ?? '',
+              initialValue: match.scoreB?.toString() ?? '0',
             ),
           ),
           const SizedBox(width: 24),
