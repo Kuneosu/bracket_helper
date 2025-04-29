@@ -8,6 +8,8 @@ class DefaultTextField extends StatefulWidget {
   final String? initialValue;
   final Function(String)? onChanged;
   final bool bottomBorder;
+  final bool isNumberField;
+
   const DefaultTextField({
     super.key,
     required this.hintText,
@@ -15,6 +17,7 @@ class DefaultTextField extends StatefulWidget {
     this.initialValue,
     this.onChanged,
     this.bottomBorder = false,
+    this.isNumberField = false,
   });
 
   @override
@@ -23,15 +26,42 @@ class DefaultTextField extends StatefulWidget {
 
 class _DefaultTextFieldState extends State<DefaultTextField> {
   late TextEditingController _controller;
+  late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialValue);
+    _focusNode = FocusNode();
+    
+    _focusNode.addListener(_onFocusChange);
+    
+    if (widget.isNumberField && _controller.text == "0") {
+      _controller.text = "";
+    }
+  }
+
+  void _onFocusChange() {
+    if (widget.isNumberField) {
+      if (_focusNode.hasFocus) {
+        if (_controller.text == "0") {
+          _controller.text = "";
+        }
+      } else {
+        if (_controller.text.isEmpty) {
+          _controller.text = "0";
+          if (widget.onChanged != null) {
+            widget.onChanged!("0");
+          }
+        }
+      }
+    }
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -40,10 +70,12 @@ class _DefaultTextFieldState extends State<DefaultTextField> {
   Widget build(BuildContext context) {
     return TextField(
       controller: _controller,
+      focusNode: _focusNode,
       textAlign: widget.textAlign!,
       textAlignVertical: TextAlignVertical.center,
       onChanged: widget.onChanged,
       style: TST.mediumTextRegular,
+      keyboardType: widget.isNumberField ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: TST.mediumTextRegular.copyWith(color: CST.gray3),

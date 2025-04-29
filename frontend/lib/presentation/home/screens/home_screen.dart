@@ -7,13 +7,12 @@ import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bracket_helper/core/constants/app_strings.dart';
+import 'package:new_version_plus/new_version_plus.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final List<TournamentModel> tournaments;
   final void Function(HomeAction) onAction;
   final VoidCallback onHelpPressed;
-  // 스낵바가 현재 표시 중인지 추적하는 변수
-  // static bool _isSnackBarVisible = false;
 
   const HomeScreen({
     super.key,
@@ -22,27 +21,66 @@ class HomeScreen extends StatelessWidget {
     required this.onHelpPressed,
   });
 
-  // // 업데이트 예정 스낵바를 표시하는 메서드
-  // void _showComingSoonMessage(BuildContext context) {
-  //   // 스낵바가 이미 표시 중이면 무시
-  //   if (_isSnackBarVisible) return;
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-  //   // 스낵바 표시 중 상태로 설정
-  //   _isSnackBarVisible = true;
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // 앱이 시작될 때 업데이트 확인
+    _checkForUpdate();
+  }
 
-  //   ScaffoldMessenger.of(context)
-  //       .showSnackBar(
-  //         const SnackBar(
-  //           content: Text(AppStrings.comingSoonMessage),
-  //           duration: Duration(seconds: 1),
-  //         ),
-  //       )
-  //       .closed
-  //       .then((_) {
-  //         // 스낵바가 닫히면 상태 업데이트
-  //         _isSnackBarVisible = false;
-  //       });
-  // }
+  Future<void> _checkForUpdate() async {
+    final newVersion = NewVersionPlus(
+      iOSId: 'id6745153734', // iOS 앱스토어 ID
+      androidId: 'com.kuneosu.bracket_helper', // 안드로이드 패키지명
+      // 사용자의 국가 코드를 지정하여 앱스토어 검색 정확도 향상
+      androidPlayStoreCountry: 'kr',
+      iOSAppStoreCountry: 'kr',
+    );
+
+    try {
+      final status = await newVersion.getVersionStatus();
+      debugPrint('status: $status');
+      
+      if (status == null) {
+        debugPrint('업데이트 상태를 확인할 수 없습니다. 네트워크 연결 및 앱 ID를 확인하세요.');
+        return;
+      }
+      
+      if (status.canUpdate) {
+        if (mounted) {
+          newVersion.showUpdateDialog(
+            context: context,
+            versionStatus: status,
+            dialogTitle: '업데이트 가능',
+            dialogText: '새 버전(${status.storeVersion})이 출시되었습니다. 지금 업데이트하시겠습니까?',
+            updateButtonText: '업데이트',
+            dismissButtonText: '나중에',
+            dismissAction: () => Navigator.pop(context),
+          );
+        }
+      }
+    } catch (e) {
+      // 오류 유형별 구체적인 처리
+      if (e.toString().contains('404')) {
+        debugPrint('앱스토어에서 앱을 찾을 수 없습니다. 앱 ID가 올바른지 확인하세요:');
+        debugPrint('iOS ID: id6745153734');
+        debugPrint('Android ID: com.kuneosu.bracket_helper');
+        // 개발 모드에서는 오류를 무시합니다.
+        debugPrint('개발 중인 경우 이 오류는 정상입니다. 앱이 아직 스토어에 등록되지 않았을 수 있습니다.');
+      } else if (e.toString().contains('Unable to parse version')) {
+        debugPrint('버전 정보를 파싱할 수 없습니다. 앱스토어 응답 형식이 변경되었을 수 있습니다.');
+      } else {
+        // 그 외 다른 오류 처리
+        debugPrint('업데이트 확인 실패: $e');
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +97,7 @@ class HomeScreen extends StatelessWidget {
         elevation: 0,
         actions: [
           TextButton(
-            onPressed: onHelpPressed,
+            onPressed: widget.onHelpPressed,
             child: Text(
               AppStrings.help,
               style: TST.normalTextBold.copyWith(color: CST.white),
@@ -69,7 +107,7 @@ class HomeScreen extends StatelessWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          onAction(const OnRefresh());
+          widget.onAction(const OnRefresh());
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -97,7 +135,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            tournaments.isEmpty
+            widget.tournaments.isEmpty
                 ? _buildEmptyTournaments()
                 : SizedBox(
                   height: 120,
@@ -107,22 +145,22 @@ class HomeScreen extends StatelessWidget {
                       horizontal: 20,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: tournaments.length,
+                    itemCount: widget.tournaments.length,
                     itemBuilder: (context, index) {
-                      final reversedIndex = tournaments.length - 1 - index;
+                      final reversedIndex = widget.tournaments.length - 1 - index;
                       return Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: RecentTournamentCard(
-                          tournament: tournaments[reversedIndex],
+                          tournament: widget.tournaments[reversedIndex],
                           onTapCard: () {
                             context.push(
-                              '${RoutePaths.match}?tournamentId=${tournaments[reversedIndex].id}',
+                              '${RoutePaths.match}?tournamentId=${widget.tournaments[reversedIndex].id}',
                             );
                           },
                           onTapDelete: () {
-                            onAction(
+                            widget.onAction(
                               OnTapDeleteTournament(
-                                tournaments[reversedIndex].id,
+                                widget.tournaments[reversedIndex].id,
                               ),
                             );
                           },
@@ -144,7 +182,7 @@ class HomeScreen extends StatelessWidget {
                     title: AppStrings.createBracket,
                     subtitle: AppStrings.createBracketDesc,
                     iconData: Icons.sports_tennis,
-                    onTap: () => onAction(const OnTapCreateTournament()),
+                    onTap: () => widget.onAction(const OnTapCreateTournament()),
                     gradient: LinearGradient(
                       colors: [CST.primary100, CST.primary100.withGreen(150)],
                     ),
@@ -174,15 +212,15 @@ class HomeScreen extends StatelessWidget {
                         child: _buildFeatureCard(
                           title: AppStrings.groupManagement,
                           subtitle: AppStrings.groupManagementDesc,
-                          iconData: Icons.group_work,
+                          iconData: Icons.people_alt,
                           onTap: () {
                             // 메인 탭 네비게이션의 그룹 관리 탭(인덱스 1)으로 이동
                             context.go(RoutePaths.savePlayer);
                           },
                           gradient: LinearGradient(
                             colors: [
-                              Colors.purple.shade700,
-                              Colors.purple.shade400,
+                              Color(0xFF546E7A),
+                              Color(0xFF78909C),
                             ],
                           ),
                           isComingSoon: false,
@@ -190,19 +228,6 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  // const SizedBox(height: 16),
-
-                  // _buildFeatureCard(
-                  //   title: AppStrings.viewStatistics,
-                  //   subtitle: AppStrings.viewStatisticsDesc,
-                  //   iconData: Icons.bar_chart,
-                  //   onTap: () => _showComingSoonMessage(context),
-                  //   gradient: LinearGradient(
-                  //     colors: [Colors.blue.shade700, Colors.blue.shade400],
-                  //   ),
-                  //   isComingSoon: true,
-                  // ),
                   const SizedBox(height: 30),
                 ],
               ),

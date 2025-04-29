@@ -2,6 +2,7 @@ import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
+import 'package:bracket_helper/domain/repository/match_repository.dart';
 import 'package:bracket_helper/domain/use_case/match/create_match_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/delete_match_use_case.dart';
 import 'package:bracket_helper/domain/use_case/match/get_matches_in_tournament_use_case.dart';
@@ -10,6 +11,7 @@ import 'package:bracket_helper/presentation/match/match_action.dart';
 import 'package:bracket_helper/presentation/match/match_state.dart';
 import 'package:bracket_helper/presentation/match/widgets/bracket_share_utils.dart';
 import 'package:bracket_helper/core/utils/bracket_scheduler.dart';
+import 'package:bracket_helper/core/utils/single_bracket_scheduler.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -44,6 +46,7 @@ class MatchViewModel with ChangeNotifier {
   final GetMatchesInTournamentUseCase _getMatchesInTournamentUseCase;
   final DeleteMatchUseCase _deleteMatchUseCase;
   final CreateMatchUseCase _createMatchUseCase;
+  final MatchRepository _matchRepository;
   MatchState _state = MatchState(
     tournament: TournamentModel(id: 0, title: '', date: DateTime.now()),
   );
@@ -59,10 +62,12 @@ class MatchViewModel with ChangeNotifier {
     required GetMatchesInTournamentUseCase getMatchesInTournamentUseCase,
     required DeleteMatchUseCase deleteMatchUseCase,
     required CreateMatchUseCase createMatchUseCase,
+    required MatchRepository matchRepository,
   }) : _getTournamentByIdUseCase = getTournamentByIdUseCase,
        _getMatchesInTournamentUseCase = getMatchesInTournamentUseCase,
        _deleteMatchUseCase = deleteMatchUseCase,
-       _createMatchUseCase = createMatchUseCase {
+       _createMatchUseCase = createMatchUseCase,
+       _matchRepository = matchRepository {
     init();
   }
 
@@ -291,17 +296,45 @@ class MatchViewModel with ChangeNotifier {
         return;
       }
 
-      // 2. BracketScheduler를 사용하여 새 매치를 생성합니다
-      final int courts = shuffledPlayers.length ~/ 4;
+      // 2. 토너먼트 모드(단식/복식)에 따라 적절한 스케줄러 사용
+      final isDoubles = _state.tournament.isDoubles;
       final int gamesPerPlayer = _state.tournament.gamesPerPlayer;
+      List<MatchModel> newMatches;
 
-      debugPrint('대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer');
+      if (isDoubles) {
+        // 복식: 4명당 1코트
+        final int courts = shuffledPlayers.length ~/ 4;
+        debugPrint('복식 대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer');
 
-      final List<MatchModel> newMatches = BracketScheduler.generate(
-        shuffledPlayers,
-        courts: courts,
-        gamesPer: gamesPerPlayer,
-      );
+        newMatches = BracketScheduler.generate(
+          shuffledPlayers,
+          courts: courts,
+          gamesPer: gamesPerPlayer,
+        );
+      } else {
+        // 단식: 2명당 1코트
+        final int courts = shuffledPlayers.length ~/ 2;
+        debugPrint('단식 대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer, 선수 수: ${shuffledPlayers.length}명');
+        
+        try {
+          newMatches = SinglesBracketScheduler.generate(
+            shuffledPlayers,
+            courts: courts,
+            gamesPer: gamesPerPlayer,
+          );
+          
+          // 예상 매치 수 계산 및 검증
+          final expectedMatches = (shuffledPlayers.length * gamesPerPlayer) ~/ 2;
+          debugPrint('예상 매치 수: $expectedMatches, 생성된 매치 수: ${newMatches.length}');
+          
+          if (newMatches.length < expectedMatches) {
+            debugPrint('경고: 예상보다 적은 매치가 생성되었습니다. 생성: ${newMatches.length}, 예상: $expectedMatches');
+          }
+        } catch (e) {
+          debugPrint('SinglesBracketScheduler 오류: $e');
+          rethrow;
+        }
+      }
 
       debugPrint('새 대진표 생성 완료: ${newMatches.length}개 매치');
 
@@ -439,7 +472,7 @@ class MatchViewModel with ChangeNotifier {
         shuffleBracket();
         break;
       case FinishTournament():
-        context.go(RoutePaths.home);
+        finishTournament(context);
         break;
       case SortPlayersBy():
         setSortOption(action.sortOption);
@@ -476,8 +509,38 @@ class MatchViewModel with ChangeNotifier {
   }
 
   // 토너먼트 종료 처리
-  Future<void> finishTournament() async {
+  Future<void> finishTournament(BuildContext context) async {
     debugPrint('토너먼트 ID $tournamentId 종료 요청됨');
-    // 프로토타입 구현 - 실제로는 API 호출이 필요함
+    
+    // 메모리에 있는 모든 매치의 점수를 데이터베이스에 저장
+    try {
+      // 모든 매치에 대해 점수를 DB에 저장
+      for (final match in _state.matches) {
+        if (match.scoreA != null && match.scoreB != null) {
+          debugPrint('매치 ID ${match.id} 점수 저장: A=${match.scoreA}, B=${match.scoreB}');
+          
+          // MatchRepository를 통해 DB에 점수 업데이트
+          final result = await _matchRepository.updateScore(
+            matchId: match.id,
+            scoreA: match.scoreA,
+            scoreB: match.scoreB,
+          );
+          
+          if (!result.isSuccess) {
+            debugPrint('매치 ID ${match.id} 점수 저장 실패: ${result.error.message}');
+          }
+        }
+      }
+      
+      debugPrint('모든 매치 점수 저장 완료');
+      
+      if(!context.mounted) return;
+      // 홈 화면으로 이동
+      context.go(RoutePaths.home);
+    } catch (e) {
+      debugPrint('매치 점수 저장 중 오류 발생: $e');
+      // 오류가 발생해도 홈 화면으로 이동
+      context.go(RoutePaths.home);
+    }
   }
 }

@@ -4,6 +4,7 @@ import 'package:bracket_helper/ui/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
 // mailto URL 처리를 위한 스트림 컨트롤러
@@ -12,8 +13,16 @@ final StreamController<Uri> mailtoLinkStream = StreamController<Uri>.broadcast()
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  
   // 의존성 설정 초기화
   await setupDependencies();
+  
+  // SharedPreferences 초기화
+  try {
+    await SharedPreferences.getInstance();
+  } catch (e) {
+    debugPrint('SharedPreferences 초기화 오류: $e');
+  }
   
   // 화면 방향 고정 (세로 모드만)
   await SystemChrome.setPreferredOrientations([

@@ -38,4 +38,7 @@ class MatchModel with _$MatchModel {
 
   /// B팀이 승리했는지 확인
   bool get isTeamBWinner => hasResult && scoreB! > scoreA!;
+
+  /// 복식 경기인지 확인
+  bool get isDoubles => playerC != null && playerD != null;
 }

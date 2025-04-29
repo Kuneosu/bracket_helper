@@ -49,7 +49,9 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
   void _onFocusChange() {
     if (!_titleFocusNode.hasFocus) {
       // 포커스가 빠져나갈 때만 상태 업데이트
-      widget.onAction(CreateTournamentAction.onTitleChanged(_titleController.text));
+      widget.onAction(
+        CreateTournamentAction.onTitleChanged(_titleController.text),
+      );
     }
   }
 
@@ -104,7 +106,10 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 20,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -119,7 +124,10 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                           ),
                           const Spacer(),
                           IconButton(
-                            icon: const Icon(Icons.refresh, color: CST.primary100),
+                            icon: const Icon(
+                              Icons.refresh,
+                              color: CST.primary100,
+                            ),
                             tooltip: AppStrings.reset,
                             onPressed: () {
                               _showResetConfirmationDialog(context);
@@ -261,69 +269,129 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppStrings.gamesPerPlayer, style: TST.normalTextBold.copyWith(color: CST.gray1)),
           const SizedBox(height: 8),
+          // 복식/단식 토글 버튼
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
               color: CST.gray4,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: CST.gray3),
+              borderRadius: BorderRadius.circular(10),
             ),
+            padding: const EdgeInsets.all(4),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
-                Text("4", style: TST.normalTextBold.copyWith(color: CST.gray2)),
+                // 복식 버튼
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (!widget.tournament.isDoubles) {
+                        widget.onAction(
+                          CreateTournamentAction.onIsDoublesChanged(true),
+                        );
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color:
+                            widget.tournament.isDoubles
+                                ? CST.primary100
+                                : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow:
+                            widget.tournament.isDoubles
+                                ? [
+                                  BoxShadow(
+                                    color: CST.primary100.withOpacity(0.3),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                                : null,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.people,
+                            size: 18,
+                            color:
+                                widget.tournament.isDoubles
+                                    ? CST.white
+                                    : CST.gray1,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            AppStrings.doubles,
+                            style: TST.normalTextBold.copyWith(
+                              color:
+                                  widget.tournament.isDoubles
+                                      ? CST.white
+                                      : CST.gray1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                // 단식 버튼
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (widget.tournament.isDoubles) {
+                        widget.onAction(
+                          CreateTournamentAction.onIsDoublesChanged(false),
+                        );
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color:
+                            !widget.tournament.isDoubles
+                                ? CST.primary100
+                                : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow:
+                            !widget.tournament.isDoubles
+                                ? [
+                                  BoxShadow(
+                                    color: CST.primary100.withOpacity(0.3),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                                : null,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person,
+                            size: 18,
+                            color:
+                                !widget.tournament.isDoubles
+                                    ? CST.white
+                                    : CST.gray1,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            AppStrings.singles,
+                            style: TST.normalTextBold.copyWith(
+                              color:
+                                  !widget.tournament.isDoubles
+                                      ? CST.white
+                                      : CST.gray1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(Icons.info_outline, size: 16, color: CST.primary80),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  AppStrings.gamesPerPlayerInfo,
-                  style: TST.smallerTextRegular.copyWith(color: CST.primary80),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(AppStrings.gameFormat, style: TST.normalTextBold.copyWith(color: CST.gray1)),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            decoration: BoxDecoration(
-              color: CST.gray4,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: CST.gray3),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.group, size: 18, color: CST.gray2),
-                const SizedBox(width: 8),
-                Text(
-                  AppStrings.doubles,
-                  style: TST.normalTextBold.copyWith(color: CST.gray2),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(Icons.info_outline, size: 16, color: CST.primary80),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  AppStrings.gameFormatInfo,
-                  style: TST.smallerTextRegular.copyWith(color: CST.primary80),
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -407,7 +475,10 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                 style: TextButton.styleFrom(
                   foregroundColor: CST.white,
                   backgroundColor: CST.gray3,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -420,16 +491,25 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CST.primary100,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text(AppStrings.exitTournament, style: TST.smallTextBold),
+                child: Text(
+                  AppStrings.exitTournament,
+                  style: TST.smallTextBold,
+                ),
               ),
             ],
-            actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            actionsPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
             buttonPadding: EdgeInsets.zero,
           ),
     );
@@ -476,7 +556,10 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                 style: TextButton.styleFrom(
                   foregroundColor: CST.white,
                   backgroundColor: CST.gray3,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -489,7 +572,10 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CST.primary100,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -501,7 +587,10 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                 child: Text(AppStrings.resetButton, style: TST.smallTextBold),
               ),
             ],
-            actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            actionsPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
             buttonPadding: EdgeInsets.zero,
           ),
     );

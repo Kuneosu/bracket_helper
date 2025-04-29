@@ -1,7 +1,7 @@
 class AppStrings {
 
   static const String appTitle = '대진 도우미';
-  static const String currentVersion = '0.2517.3';
+  static const String currentVersion = '1.2517.4';
 
   // 홈 화면
   static const String help = '도움말';
@@ -68,6 +68,7 @@ class AppStrings {
   static const String appVersion = '앱 버전';
   
   static const String checkForUpdates = '업데이트 확인';
+  static const String checkForUpdatesSubtitle = '최신 버전으로 업데이트하세요';
   
   // 고객 지원 설정
   static const String inquiryAndFeedback = '문의 및 피드백';
@@ -296,6 +297,7 @@ class AppStrings {
   static const String gamesPerPlayerInfo = '현재는 1인당 4게임만 지원됩니다. 추후 업데이트 예정입니다.';
   static const String gameFormat = '경기 형식';
   static const String doubles = '복식';
+  static const String singles = '단식';
   static const String gameFormatInfo = '현재는 복식 경기만 지원됩니다. 단식은 추후 업데이트 예정입니다.';
   
   // 입력 초기화 대화상자
