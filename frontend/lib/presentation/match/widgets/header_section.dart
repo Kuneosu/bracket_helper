@@ -8,6 +8,7 @@ class HeaderSection extends StatelessWidget {
   final int matchesCount;
   final VoidCallback onEditBracketPressed;
   final VoidCallback onShareBracketPressed;
+  final Key? shareButtonKey;
 
   const HeaderSection({
     super.key,
@@ -15,6 +16,7 @@ class HeaderSection extends StatelessWidget {
     required this.matchesCount,
     required this.onEditBracketPressed,
     required this.onShareBracketPressed,
+    this.shareButtonKey,
   });
 
   @override
@@ -69,6 +71,7 @@ class HeaderSection extends StatelessWidget {
             icon: Icons.share,
             label: '공유',
             onTap: onShareBracketPressed,
+            key: shareButtonKey,
           ),
         ],
       ),
@@ -79,8 +82,10 @@ class HeaderSection extends StatelessWidget {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    Key? key,
   }) {
     return InkWell(
+      key: key,
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
