@@ -1,5 +1,6 @@
 import 'package:bracket_helper/core/utils/date_formatter.dart';
 import 'package:bracket_helper/core/utils/bracket_scheduler.dart';
+import 'package:bracket_helper/core/utils/single_bracket_scheduler.dart';
 import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
@@ -690,7 +691,7 @@ class CreateTournamentViewModel with ChangeNotifier {
         return;
       }
 
-      debugPrint('BracketScheduler를 통한 매치 생성 시작 - 선수 ${players.length}명');
+      debugPrint('매치 생성 시작 - 선수 ${players.length}명');
       
       // 선수 ID가 바뀌었으므로 이름으로 디버깅 추가
       for (final player in players) {
@@ -700,16 +701,50 @@ class CreateTournamentViewModel with ChangeNotifier {
       List<MatchModel> newMatches;
 
       try {
-        // BracketScheduler를 사용하여 매치 생성
-        // 코트 수가 지정되었으면 사용, 그렇지 않으면 기본값(players.length ~/ 4) 사용
-        final courts = customCourts ?? players.length ~/ 4;
-        debugPrint('사용할 코트 수: $courts');
+        // 코트 수 계산 (단식과 복식에 따라 다르게 계산)
+        int courts;
+        if (isDoubles) {
+          // 복식: 선수 4명당 1코트 (기존 방식)
+          courts = customCourts ?? players.length ~/ 4;
+          debugPrint('복식 모드 - 사용할 코트 수: $courts');
+        } else {
+          // 단식: 선수 2명당 1코트
+          courts = customCourts ?? players.length ~/ 2;
+          debugPrint('단식 모드 - 사용할 코트 수: $courts');
+        }
 
-        newMatches = BracketScheduler.generate(
-          players.shuffled(),
-          gamesPer: gamesPerPlayer,
-          courts: courts,
-        );
+        // 단식/복식에 따라 다른 스케줄러 사용
+        if (isDoubles) {
+          // 복식 매치 생성
+          debugPrint('BracketScheduler 사용하여 복식 매치 생성');
+          newMatches = BracketScheduler.generate(
+            players.shuffled(),
+            gamesPer: gamesPerPlayer,
+            courts: courts,
+          );
+        } else {
+          // 단식 매치 생성
+          debugPrint('SinglesBracketScheduler 사용하여 단식 매치 생성 (선수: ${players.length}명, 각 선수당 게임 수: $gamesPerPlayer)');
+          
+          try {
+            newMatches = SinglesBracketScheduler.generate(
+              players.shuffled(),
+              gamesPer: gamesPerPlayer,
+              courts: courts,
+            );
+            
+            // 예상 매치 수 계산 및 검증
+            final expectedMatches = (players.length * gamesPerPlayer) ~/ 2;
+            debugPrint('예상 매치 수: $expectedMatches, 생성된 매치 수: ${newMatches.length}');
+            
+            if (newMatches.length < expectedMatches) {
+              debugPrint('경고: 예상보다 적은 매치가 생성되었습니다. 생성: ${newMatches.length}, 예상: $expectedMatches');
+            }
+          } catch (e) {
+            debugPrint('SinglesBracketScheduler 오류: $e');
+            rethrow;
+          }
+        }
 
         debugPrint('생성된 매치 수: ${newMatches.length}');
 
@@ -717,7 +752,7 @@ class CreateTournamentViewModel with ChangeNotifier {
         for (int i = 0; i < newMatches.length; i++) {
           final match = newMatches[i];
 
-          // order는 BracketScheduler가 기본적으로 설정한 값 사용,
+          // order는 스케줄러가 기본적으로 설정한 값 사용,
           // id를 0으로 설정하여 데이터베이스에서 자동 생성되도록 함
           // scoreA와 scoreB는 0으로 명시적 설정
           newMatches[i] = match.copyWith(
@@ -727,12 +762,18 @@ class CreateTournamentViewModel with ChangeNotifier {
           );
 
           // 로그로 생성된 매치 정보 출력
-          debugPrint(
-            'Match #${i + 1}: Order ${match.ord}, ${match.playerA} & ${match.playerC} vs ${match.playerB} & ${match.playerD}',
-          );
+          if (isDoubles) {
+            debugPrint(
+              'Match #${i + 1}: Order ${match.ord}, ${match.playerA} & ${match.playerC} vs ${match.playerB} & ${match.playerD}',
+            );
+          } else {
+            debugPrint(
+              'Match #${i + 1}: Order ${match.ord}, ${match.playerA} vs ${match.playerB}',
+            );
+          }
         }
       } catch (e) {
-        debugPrint('BracketScheduler 매치 생성 중 오류: $e');
+        debugPrint('매치 생성 중 오류: $e');
         return;
       }
 
