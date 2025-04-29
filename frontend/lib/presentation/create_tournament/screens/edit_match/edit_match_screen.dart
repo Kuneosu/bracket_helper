@@ -36,6 +36,7 @@ class EditMatchScreen extends StatefulWidget {
 
 class _EditMatchScreenState extends State<EditMatchScreen> {
   late TextEditingController _courtsController;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -89,38 +90,55 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
               );
             },
             onNext: () async {
+              if (_isSaving) {
+                debugPrint('이미 저장 중입니다.');
+                return;
+              }
+
+              setState(() {
+                _isSaving = true;
+              });
+
               debugPrint('다음 단계로 진행 - 매치 저장 시작');
 
               try {
-                // 모드에 따라 저장 로직 실행
                 await widget.onAction(
                   CreateTournamentAction.saveTournamentOrUpdateMatches(),
                 );
-  
-                // 저장이 완료될 충분한 시간 대기
+
                 await Future.delayed(const Duration(milliseconds: 500));
                 await widget.onAction(CreateTournamentAction.onDiscard());
 
                 if (context.mounted) {
-                  // 저장 후 최신 토너먼트 ID 사용
                   final tournamentId = widget.tournament.id;
                   debugPrint('매치 저장 완료 - 매치 화면으로 이동 (ID: $tournamentId)');
-                  // 매치 화면으로 이동 - shouldRefresh=true 파라미터 추가
+
+                  setState(() {
+                    _isSaving = false;
+                  });
+
                   context.go(
                     '${RoutePaths.match}?tournamentId=$tournamentId&shouldRefresh=true',
                   );
                 }
               } catch (e) {
                 debugPrint('매치 저장 중 오류 발생: $e');
-                // 오류 처리 (예: 스낵바 표시)
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('매치 저장 중 오류가 발생했습니다.')),
                   );
+
+                  setState(() {
+                    _isSaving = false;
+                  });
                 }
               }
             },
-            nextText: widget.isEditMode ? '저장 후 돌아가기' : '저장 후 완료',
+            nextText:
+                widget.isEditMode
+                    ? (_isSaving ? '저장 중...' : '저장 후 돌아가기')
+                    : (_isSaving ? '저장 중...' : '저장 후 완료'),
+            isNextDisabled: _isSaving,
           ),
         ],
       ),
@@ -257,7 +275,10 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   Icon(Icons.people_outline, color: CST.primary100, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    AppStrings.participantsCount.replaceAll('%d', playerCount.toString()),
+                    AppStrings.participantsCount.replaceAll(
+                      '%d',
+                      playerCount.toString(),
+                    ),
                     style: TST.normalTextRegular.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -274,7 +295,10 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    AppStrings.matchesCount.replaceAll('%d', matchCount.toString()),
+                    AppStrings.matchesCount.replaceAll(
+                      '%d',
+                      matchCount.toString(),
+                    ),
                     style: TST.normalTextRegular.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
