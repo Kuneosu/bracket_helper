@@ -212,15 +212,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: _buildFeatureCard(
                           title: AppStrings.groupManagement,
                           subtitle: AppStrings.groupManagementDesc,
-                          iconData: Icons.group_work,
+                          iconData: Icons.people_alt,
                           onTap: () {
                             // 메인 탭 네비게이션의 그룹 관리 탭(인덱스 1)으로 이동
                             context.go(RoutePaths.savePlayer);
                           },
                           gradient: LinearGradient(
                             colors: [
-                              Colors.purple.shade700,
-                              Colors.purple.shade400,
+                              Color(0xFF546E7A),
+                              Color(0xFF78909C),
                             ],
                           ),
                           isComingSoon: false,
