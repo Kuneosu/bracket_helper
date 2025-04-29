@@ -37,25 +37,28 @@ class MatchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            AppStrings.loading,
-            style: TST.mediumTextBold.copyWith(color: CST.white),
+      return SafeArea(
+        top: false,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              AppStrings.loading,
+              style: TST.mediumTextBold.copyWith(color: CST.white),
+            ),
+            backgroundColor: CST.primary100,
           ),
-          backgroundColor: CST.primary100,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(color: CST.primary100),
-              const SizedBox(height: 16),
-              Text(
-                AppStrings.loadingBracket,
-                style: TST.smallTextRegular.copyWith(color: CST.gray2),
-              ),
-            ],
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(color: CST.primary100),
+                const SizedBox(height: 16),
+                Text(
+                  AppStrings.loadingBracket,
+                  style: TST.smallTextRegular.copyWith(color: CST.gray2),
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -63,65 +66,67 @@ class MatchScreen extends StatelessWidget {
 
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            tournament.title,
-            style: TST.mediumTextBold.copyWith(color: CST.white),
-          ),
-          backgroundColor: CST.primary100,
-          centerTitle: true,
-          automaticallyImplyLeading: true,
-          scrolledUnderElevation: 0,
-          actions: [
-            IconButton(
-              onPressed: () {
-                TournamentInfoDialog.show(
-                  context: context,
-                  tournament: tournament,
-                  playersCount: players.length,
-                  matchesCount: matches.length,
-                );
-              },
-              icon: Icon(Icons.info_outline, color: CST.white),
-              tooltip: AppStrings.tournamentInfo,
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              tournament.title,
+              style: TST.mediumTextBold.copyWith(color: CST.white),
             ),
-          ],
-        ),
-        body: Column(
-          children: [
-            HeaderSection(
-              playersCount: players.length,
-              matchesCount: matches.length,
-              onEditBracketPressed: () => onAction(const MatchAction.editBracket()),
-              onShareBracketPressed: () => onAction(const MatchAction.captureAndShareBracket()),
-            ),
-            const CustomTabBar(),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  // 대진표 탭
-                  BracketTabContent(
-                    matches: matches,
-                    players: players,
-                    onAction: onAction,
-                  ),
-                  
-                  // 현재 순위 탭
-                  RankTabContent(
-                    players: players,
-                    playerStats: playerStats,
-                    sortOption: sortOption,
-                    onSortOptionSelected: (option) => onAction(MatchAction.sortPlayersBy(option)),
-                  ),
-                ],
+            backgroundColor: CST.primary100,
+            centerTitle: true,
+            automaticallyImplyLeading: true,
+            scrolledUnderElevation: 0,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  TournamentInfoDialog.show(
+                    context: context,
+                    tournament: tournament,
+                    playersCount: players.length,
+                    matchesCount: matches.length,
+                  );
+                },
+                icon: Icon(Icons.info_outline, color: CST.white),
+                tooltip: AppStrings.tournamentInfo,
               ),
-            ),
-            BottomActionButtons(
-              onShuffleBracketPressed: () => onAction(const MatchAction.shuffleBracket()),
-              onFinishTournamentPressed: () => onAction(const MatchAction.finishTournament()),
-            ),
-          ],
+            ],
+          ),
+          body: Column(
+            children: [
+              HeaderSection(
+                playersCount: players.length,
+                matchesCount: matches.length,
+                onEditBracketPressed: () => onAction(const MatchAction.editBracket()),
+                onShareBracketPressed: () => onAction(const MatchAction.captureAndShareBracket()),
+              ),
+              const CustomTabBar(),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    // 대진표 탭
+                    BracketTabContent(
+                      matches: matches,
+                      players: players,
+                      onAction: onAction,
+                    ),                    
+                    // 현재 순위 탭
+                    RankTabContent(
+                      players: players,
+                      playerStats: playerStats,
+                      sortOption: sortOption,
+                      onSortOptionSelected: (option) => onAction(MatchAction.sortPlayersBy(option)),
+                    ),
+                  ],
+                ),
+              ),
+              BottomActionButtons(
+                onShuffleBracketPressed: () => onAction(const MatchAction.shuffleBracket()),
+                onFinishTournamentPressed: () => onAction(const MatchAction.finishTournament()),
+              ),
+            ],
+          ),
         ),
       ),
     );
