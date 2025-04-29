@@ -10,6 +10,7 @@ import 'package:bracket_helper/presentation/match/match_action.dart';
 import 'package:bracket_helper/presentation/match/match_state.dart';
 import 'package:bracket_helper/presentation/match/widgets/bracket_share_utils.dart';
 import 'package:bracket_helper/core/utils/bracket_scheduler.dart';
+import 'package:bracket_helper/core/utils/single_bracket_scheduler.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -291,17 +292,45 @@ class MatchViewModel with ChangeNotifier {
         return;
       }
 
-      // 2. BracketScheduler를 사용하여 새 매치를 생성합니다
-      final int courts = shuffledPlayers.length ~/ 4;
+      // 2. 토너먼트 모드(단식/복식)에 따라 적절한 스케줄러 사용
+      final isDoubles = _state.tournament.isDoubles;
       final int gamesPerPlayer = _state.tournament.gamesPerPlayer;
+      List<MatchModel> newMatches;
 
-      debugPrint('대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer');
+      if (isDoubles) {
+        // 복식: 4명당 1코트
+        final int courts = shuffledPlayers.length ~/ 4;
+        debugPrint('복식 대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer');
 
-      final List<MatchModel> newMatches = BracketScheduler.generate(
-        shuffledPlayers,
-        courts: courts,
-        gamesPer: gamesPerPlayer,
-      );
+        newMatches = BracketScheduler.generate(
+          shuffledPlayers,
+          courts: courts,
+          gamesPer: gamesPerPlayer,
+        );
+      } else {
+        // 단식: 2명당 1코트
+        final int courts = shuffledPlayers.length ~/ 2;
+        debugPrint('단식 대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer, 선수 수: ${shuffledPlayers.length}명');
+        
+        try {
+          newMatches = SinglesBracketScheduler.generate(
+            shuffledPlayers,
+            courts: courts,
+            gamesPer: gamesPerPlayer,
+          );
+          
+          // 예상 매치 수 계산 및 검증
+          final expectedMatches = (shuffledPlayers.length * gamesPerPlayer) ~/ 2;
+          debugPrint('예상 매치 수: $expectedMatches, 생성된 매치 수: ${newMatches.length}');
+          
+          if (newMatches.length < expectedMatches) {
+            debugPrint('경고: 예상보다 적은 매치가 생성되었습니다. 생성: ${newMatches.length}, 예상: $expectedMatches');
+          }
+        } catch (e) {
+          debugPrint('SinglesBracketScheduler 오류: $e');
+          rethrow;
+        }
+      }
 
       debugPrint('새 대진표 생성 완료: ${newMatches.length}개 매치');
 

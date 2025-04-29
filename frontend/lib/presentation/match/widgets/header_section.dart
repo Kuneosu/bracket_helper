@@ -59,15 +59,15 @@ class HeaderSection extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          _buildActionButton(
-            icon: Icons.edit, 
-            label: AppStrings.editBracket, 
+          _buildSquareButton(
+            icon: Icons.edit,
+            label: '수정',
             onTap: onEditBracketPressed,
           ),
           const SizedBox(width: 10),
-          _buildActionButton(
+          _buildSquareButton(
             icon: Icons.share,
-            label: AppStrings.shareBracket,
+            label: '공유',
             onTap: onShareBracketPressed,
           ),
         ],
@@ -75,7 +75,7 @@ class HeaderSection extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton({
+  Widget _buildSquareButton({
     required IconData icon,
     required String label,
     required VoidCallback onTap,
@@ -84,7 +84,9 @@ class HeaderSection extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        width: 68,
+        height: 68,
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: CST.primary100,
           borderRadius: BorderRadius.circular(12),
@@ -96,11 +98,15 @@ class HeaderSection extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: CST.white, size: 18),
-            const SizedBox(width: 8),
-            Text(label, style: TST.smallTextBold.copyWith(color: CST.white)),
+            Icon(icon, color: CST.white, size: 24),
+            const SizedBox(height: 4),
+            Text(
+              label, 
+              style: TST.smallTextBold.copyWith(color: CST.white),
+            ),
           ],
         ),
       ),

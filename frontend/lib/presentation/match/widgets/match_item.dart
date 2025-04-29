@@ -54,27 +54,35 @@ class MatchItem extends StatelessWidget {
           // 왼쪽 팀
           Expanded(
             flex: 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  match.playerA!,
-                  style: TST.normalTextBold.copyWith(color: CST.gray1),
-                  textAlign: TextAlign.right,
-                ),
-                Container(
-                  width: 40,
-                  height: 1,
-                  color: CST.gray4,
-                  margin: const EdgeInsets.symmetric(vertical: 2),
-                ),
-                Text(
-                  match.playerC!,
-                  style: TST.normalTextBold.copyWith(color: CST.gray1),
-                  textAlign: TextAlign.right,
-                ),
-              ],
-            ),
+            child: match.isDoubles
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        match.playerA!,
+                        style: TST.normalTextBold.copyWith(color: CST.gray1),
+                        textAlign: TextAlign.right,
+                      ),
+                      Container(
+                        width: 40,
+                        height: 1,
+                        color: CST.gray4,
+                        margin: const EdgeInsets.symmetric(vertical: 2),
+                      ),
+                      Text(
+                        match.playerC!,
+                        style: TST.normalTextBold.copyWith(color: CST.gray1),
+                        textAlign: TextAlign.right,
+                      ),
+                    ],
+                  )
+                : Center(
+                    child: Text(
+                      match.playerA!,
+                      style: TST.normalTextBold.copyWith(color: CST.gray1),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
           ),
           const SizedBox(width: 24),
           // 왼쪽 점수
@@ -138,25 +146,32 @@ class MatchItem extends StatelessWidget {
           // 오른쪽 팀
           Expanded(
             flex: 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  match.playerB!,
-                  style: TST.normalTextBold.copyWith(color: CST.gray1),
-                ),
-                Container(
-                  width: 40,
-                  height: 1,
-                  color: CST.gray4,
-                  margin: const EdgeInsets.symmetric(vertical: 2),
-                ),
-                Text(
-                  match.playerD!,
-                  style: TST.normalTextBold.copyWith(color: CST.gray1),
-                ),
-              ],
-            ),
+            child: match.isDoubles
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        match.playerB!,
+                        style: TST.normalTextBold.copyWith(color: CST.gray1),
+                      ),
+                      Container(
+                        width: 40,
+                        height: 1,
+                        color: CST.gray4,
+                        margin: const EdgeInsets.symmetric(vertical: 2),
+                      ),
+                      Text(
+                        match.playerD!,
+                        style: TST.normalTextBold.copyWith(color: CST.gray1),
+                      ),
+                    ],
+                  )
+                : Center(
+                    child: Text(
+                      match.playerB!,
+                      style: TST.normalTextBold.copyWith(color: CST.gray1),
+                    ),
+                  ),
           ),
         ],
       ),
