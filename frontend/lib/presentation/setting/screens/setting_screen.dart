@@ -9,6 +9,7 @@ import 'package:bracket_helper/presentation/setting/widgets/contributors_dialog.
 import 'package:bracket_helper/presentation/setting/widgets/email_feedback_launcher.dart';
 import 'package:bracket_helper/presentation/setting/widgets/privacy_policy_dialog.dart';
 import 'package:bracket_helper/presentation/setting/widgets/terms_of_service_dialog.dart';
+import 'package:in_app_review/in_app_review.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -17,7 +18,10 @@ class SettingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.settings, style: TST.largeTextBold.copyWith(color: CST.white)),
+        title: Text(
+          AppStrings.settings,
+          style: TST.largeTextBold.copyWith(color: CST.white),
+        ),
         backgroundColor: CST.primary100,
         foregroundColor: CST.white,
         centerTitle: true,
@@ -65,15 +69,32 @@ class SettingScreen extends StatelessWidget {
             subtitle: AppStrings.inquirySubtitle,
             onTap: () => EmailFeedbackLauncher.launch(context),
           ),
-          // SettingItemWithBeta(
-          //   icon: Icons.star_outline,
-          //   title: AppStrings.rateUs,
-          //   subtitle: AppStrings.rateUsSubtitle,
-          //   trailing: const SizedBox(),
-          //   onTap: () {
-          //     // 평가하기 기능 구현
-          //   },
-          // ),
+          SettingItem(
+            icon: Icons.star_outline,
+            title: AppStrings.rateUs,
+            subtitle: AppStrings.rateUsSubtitle,
+            onTap: () async {
+              final InAppReview inAppReview = InAppReview.instance;
+              try {
+                if (await inAppReview.isAvailable()) {
+                  await inAppReview.requestReview();
+                } else {
+                  await inAppReview.openStoreListing();
+                }
+              } catch (e) {
+                // 시뮬레이터에서 발생하는 예외 처리
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '시뮬레이터에서는 스토어 연결이 지원되지 않습니다. 실제 기기에서 테스트해주세요.',
+                      ),
+                    ),
+                  );
+                }
+              }
+            },
+          ),
           SectionTitle(title: AppStrings.otherSection),
           SettingItem(
             icon: Icons.code,
