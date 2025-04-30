@@ -56,7 +56,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
 
     // 기본 선택 그룹 설정 (전체 그룹)
     _selectedGroupId = ALL_GROUPS;
-    
+
     // 저장된 파트너 쌍 정보 불러오기
     _fixedPairs = List<List<String>>.from(widget.tournament.partnerPairs);
 
@@ -270,7 +270,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
       final firstPlayer = widget.players.firstWhere(
         (p) => p.id == _firstSelectedPlayerId,
       );
-      
+
       // 중복 쌍 확인
       bool isDuplicate = false;
       for (var pair in _fixedPairs) {
@@ -280,12 +280,12 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
           break;
         }
       }
-      
+
       if (!isDuplicate) {
         setState(() {
           _fixedPairs.add([firstPlayer.name, player.name]);
           _firstSelectedPlayerId = null;
-          
+
           // 파트너 쌍 정보 tournament 모델에 업데이트
           _updateTournamentPartnerPairs();
         });
@@ -297,23 +297,56 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
       }
     }
   }
-  
+
   // 파트너 쌍 제거
   void _removePartnerPair(int index) {
     setState(() {
       _fixedPairs.removeAt(index);
-      
+
       // 파트너 쌍 정보 tournament 모델에 업데이트
       _updateTournamentPartnerPairs();
     });
   }
-  
+
   // 파트너 쌍 정보를 tournament 모델에 업데이트하는 메서드
   void _updateTournamentPartnerPairs() {
     // 토너먼트 모델 업데이트
     widget.onAction(
       CreatePartnerTournamentAction.updatePartnerPairs(_fixedPairs),
     );
+  }
+
+  // 삭제된 플레이어가 포함된 파트너 쌍을 제거하는 메서드
+  void _removePartnerPairsWithPlayer(String playerName) {
+    // 원래의 쌍 목록을 유지하면서 삭제될 쌍을 식별
+    final pairsToRemove = <int>[];
+
+    // 삭제될 쌍의 인덱스 파악
+    for (int i = 0; i < _fixedPairs.length; i++) {
+      final pair = _fixedPairs[i];
+      if (pair[0] == playerName || pair[1] == playerName) {
+        pairsToRemove.add(i);
+      }
+    }
+
+    // 뒤에서부터 제거 (인덱스 변화 방지)
+    if (pairsToRemove.isNotEmpty) {
+      // 인덱스 내림차순 정렬
+      pairsToRemove.sort((a, b) => b.compareTo(a));
+
+      setState(() {
+        // 뒤에서부터 해당 쌍 제거
+        for (final index in pairsToRemove) {
+          _fixedPairs.removeAt(index);
+        }
+
+        // 파트너 쌍 정보 tournament 모델에 업데이트
+        _updateTournamentPartnerPairs();
+        debugPrint(
+          '플레이어 "$playerName" 제거로 인해 ${pairsToRemove.length}개의 파트너 쌍이 제거되었습니다.',
+        );
+      });
+    }
   }
 
   @override
@@ -410,7 +443,8 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
           PartnerWarningBanner(
             message: warningMessage,
             isPlayerCountWarning: !isValidPlayerCount,
-            currentCount: !isValidPlayerCount ? playerCount : _fixedPairs.length,
+            currentCount:
+                !isValidPlayerCount ? playerCount : _fixedPairs.length,
             requiredCount: !isValidPlayerCount ? 32 : 1,
           ),
 
@@ -484,9 +518,11 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
 
             // 매치 생성 액션 호출
             widget.onAction(CreatePartnerTournamentAction.updateProcess(2));
-            
+
             // 파트너 매칭 사용 설정
-            widget.onAction(CreatePartnerTournamentAction.updateIsPartnerMatching(true));
+            widget.onAction(
+              CreatePartnerTournamentAction.updateIsPartnerMatching(true),
+            );
 
             // 고정 파트너 쌍이 있으면 GenerateMatchesWithPartners 액션 호출
             if (_fixedPairs.isNotEmpty && context.mounted) {
@@ -608,12 +644,12 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
               widget.players.isEmpty
                   ? EmptyPlayerListWidget()
                   : ListView.builder(
-                      itemCount: widget.players.length,
-                      itemBuilder: (context, index) {
-                        final player = widget.players[index];
-                        return _buildEditablePlayerItem(player, index);
-                      },
-                    ),
+                    itemCount: widget.players.length,
+                    itemBuilder: (context, index) {
+                      final player = widget.players[index];
+                      return _buildEditablePlayerItem(player, index);
+                    },
+                  ),
         ),
       ],
     );
@@ -621,65 +657,61 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
 
   // 파트너 쌍 설정 탭 (새로 추가)
   Widget _buildPartnerPairsTab() {
-    return widget.tournament.isDoubles 
+    return widget.tournament.isDoubles
         ? Column(
-            children: [
-              // 선수 선택 영역
-              Expanded(
-                child:
-                    widget.players.isEmpty
-                        ? Center(
-                          child: Text(
-                            '선수 목록이 비어있습니다.\n선수 목록 탭에서 선수를 추가하세요.',
-                            textAlign: TextAlign.center,
-                            style: TST.mediumTextRegular.copyWith(
-                              color: CST.gray3,
+          children: [
+            // 선수 선택 영역
+            Expanded(
+              child:
+                  widget.players.isEmpty
+                      ? EmptyPlayerListWidget(
+                        icon: Icons.link_off,
+                        message: '파트너 쌍을 설정할 선수가 없습니다.',
+                        subText: '선수 목록 탭 또는 저장된 선수 탭에서\n먼저 선수를 추가해주세요.',
+                      )
+                      : Column(
+                        children: [
+                          // 선수 선택 목록 (비율 3/5)
+                          Expanded(
+                            flex: 3,
+                            child: PartnerSelectionGrid(
+                              players: widget.players,
+                              fixedPairs: _fixedPairs,
+                              firstSelectedPlayerId: _firstSelectedPlayerId,
+                              onSelectPlayer: _selectPlayerAsPartner,
                             ),
                           ),
-                        )
-                        : Column(
-                          children: [
-                            // 선수 선택 목록 (비율 3/5)
-                            Expanded(
-                              flex: 3, 
-                              child: PartnerSelectionGrid(
-                                players: widget.players,
-                                fixedPairs: _fixedPairs,
-                                firstSelectedPlayerId: _firstSelectedPlayerId,
-                                onSelectPlayer: _selectPlayerAsPartner,
-                              ),
-                            ),
 
-                            // 구분선
-                            Divider(thickness: 1, color: CST.primary40),
-                            
-                            // 고정 파트너 쌍 목록 (비율 2/5)
-                            Expanded(
-                              flex: 2,
-                              child: FixedPartnerList(
-                                fixedPairs: _fixedPairs,
-                                onRemove: _removePartnerPair,
-                              ),
+                          // 구분선
+                          Divider(thickness: 1, color: CST.primary40),
+
+                          // 고정 파트너 쌍 목록 (비율 2/5)
+                          Expanded(
+                            flex: 2,
+                            child: FixedPartnerList(
+                              fixedPairs: _fixedPairs,
+                              onRemove: _removePartnerPair,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
+            ),
+          ],
+        )
+        : Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.sports_tennis, size: 64, color: CST.primary40),
+              SizedBox(height: 16),
+              Text(
+                '단식 토너먼트에서는\n파트너 설정이 필요하지 않습니다.',
+                textAlign: TextAlign.center,
+                style: TST.mediumTextBold.copyWith(color: CST.primary100),
               ),
             ],
-          )
-        : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.sports_tennis, size: 64, color: CST.primary40),
-                SizedBox(height: 16),
-                Text(
-                  '단식 토너먼트에서는\n파트너 설정이 필요하지 않습니다.',
-                  textAlign: TextAlign.center,
-                  style: TST.mediumTextBold.copyWith(color: CST.primary100),
-                ),
-              ],
-            ),
-          );
+          ),
+        );
   }
 
   // 저장된 선수 탭 빌드
@@ -764,26 +796,29 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
           if (actionStr.contains('updatePlayer')) {
             // 선수 업데이트 - UpdatePlayer(player: PlayerModel(...)) 형식에서 PlayerModel 추출
             // PlayerModel을 직접 추출
-            final startIndex = actionStr.indexOf('player: ') + 'player: '.length;
+            final startIndex =
+                actionStr.indexOf('player: ') + 'player: '.length;
             final endIndex = actionStr.lastIndexOf(')');
-            
+
             if (startIndex > 0 && endIndex > startIndex) {
               final playerModelStr = actionStr.substring(startIndex, endIndex);
-              
+
               // PlayerModel 정보에서 id와 name 추출
               final idMatch = RegExp(r'id: (\d+)').firstMatch(playerModelStr);
-              final nameMatch = RegExp(r'name: ([^,)]+)').firstMatch(playerModelStr);
-              
+              final nameMatch = RegExp(
+                r'name: ([^,)]+)',
+              ).firstMatch(playerModelStr);
+
               if (idMatch != null && nameMatch != null) {
                 final id = int.parse(idMatch.group(1)!);
                 final name = nameMatch.group(1)!;
                 final updatedPlayer = PlayerModel(id: id, name: name);
-                
+
                 // 중복 이름 확인
                 final isDuplicate = widget.players
                     .where((p) => p.id != id) // 자신을 제외한 선수들
                     .any((p) => p.name == name); // 동일한 이름 확인
-                
+
                 if (isDuplicate) {
                   // 중복 이름 발견 시 스낵바 표시
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -795,17 +830,32 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
                   );
                   return;
                 }
-                
-                widget.onAction(CreatePartnerTournamentAction.updatePlayer(updatedPlayer));
+
+                // 이름이 변경된 경우, 파트너 쌍 업데이트 필요
+                final oldName = player.name;
+                if (name != oldName) {
+                  _updatePartnerPairPlayerName(oldName, name);
+                }
+
+                widget.onAction(
+                  CreatePartnerTournamentAction.updatePlayer(updatedPlayer),
+                );
               } else {
                 // 추출 실패 시 원래 선수 정보 그대로 전달
-                widget.onAction(CreatePartnerTournamentAction.updatePlayer(player));
+                widget.onAction(
+                  CreatePartnerTournamentAction.updatePlayer(player),
+                );
               }
             } else {
               // 추출 실패 시 원래 선수 정보 그대로 전달
-              widget.onAction(CreatePartnerTournamentAction.updatePlayer(player));
+              widget.onAction(
+                CreatePartnerTournamentAction.updatePlayer(player),
+              );
             }
           } else if (actionStr.contains('removePlayer')) {
+            // 선수 삭제 전에 관련 파트너 쌍 제거
+            _removePartnerPairsWithPlayer(player.name);
+
             // 선수 삭제
             widget.onAction(
               CreatePartnerTournamentAction.removePlayer(player.id),
@@ -814,6 +864,28 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
         },
       ),
     );
+  }
+
+  // 선수 이름이 변경된 경우 파트너 쌍의 이름을 업데이트하는 메서드
+  void _updatePartnerPairPlayerName(String oldName, String newName) {
+    bool updated = false;
+
+    for (int i = 0; i < _fixedPairs.length; i++) {
+      if (_fixedPairs[i][0] == oldName) {
+        _fixedPairs[i][0] = newName;
+        updated = true;
+      }
+      if (_fixedPairs[i][1] == oldName) {
+        _fixedPairs[i][1] = newName;
+        updated = true;
+      }
+    }
+
+    if (updated) {
+      // 파트너 쌍 정보 tournament 모델에 업데이트
+      _updateTournamentPartnerPairs();
+      debugPrint('플레이어 이름 변경: "$oldName" → "$newName", 파트너 쌍 정보 업데이트됨');
+    }
   }
 
   // 에러 다이얼로그를 표시하는 헬퍼 메서드
