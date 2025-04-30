@@ -47,12 +47,12 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final status = await newVersion.getVersionStatus();
       debugPrint('status: $status');
-      
+
       if (status == null) {
         debugPrint('업데이트 상태를 확인할 수 없습니다. 네트워크 연결 및 앱 ID를 확인하세요.');
         return;
       }
-      
+
       if (status.canUpdate) {
         if (mounted) {
           newVersion.showUpdateDialog(
@@ -82,7 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    CST.primary100.withOpacity(0.1),
+                    CST.primary100.withValues(alpha: 0.1),
                     Colors.transparent,
                   ],
                 ),
@@ -149,7 +148,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     scrollDirection: Axis.horizontal,
                     itemCount: widget.tournaments.length,
                     itemBuilder: (context, index) {
-                      final reversedIndex = widget.tournaments.length - 1 - index;
+                      final reversedIndex =
+                          widget.tournaments.length - 1 - index;
                       return Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: RecentTournamentCard(
@@ -191,19 +191,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   const SizedBox(height: 16),
-                  
+
                   FeatureCard(
                     title: AppStrings.designatedPartnerMatching,
                     subtitle: AppStrings.designatedPartnerMatchingDesc,
                     iconData: Icons.groups,
-                    onTap: () {
-                      // 지정 파트너 매칭 대진표 기능 구현
-                    },
+                    onTap:
+                        () => widget.onAction(const OnTapPartnerTournament()),
                     gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFE67E22),
-                        Color(0xFFF39C12),
-                      ],
+                      colors: [Color(0xFFE67E22), Color(0xFFF39C12)],
                     ),
                   ),
 
@@ -221,10 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             context.go(RoutePaths.savePlayer);
                           },
                           gradient: LinearGradient(
-                            colors: [
-                              Color(0xFF546E7A),
-                              Color(0xFF78909C),
-                            ],
+                            colors: [Color(0xFF546E7A), Color(0xFF78909C)],
                           ),
                         ),
                       ),
