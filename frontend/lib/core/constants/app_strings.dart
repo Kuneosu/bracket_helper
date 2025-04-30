@@ -23,6 +23,9 @@ class AppStrings {
   static const String groupManagement = '그룹 관리';
   static const String groupManagementDesc = '그룹을 만들고 선수를 추가하세요';
   
+  static const String designatedPartnerMatching = '지정 파트너 매칭 대진표';
+  static const String designatedPartnerMatchingDesc = '파트너를 직접 지정해서 대진표를 생성해보세요';
+  
   static const String viewStatistics = '통계 보기';
   static const String viewStatisticsDesc = '경기 결과와 플레이어 성적을 분석하세요';
   

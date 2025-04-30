@@ -2,6 +2,8 @@ import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/presentation/home/home_action.dart';
 import 'package:bracket_helper/presentation/home/widgets/recent_tournament_card.dart';
+import 'package:bracket_helper/presentation/home/widgets/feature_card.dart';
+import 'package:bracket_helper/presentation/home/widgets/empty_tournaments_widget.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:flutter/material.dart';
@@ -120,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    CST.primary100.withValues(alpha: 0.1),
+                    CST.primary100.withOpacity(0.1),
                     Colors.transparent,
                   ],
                 ),
@@ -136,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             widget.tournaments.isEmpty
-                ? _buildEmptyTournaments()
+                ? const EmptyTournamentsWidget()
                 : SizedBox(
                   height: 120,
                   child: ListView.builder(
@@ -178,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(AppStrings.services, style: TST.mediumTextBold),
                   const SizedBox(height: 16),
 
-                  _buildFeatureCard(
+                  FeatureCard(
                     title: AppStrings.createBracket,
                     subtitle: AppStrings.createBracketDesc,
                     iconData: Icons.sports_tennis,
@@ -189,27 +191,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   const SizedBox(height: 16),
+                  
+                  FeatureCard(
+                    title: AppStrings.designatedPartnerMatching,
+                    subtitle: AppStrings.designatedPartnerMatchingDesc,
+                    iconData: Icons.groups,
+                    onTap: () {
+                      // 지정 파트너 매칭 대진표 기능 구현
+                    },
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFFE67E22),
+                        Color(0xFFF39C12),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
 
                   Row(
                     children: [
-                      // Expanded(
-                      //   child: _buildSmallFeatureCard(
-                      //     title: AppStrings.playerManagement,
-                      //     subtitle: AppStrings.playerManagementDesc,
-                      //     iconData: Icons.people,
-                      //     onTap: () => _showComingSoonMessage(context),
-                      //     gradient: LinearGradient(
-                      //       colors: [
-                      //         Colors.orange.shade700,
-                      //         Colors.orange.shade400,
-                      //       ],
-                      //     ),
-                      //     isComingSoon: true,
-                      //   ),
-                      // ),
-                      // const SizedBox(width: 12),
                       Expanded(
-                        child: _buildFeatureCard(
+                        child: FeatureCard(
                           title: AppStrings.groupManagement,
                           subtitle: AppStrings.groupManagementDesc,
                           iconData: Icons.people_alt,
@@ -223,7 +226,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               Color(0xFF78909C),
                             ],
                           ),
-                          isComingSoon: false,
                         ),
                       ),
                     ],
@@ -250,225 +252,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  Widget _buildEmptyTournaments() {
-    return Container(
-      height: 150,
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: CST.gray4,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: CST.gray3.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.sports_tennis, size: 40, color: CST.gray3),
-          const SizedBox(height: 12),
-          Text(
-            AppStrings.noTournaments,
-            style: TST.normalTextRegular.copyWith(color: CST.gray2),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            AppStrings.createNewTournament,
-            style: TST.smallTextRegular.copyWith(color: CST.gray2),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureCard({
-    required String title,
-    required String subtitle,
-    required IconData iconData,
-    required VoidCallback onTap,
-    required Gradient gradient,
-    double height = 160,
-    bool isComingSoon = false,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        height: height,
-        decoration: BoxDecoration(
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -20,
-              bottom: -20,
-              child: Icon(
-                iconData,
-                size: 120,
-                color: Colors.white.withValues(alpha: 0.2),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(iconData, color: Colors.white, size: 32),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TST.mediumTextBold.copyWith(color: Colors.white),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TST.smallTextRegular.copyWith(
-                          color: Colors.white.withValues(alpha: 0.9),
-                          fontSize: 13,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            if (isComingSoon)
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.6),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Text(
-                        AppStrings.comingSoon,
-                        style: TST.normalTextBold.copyWith(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Widget _buildSmallFeatureCard({
-  //   required String title,
-  //   required String subtitle,
-  //   required IconData iconData,
-  //   required VoidCallback onTap,
-  //   required Gradient gradient,
-  //   bool isComingSoon = false,
-  // }) {
-  //   return GestureDetector(
-  //     onTap: onTap,
-  //     child: Container(
-  //       width: double.infinity,
-  //       height: 120,
-  //       decoration: BoxDecoration(
-  //         gradient: gradient,
-  //         borderRadius: BorderRadius.circular(16),
-  //         boxShadow: [
-  //           BoxShadow(
-  //             color: Colors.black.withValues(alpha: 0.1),
-  //             blurRadius: 8,
-  //             offset: const Offset(0, 3),
-  //           ),
-  //         ],
-  //       ),
-  //       child: Stack(
-  //         children: [
-  //           Positioned(
-  //             right: -15,
-  //             bottom: -15,
-  //             child: Icon(
-  //               iconData,
-  //               size: 80,
-  //               color: Colors.white.withValues(alpha: 0.2),
-  //             ),
-  //           ),
-  //           Padding(
-  //             padding: const EdgeInsets.all(12),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Icon(iconData, color: Colors.white, size: 24),
-  //                 const Spacer(),
-  //                 Text(
-  //                   title,
-  //                   style: TST.smallTextBold.copyWith(color: Colors.white),
-  //                 ),
-  //                 const SizedBox(height: 2),
-  //                 Text(
-  //                   subtitle,
-  //                   style: TST.smallTextRegular.copyWith(
-  //                     color: Colors.white.withValues(alpha: 0.9),
-  //                     fontSize: 12,
-  //                   ),
-  //                   maxLines: 1,
-  //                   overflow: TextOverflow.ellipsis,
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //           if (isComingSoon)
-  //             Positioned.fill(
-  //               child: Container(
-  //                 decoration: BoxDecoration(
-  //                   color: Colors.black.withValues(alpha: 0.4),
-  //                   borderRadius: BorderRadius.circular(16),
-  //                 ),
-  //                 child: Center(
-  //                   child: Container(
-  //                     padding: const EdgeInsets.symmetric(
-  //                       horizontal: 12,
-  //                       vertical: 6,
-  //                     ),
-  //                     decoration: BoxDecoration(
-  //                       color: Colors.black.withValues(alpha: 0.6),
-  //                       borderRadius: BorderRadius.circular(16),
-  //                       border: Border.all(
-  //                         color: Colors.white.withValues(alpha: 0.3),
-  //                       ),
-  //                     ),
-  //                     child: Text(
-  //                       AppStrings.comingSoon,
-  //                       style: TST.smallTextBold.copyWith(color: Colors.white),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }

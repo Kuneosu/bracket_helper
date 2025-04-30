@@ -74,6 +74,7 @@ class ContributorsDialog extends StatelessWidget {
                     ContributorItem(name: '김봉준', role: '소중한 의견과 격려'),
                     ContributorItem(name: '조소희', role: '소중한 의견과 격려'),
                     ContributorItem(name: '김정수', role: '소중한 의견과 격려'),
+                    ContributorItem(name: '전수옥', role: '언젠가 A조'),
                     ContributorItem(
                       name: '김지연',
                       role: '개발자 벗, iOS 출시 비용 지원',
