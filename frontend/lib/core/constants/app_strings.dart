@@ -367,5 +367,10 @@ class AppStrings {
   // NavigationButtonsWidget strings
   static const String previous = '이전';
   static const String next = '다음';
+
+  // PartnerAddPlayerScreen strings
+  static const String partnerMinPlayersRequired = "최소 8명의 선수가 필요합니다.";
+  static const String partnerMaxPlayersAllowed = "최대 32명까지 등록 가능합니다.";
+  static const String partnerPlayersRequired = "선수는 8~32명으로 구성해야 합니다";
   
   }

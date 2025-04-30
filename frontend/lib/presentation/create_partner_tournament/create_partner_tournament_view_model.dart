@@ -1,5 +1,6 @@
 import 'package:bracket_helper/core/utils/date_formatter.dart';
 import 'package:bracket_helper/core/utils/bracket_scheduler.dart';
+import 'package:bracket_helper/core/utils/partner_bracket_scheduler.dart';
 import 'package:bracket_helper/core/utils/single_bracket_scheduler.dart';
 import 'package:bracket_helper/domain/model/match_model.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
@@ -82,6 +83,12 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
         final courts = action.courts;
         debugPrint('GenerateMatchesWithCourts 액션 감지 - 코트 수: $courts');
         _createMatchesDirectly(courts);
+
+      case GenerateMatchesWithPartners():
+        final courts = action.courts;
+        final fixedPairs = action.fixedPairs;
+        debugPrint('GenerateMatchesWithPartners 액션 감지 - 코트 수: $courts, 고정 파트너 쌍: ${fixedPairs.length}개');
+        _createMatchesDirectly(courts, fixedPairs);
 
       case ResetState():
         debugPrint('ResetState 액션 감지 - 상태 초기화 시작');
@@ -415,34 +422,34 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
 
   // 모든 그룹 목록 조회
   Future<void> fetchAllGroups() async {
-    debugPrint('CreateTournamentViewModel - 모든 그룹 목록 조회 시작');
+    debugPrint('CreatePartnerTournamentViewModel - 모든 그룹 목록 조회 시작');
 
     // 상태 변경 전 플래그만 설정
     _state = _state.copyWith(isLoading: true);
 
     // 즉시 notifyListeners 호출하지 않고 비동기 작업 먼저 수행
     try {
-      debugPrint('CreateTournamentViewModel - GetAllGroupsUseCase 호출 시작');
+      debugPrint('CreatePartnerTournamentViewModel - GetAllGroupsUseCase 호출 시작');
       final result = await _getAllGroupsUseCase.execute();
-      debugPrint('CreateTournamentViewModel - GetAllGroupsUseCase 호출 완료');
+      debugPrint('CreatePartnerTournamentViewModel - GetAllGroupsUseCase 호출 완료');
 
       if (result.isSuccess) {
         // 작업 완료 후 상태 업데이트
         final groups = result.value;
         debugPrint(
-          'CreateTournamentViewModel - 그룹 목록 조회 성공: ${groups.length}개 그룹',
+          'CreatePartnerTournamentViewModel - 그룹 목록 조회 성공: ${groups.length}개 그룹',
         );
 
         if (groups.isNotEmpty) {
           debugPrint(
-            'CreateTournamentViewModel - 그룹 목록: ${groups.map((g) => "${g.id}:${g.name}").join(", ")}',
+            'CreatePartnerTournamentViewModel - 그룹 목록: ${groups.map((g) => "${g.id}:${g.name}").join(", ")}',
           );
         }
 
         _state = _state.copyWith(groups: groups, isLoading: false);
       } else {
         debugPrint(
-          'CreateTournamentViewModel - 그룹 목록 조회 실패: ${result.error.message}',
+          'CreatePartnerTournamentViewModel - 그룹 목록 조회 실패: ${result.error.message}',
         );
         _state = _state.copyWith(
           errorMessage: '그룹 목록을 불러오는 데 실패했습니다: ${result.error.message}',
@@ -450,7 +457,7 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
         );
       }
     } catch (e) {
-      debugPrint('CreateTournamentViewModel - 그룹 목록 조회 중 예외 발생: $e');
+      debugPrint('CreatePartnerTournamentViewModel - 그룹 목록 조회 중 예외 발생: $e');
       _state = _state.copyWith(
         errorMessage: '그룹 목록을 불러오는 중 오류가 발생했습니다: $e',
         isLoading: false,
@@ -458,18 +465,18 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
     }
 
     // 모든 작업 완료 후 한 번만 notifyListeners 호출
-    debugPrint('CreateTournamentViewModel - 그룹 목록 조회 완료, UI 갱신 요청');
+    debugPrint('CreatePartnerTournamentViewModel - 그룹 목록 조회 완료, UI 갱신 요청');
     try {
       // Future.microtask를 사용하여 안전하게 알림
       Future.microtask(() => notifyListeners());
     } catch (e) {
-      debugPrint('CreateTournamentViewModel - notifyListeners 호출 오류: $e');
+      debugPrint('CreatePartnerTournamentViewModel - notifyListeners 호출 오류: $e');
     }
   }
 
   // 특정 그룹의 선수 목록을 조회 (캐시 또는 빈 목록 반환, 비동기 로드는 별도로 호출)
   List<PlayerModel> getPlayersInGroupSync(int groupId) {
-    debugPrint('CreateTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 조회');
+    debugPrint('CreatePartnerTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 조회');
 
     // ALL_GROUPS 상수 값이면 모든 그룹의 선수 목록 병합하여 반환
     if (groupId == -999) {
@@ -491,7 +498,7 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
       }
 
       debugPrint(
-        'CreateTournamentViewModel - 모든 그룹 선수 목록 반환: ${allPlayers.length}명',
+        'CreatePartnerTournamentViewModel - 모든 그룹 선수 목록 반환: ${allPlayers.length}명',
       );
       return allPlayers;
     }
@@ -501,19 +508,19 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
     if (_playerListCache.containsKey(groupId)) {
       final cachedPlayers = _playerListCache[groupId] ?? [];
       debugPrint(
-        'CreateTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 있음 (${cachedPlayers.length}명)',
+        'CreatePartnerTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 있음 (${cachedPlayers.length}명)',
       );
       return cachedPlayers;
     }
 
     // 캐시에 없으면 빈 목록 반환
-    debugPrint('CreateTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 없음, 빈 목록 반환');
+    debugPrint('CreatePartnerTournamentViewModel - 그룹 $groupId의 선수 목록 캐시 없음, 빈 목록 반환');
     return [];
   }
 
   // 특정 그룹의 선수 목록 조회 (비동기 메서드)
   Future<void> loadPlayersFromGroup(int groupId) async {
-    debugPrint('CreateTournamentViewModel - 그룹 $groupId의 선수 목록 조회 시작');
+    debugPrint('CreatePartnerTournamentViewModel - 그룹 $groupId의 선수 목록 조회 시작');
 
     // UI에서 직접 로딩 상태를 처리하므로 여기서는 상태만 업데이트하고 알림 없음
     _state = _state.copyWith(isLoading: true);
@@ -523,7 +530,7 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
       if (_playerListCache.containsKey(groupId)) {
         final cachedPlayers = _playerListCache[groupId]!;
         debugPrint(
-          'CreateTournamentViewModel - 캐시에서 선수 목록 반환 (${cachedPlayers.length}명)',
+          'CreatePartnerTournamentViewModel - 캐시에서 선수 목록 반환 (${cachedPlayers.length}명)',
         );
 
         _state = _state.copyWith(isLoading: false);
@@ -546,18 +553,18 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
         _playerListCache[groupId] = players;
 
         debugPrint(
-          'CreateTournamentViewModel - DB에서 선수 목록 조회 성공 (${players.length}명)',
+          'CreatePartnerTournamentViewModel - DB에서 선수 목록 조회 성공 (${players.length}명)',
         );
       } else {
         debugPrint(
-          'CreateTournamentViewModel - 그룹 정보 조회 실패: ${result.error.message}',
+          'CreatePartnerTournamentViewModel - 그룹 정보 조회 실패: ${result.error.message}',
         );
         _state = _state.copyWith(
           errorMessage: '그룹 선수 목록을 불러오는 데 실패했습니다: ${result.error.message}',
         );
       }
     } catch (e) {
-      debugPrint('CreateTournamentViewModel - 그룹 선수 목록 조회 중 예외 발생: $e');
+      debugPrint('CreatePartnerTournamentViewModel - 그룹 선수 목록 조회 중 예외 발생: $e');
       _state = _state.copyWith(errorMessage: '그룹 선수 목록을 불러오는 중 오류가 발생했습니다: $e');
     }
 
@@ -568,21 +575,21 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
       // Future.microtask를 사용하여 안전하게 알림
       Future.microtask(() => notifyListeners());
     } catch (e) {
-      debugPrint('CreateTournamentViewModel - notifyListeners 호출 오류: $e');
+      debugPrint('CreatePartnerTournamentViewModel - notifyListeners 호출 오류: $e');
     }
   }
 
   // 그룹에서 선수 선택
   void selectPlayerFromGroup(PlayerModel player) {
     debugPrint(
-      'CreateTournamentViewModel - 그룹에서 선수 선택: ${player.id} - ${player.name}',
+      'CreatePartnerTournamentViewModel - 그룹에서 선수 선택: ${player.id} - ${player.name}',
     );
 
     // 이미 선택된 선수인지 확인 (이름으로만 비교)
     final isAlreadySelected = _state.players.any((p) => p.name == player.name);
 
     if (isAlreadySelected) {
-      debugPrint('CreateTournamentViewModel - 이미 선택된 선수입니다: ${player.name}');
+      debugPrint('CreatePartnerTournamentViewModel - 이미 선택된 선수입니다: ${player.name}');
       return;
     }
 
@@ -590,7 +597,7 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
     _state = _state.copyWith(players: [..._state.players, player]);
 
     debugPrint(
-      'CreateTournamentViewModel - 선수 추가됨: ${player.name} (현재 ${_state.players.length}명)',
+      'CreatePartnerTournamentViewModel - 선수 추가됨: ${player.name} (현재 ${_state.players.length}명)',
     );
 
     // 안전하게 상태 변경 알림
@@ -598,18 +605,18 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
       // Future.microtask를 사용하여 안전하게 알림
       Future.microtask(() => notifyListeners());
     } catch (e) {
-      debugPrint('CreateTournamentViewModel - notifyListeners 호출 오류: $e');
+      debugPrint('CreatePartnerTournamentViewModel - notifyListeners 호출 오류: $e');
     }
   }
 
   // 상태 강제 갱신 메서드 (UI 업데이트를 위한 용도)
   void refreshState() {
-    debugPrint('CreateTournamentViewModel - 상태 강제 갱신');
+    debugPrint('CreatePartnerTournamentViewModel - 상태 강제 갱신');
     try {
       // Future.microtask를 사용하여 안전하게 알림
       Future.microtask(() => notifyListeners());
     } catch (e) {
-      debugPrint('CreateTournamentViewModel - 상태 갱신 중 오류: $e');
+      debugPrint('CreatePartnerTournamentViewModel - 상태 갱신 중 오류: $e');
     }
   }
 
@@ -669,7 +676,7 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
   }
 
   // 직접 매치를 생성하는 함수
-  void _createMatchesDirectly([int? customCourts]) {
+  void _createMatchesDirectly([int? customCourts, List<List<String>>? fixedPairs]) {
     debugPrint(
       '_createMatchesDirectly 함수 호출됨${customCourts != null ? " (코트 수: $customCourts)" : ""}',
     );
@@ -695,6 +702,14 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
         debugPrint('매치 생성에 사용될 선수: ID ${player.id}, 이름 ${player.name}');
       }
 
+      // 고정 파트너 정보 출력 (있는 경우)
+      if (fixedPairs != null && fixedPairs.isNotEmpty) {
+        debugPrint('고정 파트너 쌍: ${fixedPairs.length}개');
+        for (final pair in fixedPairs) {
+          debugPrint('  - ${pair[0]} & ${pair[1]}');
+        }
+      }
+
       List<MatchModel> newMatches;
 
       try {
@@ -712,13 +727,25 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
 
         // 단식/복식에 따라 다른 스케줄러 사용
         if (isDoubles) {
-          // 복식 매치 생성
-          debugPrint('BracketScheduler 사용하여 복식 매치 생성');
-          newMatches = BracketScheduler.generate(
-            players.shuffled(),
-            gamesPer: gamesPerPlayer,
-            courts: courts,
-          );
+          // 고정 파트너가 있는 경우 파트너 스케줄러 사용, 없는 경우 일반 스케줄러 사용
+          if (fixedPairs != null && fixedPairs.isNotEmpty) {
+            // 고정 파트너 복식 매치 생성
+            debugPrint('PartnerBracketScheduler 사용하여 고정 파트너 복식 매치 생성');
+            newMatches = PartnerBracketScheduler.generate(
+              players.shuffled(),
+              fixedPairs: fixedPairs,
+              gamesPer: gamesPerPlayer,
+              optimize: true,
+            );
+          } else {
+            // 일반 복식 매치 생성
+            debugPrint('BracketScheduler 사용하여 일반 복식 매치 생성');
+            newMatches = BracketScheduler.generate(
+              players.shuffled(),
+              gamesPer: gamesPerPlayer,
+              courts: courts,
+            );
+          }
         } else {
           // 단식 매치 생성
           debugPrint(

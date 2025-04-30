@@ -445,7 +445,7 @@ class _PartnerTournamentInfoScreenState
         // 프로세스 진행 상태만 업데이트
         debugPrint('PartnerTournamentInfoScreen - 다음 버튼 클릭');
         widget.onAction(CreatePartnerTournamentAction.updateProcess(1));
-        ctx.go('${RoutePaths.createTournament}${RoutePaths.addPlayer}');
+        ctx.go('${RoutePaths.createPartnerTournament}${RoutePaths.partnerAddPlayer}');
       },
     );
   }

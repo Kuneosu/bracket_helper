@@ -57,6 +57,10 @@ sealed class CreatePartnerTournamentAction
   const factory CreatePartnerTournamentAction.generateMatchesWithCourts(
     int courts,
   ) = GenerateMatchesWithCourts;
+  const factory CreatePartnerTournamentAction.generateMatchesWithPartners(
+    int courts,
+    List<List<String>> fixedPairs,
+  ) = GenerateMatchesWithPartners;
   const factory CreatePartnerTournamentAction.updateMatches(
     List<MatchModel> matches,
   ) = UpdateMatches;

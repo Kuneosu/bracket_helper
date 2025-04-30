@@ -19,7 +19,7 @@ class _PartnerAddPlayerRootState extends State<PartnerAddPlayerRoot> {
   @override
   void initState() {
     super.initState();
-    // CreateTournamentViewModel 로딩 상태 확인
+    // CreatePartnerTournamentViewModel 로딩 상태 확인
     _checkLoadingState();
   }
 
@@ -48,7 +48,7 @@ class _PartnerAddPlayerRootState extends State<PartnerAddPlayerRoot> {
         CreatePartnerTournamentAction.loadPlayersFromGroup(groupId),
       );
     } catch (e) {
-      debugPrint('AddPlayerRoot - 그룹 $groupId 선수 로드 중 오류: $e');
+      debugPrint('PartnerAddPlayerRoot - 그룹 $groupId 선수 로드 중 오류: $e');
     }
   }
 
@@ -61,8 +61,8 @@ class _PartnerAddPlayerRootState extends State<PartnerAddPlayerRoot> {
         final currentPlayers = List<PlayerModel>.from(widget.viewModel.state.players);
         
         debugPrint(
-          'AddPlayerRoot - 화면 빌드: 선수 ${currentPlayers.length}명, 그룹 ${currentGroups.length}개',
-        );
+          'PartnerAddPlayerRoot - 화면 빌드: 선수 ${currentPlayers.length}명, 그룹 ${currentGroups.length}개',
+        );  
 
         return PartnerAddPlayerScreen(
           tournament: widget.viewModel.state.tournament,
@@ -70,7 +70,7 @@ class _PartnerAddPlayerRootState extends State<PartnerAddPlayerRoot> {
           groups: currentGroups,
           isLoading: _isLoading || widget.viewModel.state.isLoading,
           onAction: (action) {
-            debugPrint('AddPlayerRoot - 액션 전달: $action');
+            debugPrint('PartnerAddPlayerRoot - 액션 전달: $action');
             
             // 그룹 목록 새로고침 액션인 경우 로딩 상태 표시
             if (action is FetchAllGroups) {
