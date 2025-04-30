@@ -450,9 +450,12 @@ class _PartnerEditMatchScreenState extends State<PartnerEditMatchScreen> {
     // 액션 실행
     debugPrint('매치 생성 - 코트 수: $courts');
     
-    // 상태에서 고정 파트너 쌍 정보 확인 (여기서는 파트너 쌍 정보를 알 수 없어 일반 매치 생성 액션 호출)
-    // 파트너 쌍 정보는 PartnerAddPlayerScreen에서 다음 버튼 클릭 시 자동으로 처리됨
-    final action = CreatePartnerTournamentAction.generateMatchesWithCourts(courts);
+    // 파트너 쌍 정보를 활용하여 매치 생성
+    debugPrint('파트너 쌍 정보를 활용하여 매치 생성 (파트너 쌍: ${widget.tournament.partnerPairs.length}개)');
+    final action = CreatePartnerTournamentAction.generateMatchesWithPartners(
+      courts, 
+      widget.tournament.partnerPairs
+    );
     debugPrint('생성된 액션: $action');
     widget.onAction(action);
   }

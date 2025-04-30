@@ -12,6 +12,7 @@ import 'package:bracket_helper/presentation/match/match_state.dart';
 import 'package:bracket_helper/presentation/match/widgets/bracket_share_utils.dart';
 import 'package:bracket_helper/core/utils/bracket_scheduler.dart';
 import 'package:bracket_helper/core/utils/single_bracket_scheduler.dart';
+import 'package:bracket_helper/core/utils/partner_bracket_scheduler.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -279,15 +280,27 @@ class MatchViewModel with ChangeNotifier {
     _notifyChanges();
 
     try {
-      // 1. 현재 플레이어 목록을 무작위로 섞습니다
-      final Random random = Random();
-      final shuffledPlayers = [..._state.players]..shuffle(random);
-
-      debugPrint('선수 목록 섞기 완료: ${shuffledPlayers.length}명');
+      final isPartnerMatching = _state.tournament.isPartnerMatching;
+      final isDoubles = _state.tournament.isDoubles;
+      final int gamesPerPlayer = _state.tournament.gamesPerPlayer;
+      List<MatchModel> newMatches;
+      
+      // isPartnerMatching인 경우 선수 리스트를 섞지 않음
+      List<PlayerModel> playerList;
+      if (isPartnerMatching && isDoubles) {
+        // 파트너 지정 매칭의 경우 선수 리스트를 그대로 사용
+        playerList = [..._state.players];
+        debugPrint('파트너 지정 매칭: 선수 리스트를 섞지 않고 원래 순서 유지 (${playerList.length}명)');
+      } else {
+        // 일반 매칭의 경우 선수 리스트를 섞음
+        final Random random = Random();
+        playerList = [..._state.players]..shuffle(random);
+        debugPrint('일반 매칭: 선수 목록 섞기 완료 (${playerList.length}명)');
+      }
 
       // 유효성 검사: 선수가 최소 4명 이상이어야 함
-      if (shuffledPlayers.length < 4) {
-        debugPrint('오류: 선수가 부족합니다 (${shuffledPlayers.length}명, 최소 4명 필요)');
+      if (playerList.length < 4) {
+        debugPrint('오류: 선수가 부족합니다 (${playerList.length}명, 최소 4명 필요)');
         _state = _state.copyWith(
           isLoading: false,
           errorMessage: '대진표 생성을 위해 최소 4명의 선수가 필요합니다.',
@@ -296,35 +309,55 @@ class MatchViewModel with ChangeNotifier {
         return;
       }
 
-      // 2. 토너먼트 모드(단식/복식)에 따라 적절한 스케줄러 사용
-      final isDoubles = _state.tournament.isDoubles;
-      final int gamesPerPlayer = _state.tournament.gamesPerPlayer;
-      List<MatchModel> newMatches;
-
-      if (isDoubles) {
-        // 복식: 4명당 1코트
-        final int courts = shuffledPlayers.length ~/ 4;
+      // 토너먼트 모드에 따라 적절한 스케줄러 사용
+      if (isPartnerMatching && isDoubles) {
+        // 파트너 지정 복식 모드
+        debugPrint('파트너 지정 복식 대진표 생성 - 파트너 쌍: ${_state.tournament.partnerPairs.length}개');
+        
+        // 파트너 쌍 정보가 있는지 확인
+        if (_state.tournament.partnerPairs.isEmpty) {
+          debugPrint('경고: 파트너 쌍 정보가 없음. 기본 복식 대진표 생성으로 대체');
+          final int courts = playerList.length ~/ 4;
+          newMatches = BracketScheduler.generate(
+            playerList,
+            courts: courts,
+            gamesPer: gamesPerPlayer,
+          );
+        } else {
+          // 파트너 쌍 정보를 활용하여 대진표 생성
+          debugPrint('파트너 쌍 정보를 활용하여 대진표 생성');
+          
+          // PartnerBracketScheduler 사용
+          newMatches = PartnerBracketScheduler.generate(
+            playerList,
+            fixedPairs: _state.tournament.partnerPairs,
+            gamesPer: gamesPerPlayer,
+          );
+        }
+      } else if (isDoubles) {
+        // 일반 복식 모드
+        final int courts = playerList.length ~/ 4;
         debugPrint('복식 대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer');
 
         newMatches = BracketScheduler.generate(
-          shuffledPlayers,
+          playerList,
           courts: courts,
           gamesPer: gamesPerPlayer,
         );
       } else {
-        // 단식: 2명당 1코트
-        final int courts = shuffledPlayers.length ~/ 2;
-        debugPrint('단식 대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer, 선수 수: ${shuffledPlayers.length}명');
+        // 단식 모드
+        final int courts = playerList.length ~/ 2;
+        debugPrint('단식 대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer, 선수 수: ${playerList.length}명');
         
         try {
           newMatches = SinglesBracketScheduler.generate(
-            shuffledPlayers,
+            playerList,
             courts: courts,
             gamesPer: gamesPerPlayer,
           );
           
           // 예상 매치 수 계산 및 검증
-          final expectedMatches = (shuffledPlayers.length * gamesPerPlayer) ~/ 2;
+          final expectedMatches = (playerList.length * gamesPerPlayer) ~/ 2;
           debugPrint('예상 매치 수: $expectedMatches, 생성된 매치 수: ${newMatches.length}');
           
           if (newMatches.length < expectedMatches) {
@@ -338,11 +371,11 @@ class MatchViewModel with ChangeNotifier {
 
       debugPrint('새 대진표 생성 완료: ${newMatches.length}개 매치');
 
-      // 3. 기존 매치 삭제 및 새 매치 저장
+      // 기존 매치 삭제 및 새 매치 저장
       await _deleteExistingMatches();
       await _createNewMatches(newMatches);
 
-      // 4. 상태 업데이트 및 매치와 플레이어 목록 다시 로드
+      // 상태 업데이트 및 매치와 플레이어 목록 다시 로드
       await loadMatchesAndPlayers();
     } catch (e) {
       debugPrint('대진표 섞기 중 오류 발생: $e');

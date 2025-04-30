@@ -36,11 +36,20 @@ class _PartnerEditMatchRootState extends State<PartnerEditMatchRoot> {
     });
 
     try {
-      // 새 매치 전달
-      debugPrint('화면에서 매치 생성 버튼 클릭됨');
-      final generateAction =
-          const CreatePartnerTournamentAction.generateMatches();
-      debugPrint('매치 생성 액션 생성됨: $generateAction');
+      // 기본 코트 수 설정
+      final defaultCourts = widget.viewModel.state.players.isEmpty 
+          ? 1 
+          : widget.viewModel.state.players.length ~/ 4;
+          
+      // 파트너 쌍 정보를 활용하여 매치 생성
+      final tournament = widget.viewModel.state.tournament;
+      
+      debugPrint('파트너 쌍 정보를 활용하여 매치 생성 (파트너 쌍: ${tournament.partnerPairs.length}개)');
+      final generateAction = CreatePartnerTournamentAction.generateMatchesWithPartners(
+        defaultCourts,
+        tournament.partnerPairs,
+      );
+      debugPrint('파트너 쌍을 활용한 매치 생성 액션 생성됨: $generateAction');
       widget.viewModel.onAction(generateAction);
     } catch (e) {
       debugPrint('매치 생성 액션 실행 중 오류: $e');
