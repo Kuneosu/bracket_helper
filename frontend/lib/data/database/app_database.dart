@@ -36,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -224,6 +224,23 @@ class AppDatabase extends _$AppDatabase {
           
         } catch (e) {
           debugPrint('order -> ord 마이그레이션 오류: $e');
+        }
+      }
+      if (from < 8) {
+        // 버전 7에서 버전 8로 업데이트: Tournaments 테이블에 isPartnerMatching 및 partnerPairs 컬럼 추가
+        debugPrint('Tournaments 테이블에 파트너 매칭 관련 컬럼 추가 (버전 7 -> 8)');
+        
+        try {
+          // ALTER TABLE 문을 직접 사용합니다
+          await customStatement(
+            'ALTER TABLE tournaments ADD COLUMN is_partner_matching BOOLEAN NOT NULL DEFAULT 0',
+          );
+          await customStatement(
+            "ALTER TABLE tournaments ADD COLUMN partner_pairs TEXT NOT NULL DEFAULT '[]'",
+          );
+          debugPrint('파트너 매칭 관련 컬럼 추가 완료');
+        } catch (e) {
+          debugPrint('파트너 매칭 관련 컬럼 추가 실패: $e');
         }
       }
     },

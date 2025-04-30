@@ -17,6 +17,8 @@ class TournamentModel with _$TournamentModel {
   final int gamesPerPlayer;
   final bool isDoubles;
   final int process;
+  final bool isPartnerMatching;
+  final List<List<String>> partnerPairs;
 
   const TournamentModel({
     required this.id,
@@ -28,6 +30,8 @@ class TournamentModel with _$TournamentModel {
     this.gamesPerPlayer = 4,
     this.isDoubles = true,
     this.process = 0,
+    this.isPartnerMatching = false,
+    this.partnerPairs = const [],
   });
 
   factory TournamentModel.fromJson(Map<String, dynamic> json) =>

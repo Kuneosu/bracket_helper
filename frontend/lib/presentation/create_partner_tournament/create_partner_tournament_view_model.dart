@@ -169,6 +169,22 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
         _state = _state.copyWith(tournament: updatedTournament);
         debugPrint('새 프로세스 값: ${_state.tournament.process}');
         _notifyChanges();
+      case UpdateIsPartnerMatching():
+        debugPrint('파트너 매칭 모드 업데이트: ${action.isPartnerMatching}');
+        final updatedTournament = _state.tournament.copyWith(
+          isPartnerMatching: action.isPartnerMatching,
+        );
+        _state = _state.copyWith(tournament: updatedTournament);
+        debugPrint('파트너 매칭 모드 설정: ${_state.tournament.isPartnerMatching}');
+        _notifyChanges();
+      case UpdatePartnerPairs():
+        debugPrint('파트너 쌍 업데이트: ${action.partnerPairs.length}개');
+        final updatedTournament = _state.tournament.copyWith(
+          partnerPairs: action.partnerPairs,
+        );
+        _state = _state.copyWith(tournament: updatedTournament);
+        debugPrint('파트너 쌍 저장 완료: ${_state.tournament.partnerPairs.length}개');
+        _notifyChanges();
       case AddPlayer():
         debugPrint(
           '플레이어 추가 시작: ${action.name} (현재 선수 수: ${_state.players.length})',

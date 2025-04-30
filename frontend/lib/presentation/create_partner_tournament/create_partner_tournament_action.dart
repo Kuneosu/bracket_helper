@@ -27,6 +27,13 @@ sealed class CreatePartnerTournamentAction
   const factory CreatePartnerTournamentAction.saveTournament() = SaveTournament;
   const factory CreatePartnerTournamentAction.updateProcess(int process) =
       UpdateProcess;
+  // 파트너 매칭 관련 액션 추가
+  const factory CreatePartnerTournamentAction.updateIsPartnerMatching(
+    bool isPartnerMatching,
+  ) = UpdateIsPartnerMatching;
+  const factory CreatePartnerTournamentAction.updatePartnerPairs(
+    List<List<String>> partnerPairs,
+  ) = UpdatePartnerPairs;
 
   // 플레이어 관련 액션
   const factory CreatePartnerTournamentAction.addPlayer(String name) =

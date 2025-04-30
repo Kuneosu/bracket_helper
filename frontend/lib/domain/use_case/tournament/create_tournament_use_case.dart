@@ -5,6 +5,7 @@ import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/repository/tournament_repository.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:convert'; // JSON 변환을 위해 추가
 
 /// 토너먼트 생성 UseCase의 입력 파라미터
 class CreateTournamentParams {
@@ -16,6 +17,8 @@ class CreateTournamentParams {
   final int gamesPerPlayer;
   final bool isDoubles;
   final int process;
+  final bool isPartnerMatching;
+  final List<List<String>> partnerPairs;
 
   const CreateTournamentParams({
     required this.title,
@@ -26,6 +29,8 @@ class CreateTournamentParams {
     this.gamesPerPlayer = 4,
     this.isDoubles = true,
     this.process = 0,
+    this.isPartnerMatching = false,
+    this.partnerPairs = const [],
   });
 
   factory CreateTournamentParams.fromTournamentModel(TournamentModel model) {
@@ -38,6 +43,8 @@ class CreateTournamentParams {
       gamesPerPlayer: model.gamesPerPlayer,
       isDoubles: model.isDoubles,
       process: model.process,
+      isPartnerMatching: model.isPartnerMatching,
+      partnerPairs: model.partnerPairs,
     );
   }
 
@@ -45,7 +52,8 @@ class CreateTournamentParams {
   String toString() =>
       'CreateTournamentParams(title: $title, date: $date, '
       'winPoint: $winPoint, drawPoint: $drawPoint, losePoint: $losePoint, '
-      'gamesPerPlayer: $gamesPerPlayer, isDoubles: $isDoubles, process: $process)';
+      'gamesPerPlayer: $gamesPerPlayer, isDoubles: $isDoubles, process: $process, '
+      'isPartnerMatching: $isPartnerMatching, partnerPairs: ${partnerPairs.length} pairs)';
 }
 
 /// 토너먼트 생성 UseCase
@@ -78,6 +86,8 @@ class CreateTournamentUseCase {
         gamesPerPlayer: Value(params.gamesPerPlayer),
         isDoubles: Value(params.isDoubles),
         process: Value(params.process),
+        isPartnerMatching: Value(params.isPartnerMatching),
+        partnerPairs: Value(jsonEncode(params.partnerPairs)),
       );
 
       // 디버그 로그

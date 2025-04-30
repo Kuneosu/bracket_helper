@@ -480,6 +480,9 @@ class MatchViewModel with ChangeNotifier {
       case EditBracket():
         editBracket(context);
         break;
+      case EditPartnerBracket():
+        editPartnerBracket(context);
+        break;
     }
   }
 
@@ -490,6 +493,21 @@ class MatchViewModel with ChangeNotifier {
     // 대진 수정 화면으로 이동
     context.go(
       '${RoutePaths.createTournament}${RoutePaths.editMatch}',
+      extra: {
+        'tournament': _state.tournament,
+        'players': _state.players,
+        'matches': _state.matches,
+      },
+    );
+  }
+  
+  // 파트너 대진표 수정 화면으로 이동
+  void editPartnerBracket(BuildContext context) {
+    debugPrint('파트너 대진표 수정 화면으로 이동: ${_state.tournament.id}');
+
+    // 파트너 대진 수정 화면으로 이동
+    context.go(
+      '${RoutePaths.createPartnerTournament}${RoutePaths.partnerEditMatch}',
       extra: {
         'tournament': _state.tournament,
         'players': _state.players,

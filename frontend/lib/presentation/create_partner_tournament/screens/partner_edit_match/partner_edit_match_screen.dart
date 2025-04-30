@@ -102,6 +102,11 @@ class _PartnerEditMatchScreenState extends State<PartnerEditMatchScreen> {
               debugPrint('다음 단계로 진행 - 매치 저장 시작');
 
               try {
+                // 파트너 매칭 플래그 설정
+                await widget.onAction(
+                  CreatePartnerTournamentAction.updateIsPartnerMatching(true),
+                );
+                
                 await widget.onAction(
                   CreatePartnerTournamentAction.saveTournamentOrUpdateMatches(),
                 );

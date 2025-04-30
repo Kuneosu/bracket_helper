@@ -46,7 +46,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
   static const int ALL_GROUPS = -999; // 모든 그룹을 선택했을 때 사용할 상수
 
   // 파트너 관련 상태 추가
-  final List<List<String>> _fixedPairs = [];
+  late List<List<String>> _fixedPairs;
   int? _firstSelectedPlayerId;
 
   @override
@@ -56,9 +56,12 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
 
     // 기본 선택 그룹 설정 (전체 그룹)
     _selectedGroupId = ALL_GROUPS;
+    
+    // 저장된 파트너 쌍 정보 불러오기
+    _fixedPairs = List<List<String>>.from(widget.tournament.partnerPairs);
 
     debugPrint(
-      'PartnerAddPlayerScreen - 초기화: 저장된 그룹 수 ${widget.groups.length}개',
+      'PartnerAddPlayerScreen - 초기화: 저장된 그룹 수 ${widget.groups.length}개, 저장된 파트너 쌍 ${_fixedPairs.length}개',
     );
     if (widget.groups.isNotEmpty) {
       debugPrint(
@@ -282,6 +285,9 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
         setState(() {
           _fixedPairs.add([firstPlayer.name, player.name]);
           _firstSelectedPlayerId = null;
+          
+          // 파트너 쌍 정보 tournament 모델에 업데이트
+          _updateTournamentPartnerPairs();
         });
       } else {
         // 중복된 쌍이면 선택 취소만
@@ -296,7 +302,18 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
   void _removePartnerPair(int index) {
     setState(() {
       _fixedPairs.removeAt(index);
+      
+      // 파트너 쌍 정보 tournament 모델에 업데이트
+      _updateTournamentPartnerPairs();
     });
+  }
+  
+  // 파트너 쌍 정보를 tournament 모델에 업데이트하는 메서드
+  void _updateTournamentPartnerPairs() {
+    // 토너먼트 모델 업데이트
+    widget.onAction(
+      CreatePartnerTournamentAction.updatePartnerPairs(_fixedPairs),
+    );
   }
 
   @override
@@ -467,6 +484,9 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
 
             // 매치 생성 액션 호출
             widget.onAction(CreatePartnerTournamentAction.updateProcess(2));
+            
+            // 파트너 매칭 사용 설정
+            widget.onAction(CreatePartnerTournamentAction.updateIsPartnerMatching(true));
 
             // 고정 파트너 쌍이 있으면 GenerateMatchesWithPartners 액션 호출
             if (_fixedPairs.isNotEmpty && context.mounted) {

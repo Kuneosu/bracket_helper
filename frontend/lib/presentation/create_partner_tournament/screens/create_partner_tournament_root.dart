@@ -18,10 +18,12 @@ class CreatePartnerTournamentRoot extends StatefulWidget {
   const CreatePartnerTournamentRoot({super.key});
 
   @override
-  State<CreatePartnerTournamentRoot> createState() => _CreatePartnerTournamentRootState();
+  State<CreatePartnerTournamentRoot> createState() =>
+      _CreatePartnerTournamentRootState();
 }
 
-class _CreatePartnerTournamentRootState extends State<CreatePartnerTournamentRoot>
+class _CreatePartnerTournamentRootState
+    extends State<CreatePartnerTournamentRoot>
     with WidgetsBindingObserver {
   late CreatePartnerTournamentViewModel viewModel;
   String currentLocation = ''; // 현재 경로를 저장할 변수 추가
@@ -54,7 +56,9 @@ class _CreatePartnerTournamentRootState extends State<CreatePartnerTournamentRoo
 
       // 화면이 완전히 빌드된 후에 그룹 데이터 로드 (UI 블로킹 방지)
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        viewModel.onAction(const CreatePartnerTournamentAction.fetchAllGroups());
+        viewModel.onAction(
+          const CreatePartnerTournamentAction.fetchAllGroups(),
+        );
       });
     } else {
       // 뷰모델 생성 및 등록
@@ -73,7 +77,9 @@ class _CreatePartnerTournamentRootState extends State<CreatePartnerTournamentRoo
       // 화면이 완전히 빌드된 후에 그룹 데이터 로드 (UI 블로킹 방지)
       WidgetsBinding.instance.addPostFrameCallback((_) {
         debugPrint('CreatePartnerTournamentRoot - 그룹 데이터 로드 시작 (초기화)');
-        viewModel.onAction(const CreatePartnerTournamentAction.fetchAllGroups());
+        viewModel.onAction(
+          const CreatePartnerTournamentAction.fetchAllGroups(),
+        );
       });
 
       debugPrint(
@@ -131,12 +137,16 @@ class _CreatePartnerTournamentRootState extends State<CreatePartnerTournamentRoo
       final extra = state.extra;
 
       // shouldReset 파라미터 확인 (홈 화면에서 넘어올 때)
-      if (extra != null && extra is Map<String, dynamic> && extra.containsKey('shouldReset')) {
+      if (extra != null &&
+          extra is Map<String, dynamic> &&
+          extra.containsKey('shouldReset')) {
         final shouldReset = extra['shouldReset'] as bool;
-        
+
         if (shouldReset) {
-          debugPrint('CreatePartnerTournamentRoot - shouldReset 파라미터가 true, ViewModel 초기화');
-          
+          debugPrint(
+            'CreatePartnerTournamentRoot - shouldReset 파라미터가 true, ViewModel 초기화',
+          );
+
           // 뷰모델 상태 초기화
           WidgetsBinding.instance.addPostFrameCallback((_) {
             viewModel.resetState();
@@ -147,7 +157,7 @@ class _CreatePartnerTournamentRootState extends State<CreatePartnerTournamentRoo
       // 대진표 수정 모드로 접근한 경우 (MatchScreen에서 이동)
       if (extra != null &&
           extra is Map<String, dynamic> &&
-          currentLocation.endsWith(RoutePaths.editMatch)) {
+          currentLocation.endsWith(RoutePaths.partnerEditMatch)) {
         debugPrint('CreatePartnerTournamentRoot - 대진 수정 모드로 접근: $extra');
 
         // 데이터 추출
@@ -192,7 +202,9 @@ class _CreatePartnerTournamentRootState extends State<CreatePartnerTournamentRoo
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (viewModel.state.groups.isEmpty) {
             debugPrint('CreatePartnerTournamentRoot - 그룹 데이터 없음, 강제 로드');
-            viewModel.onAction(const CreatePartnerTournamentAction.fetchAllGroups());
+            viewModel.onAction(
+              const CreatePartnerTournamentAction.fetchAllGroups(),
+            );
           }
         });
       }
@@ -281,7 +293,9 @@ class _CreatePartnerTournamentRootState extends State<CreatePartnerTournamentRoo
           _ => PartnerTournamentInfoRoot(viewModel: viewModel),
         };
 
-        debugPrint('CreatePartnerTournamentRoot - 페이지 전환: 인덱스 $currentPageIndex');
+        debugPrint(
+          'CreatePartnerTournamentRoot - 페이지 전환: 인덱스 $currentPageIndex',
+        );
         return CreatePartnerTournamentScreen(
           body: body,
           currentPageIndex: currentPageIndex,
