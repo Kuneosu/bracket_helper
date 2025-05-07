@@ -85,6 +85,16 @@ class _PartnerEditMatchScreenState extends State<PartnerEditMatchScreen> {
           ),
           NavigationButtonsWidget(
             onPrevious: () {
+              // 현재 파트너 쌍 정보를 명시적으로 업데이트하여 보존
+              debugPrint(
+                'EditMatchScreen - 이전 버튼 클릭: 파트너 쌍 정보 보존 확인 (${widget.tournament.partnerPairs.length}개)',
+              );
+              
+              // 파트너 매칭 모드 유지
+              widget.onAction(
+                CreatePartnerTournamentAction.updateIsPartnerMatching(true),
+              );
+              
               context.go(
                 '${RoutePaths.createPartnerTournament}${RoutePaths.partnerAddPlayer}',
               );
@@ -102,16 +112,25 @@ class _PartnerEditMatchScreenState extends State<PartnerEditMatchScreen> {
               debugPrint('다음 단계로 진행 - 매치 저장 시작');
 
               try {
-                // 파트너 매칭 플래그 설정
+                // 파트너 쌍 정보 디버깅 - 저장 전 확인
+                debugPrint('저장 전 파트너 쌍 정보: ${widget.tournament.partnerPairs.length}개');
+                for (var i = 0; i < widget.tournament.partnerPairs.length; i++) {
+                  final pair = widget.tournament.partnerPairs[i];
+                  debugPrint('  파트너 쌍 ${i+1}: ${pair[0]} & ${pair[1]}');
+                }
+              
+                // 파트너 매칭 모드 유지
                 await widget.onAction(
                   CreatePartnerTournamentAction.updateIsPartnerMatching(true),
                 );
                 
+                // 데이터 저장
                 await widget.onAction(
                   CreatePartnerTournamentAction.saveTournamentOrUpdateMatches(),
                 );
 
-                await Future.delayed(const Duration(milliseconds: 500));
+                // 저장 완료 후 데이터 반영을 위한 딜레이
+                await Future.delayed(const Duration(milliseconds: 1000));
                 await widget.onAction(CreatePartnerTournamentAction.onDiscard());
 
                 if (context.mounted) {
@@ -122,6 +141,7 @@ class _PartnerEditMatchScreenState extends State<PartnerEditMatchScreen> {
                     _isSaving = false;
                   });
 
+                  // shouldRefresh=true 쿼리 파라미터 추가 - 새로고침 확실히 실행
                   context.go(
                     '${RoutePaths.match}?tournamentId=$tournamentId&shouldRefresh=true',
                   );
@@ -130,7 +150,7 @@ class _PartnerEditMatchScreenState extends State<PartnerEditMatchScreen> {
                 debugPrint('매치 저장 중 오류 발생: $e');
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('매치 저장 중 오류가 발생했습니다.')),
+                    SnackBar(content: Text('매치 저장 중 오류가 발생했습니다: $e')),
                   );
 
                   setState(() {
@@ -450,6 +470,12 @@ class _PartnerEditMatchScreenState extends State<PartnerEditMatchScreen> {
     // 액션 실행
     debugPrint('매치 생성 - 코트 수: $courts');
     
+    // 현재 파트너 쌍 정보 로깅
+    debugPrint('현재 파트너 쌍 정보: ${widget.tournament.partnerPairs.length}개');
+    for (var pair in widget.tournament.partnerPairs) {
+      debugPrint('  - ${pair[0]} & ${pair[1]}');
+    }
+    
     // 파트너 쌍 정보를 활용하여 매치 생성
     debugPrint('파트너 쌍 정보를 활용하여 매치 생성 (파트너 쌍: ${widget.tournament.partnerPairs.length}개)');
     final action = CreatePartnerTournamentAction.generateMatchesWithPartners(
@@ -458,6 +484,11 @@ class _PartnerEditMatchScreenState extends State<PartnerEditMatchScreen> {
     );
     debugPrint('생성된 액션: $action');
     widget.onAction(action);
+    
+    // 매치 생성 후 파트너 매칭 모드 유지
+    widget.onAction(
+      CreatePartnerTournamentAction.updateIsPartnerMatching(true),
+    );
   }
 
   // 매치 아이템 위젯

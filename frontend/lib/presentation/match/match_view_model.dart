@@ -77,67 +77,127 @@ class MatchViewModel with ChangeNotifier {
   Map<String, PlayerStats> get playerStats => _playerStats;
 
   Future<void> init() async {
-    await loadTournament();
-    await loadMatchesAndPlayers();
+    debugPrint('MatchViewModel - init() 호출됨');
+    try {
+      await loadTournament();
+      await loadMatchesAndPlayers();
+      debugPrint('MatchViewModel - 초기화 완료');
+    } catch (e) {
+      debugPrint('MatchViewModel - 초기화 중 오류 발생: $e');
+      // 오류가 발생해도 상태 업데이트는 진행
+      _state = _state.copyWith(
+        isLoading: false,
+        errorMessage: '데이터 로드 중 오류가 발생했습니다: $e',
+      );
+      _notifyChanges();
+    }
   }
 
   void _notifyChanges() {
     debugPrint('MatchViewModel: 상태 변경 알림');
-    notifyListeners();
+    try {
+      notifyListeners();
+    } catch (e) {
+      debugPrint('MatchViewModel: notifyListeners 호출 중 오류 - $e');
+    }
   }
 
   Future<void> loadTournament() async {
+    debugPrint('MatchViewModel - loadTournament() 호출됨');
     _state = _state.copyWith(isLoading: true);
     _notifyChanges();
-    final result = await _getTournamentByIdUseCase.execute(tournamentId);
-    if (result.isSuccess) {
-      _state = _state.copyWith(tournament: result.value);
-    } else {
-      _state = _state.copyWith(errorMessage: result.error.toString());
+    
+    try {
+      debugPrint('토너먼트 ID $tournamentId 데이터 로드 시작');
+      
+      final result = await _getTournamentByIdUseCase.execute(tournamentId);
+      if (result.isSuccess) {
+        debugPrint('토너먼트 데이터 로드 성공: ${result.value.title}');
+        
+        // 파트너 쌍 정보 상세 디버깅 로그
+        if (result.value.isPartnerMatching) {
+          if (result.value.partnerPairs.isNotEmpty) {
+            debugPrint('파트너 쌍 정보 로드됨: ${result.value.partnerPairs.length}개');
+            for (var i = 0; i < result.value.partnerPairs.length; i++) {
+              try {
+                var pair = result.value.partnerPairs[i];
+                if (pair.length >= 2) {
+                  debugPrint('  파트너 쌍 ${i+1}: ${pair[0]} & ${pair[1]}');
+                } else {
+                  debugPrint('  파트너 쌍 ${i+1}: 불완전한 쌍 데이터 (${pair.length}개 항목)');
+                }
+              } catch (e) {
+                debugPrint('  파트너 쌍 ${i+1} 파싱 오류: $e');
+              }
+            }
+          } else {
+            debugPrint('파트너 매칭 모드지만 파트너 쌍 정보가 없음');
+          }
+        }
+        
+        _state = _state.copyWith(tournament: result.value);
+      } else {
+        debugPrint('토너먼트 데이터 로드 실패: ${result.error}');
+        _state = _state.copyWith(errorMessage: result.error.toString());
+      }
+    } catch (e) {
+      debugPrint('토너먼트 데이터 로드 중 예외 발생: $e');
+      _state = _state.copyWith(errorMessage: '토너먼트 데이터 로드 중 오류: $e');
+    } finally {
+      _state = _state.copyWith(isLoading: false);
+      _notifyChanges();
     }
-    _state = _state.copyWith(isLoading: false);
-    _notifyChanges();
   }
 
   Future<void> loadMatchesAndPlayers() async {
+    debugPrint('MatchViewModel - loadMatchesAndPlayers() 호출됨');
     _state = _state.copyWith(isLoading: true);
     _notifyChanges();
     
-    debugPrint('토너먼트 ID $tournamentId의 매치 데이터 로드 시작');
-    
-    // DB에서 최신 매치 데이터 로드
-    final result = await _getMatchesInTournamentUseCase.execute(tournamentId);
-    
-    if (result.isSuccess) {
-      debugPrint('매치 데이터 로드 성공: ${result.value.length}개 매치');
-      _state = _state.copyWith(matches: result.value);
+    try {
+      debugPrint('토너먼트 ID $tournamentId의 매치 데이터 로드 시작');
       
-      // 매치 데이터로부터 플레이어 목록 추출
-      final players = <PlayerModel>{};
+      // DB에서 최신 매치 데이터 로드
+      final result = await _getMatchesInTournamentUseCase.execute(tournamentId);
       
-      for (var match in result.value) {
-        if (match.playerA != null) players.add(PlayerModel(id: 0, name: match.playerA!));
-        if (match.playerB != null) players.add(PlayerModel(id: 0, name: match.playerB!));
-        if (match.playerC != null) players.add(PlayerModel(id: 0, name: match.playerC!));
-        if (match.playerD != null) players.add(PlayerModel(id: 0, name: match.playerD!));
-      }
-      
-      debugPrint('추출된 플레이어 수: ${players.length}명');
-      _state = _state.copyWith(players: players.toList());
+      if (result.isSuccess) {
+        debugPrint('매치 데이터 로드 성공: ${result.value.length}개 매치');
+        _state = _state.copyWith(matches: result.value);
+        
+        // 매치 데이터로부터 플레이어 목록 추출
+        final players = <PlayerModel>{};
+        
+        for (var match in result.value) {
+          if (match.playerA != null) players.add(PlayerModel(id: 0, name: match.playerA!));
+          if (match.playerB != null) players.add(PlayerModel(id: 0, name: match.playerB!));
+          if (match.playerC != null) players.add(PlayerModel(id: 0, name: match.playerC!));
+          if (match.playerD != null) players.add(PlayerModel(id: 0, name: match.playerD!));
+        }
+        
+        debugPrint('추출된 플레이어 수: ${players.length}명');
+        _state = _state.copyWith(players: players.toList());
 
-      // 매치 데이터가 있으면 통계 계산
-      _calculatePlayerStats();
-    } else {
-      debugPrint('매치 데이터 로드 실패: ${result.error}');
+        // 매치 데이터가 있으면 통계 계산
+        _calculatePlayerStats();
+      } else {
+        debugPrint('매치 데이터 로드 실패: ${result.error}');
+        _state = _state.copyWith(
+          errorMessage: '매치 데이터를 불러오는데 실패했습니다: ${result.error}',
+          matches: [], // 실패 시 빈 목록으로 초기화
+          players: [], // 실패 시 빈 목록으로 초기화
+        );
+      }
+    } catch (e) {
+      debugPrint('매치 및 플레이어 데이터 로드 중 예외 발생: $e');
       _state = _state.copyWith(
-        errorMessage: '매치 데이터를 불러오는데 실패했습니다: ${result.error}',
-        matches: [], // 실패 시 빈 목록으로 초기화
-        players: [], // 실패 시 빈 목록으로 초기화
+        errorMessage: '매치 및 플레이어 데이터 로드 중 오류: $e',
+        matches: [], // 예외 발생 시 빈 목록으로 초기화
+        players: [], // 예외 발생 시 빈 목록으로 초기화
       );
+    } finally {
+      _state = _state.copyWith(isLoading: false);
+      _notifyChanges();
     }
-    
-    _state = _state.copyWith(isLoading: false);
-    _notifyChanges();
   }
 
   /// 모든 플레이어의 통계를 계산

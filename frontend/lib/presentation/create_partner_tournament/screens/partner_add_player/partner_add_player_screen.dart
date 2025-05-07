@@ -63,6 +63,16 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
     debugPrint(
       'PartnerAddPlayerScreen - 초기화: 저장된 그룹 수 ${widget.groups.length}개, 저장된 파트너 쌍 ${_fixedPairs.length}개',
     );
+    
+    // 파트너 쌍 디버깅
+    if (widget.tournament.partnerPairs.isNotEmpty) {
+      debugPrint('파트너 쌍 정보 초기 상태:');
+      for (int i = 0; i < widget.tournament.partnerPairs.length; i++) {
+        final pair = widget.tournament.partnerPairs[i];
+        debugPrint('  ${i+1}. ${pair[0]} & ${pair[1]}');
+      }
+    }
+    
     if (widget.groups.isNotEmpty) {
       debugPrint(
         'PartnerAddPlayerScreen - 그룹 목록: ${widget.groups.map((g) => "${g.id}:${g.name}").join(', ')}',
@@ -98,6 +108,30 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
         _loadAllGroupPlayers();
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(PartnerAddPlayerScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    // tournament.partnerPairs가 변경되었는지 확인
+    if (widget.tournament.partnerPairs != oldWidget.tournament.partnerPairs) {
+      debugPrint('파트너 쌍 정보가 외부에서 변경됨: ${widget.tournament.partnerPairs.length}개');
+      
+      // _fixedPairs 업데이트
+      setState(() {
+        _fixedPairs = List<List<String>>.from(widget.tournament.partnerPairs);
+      });
+      
+      // 디버깅 정보 출력
+      if (widget.tournament.partnerPairs.isNotEmpty) {
+        debugPrint('새로운 파트너 쌍 정보:');
+        for (int i = 0; i < widget.tournament.partnerPairs.length; i++) {
+          final pair = widget.tournament.partnerPairs[i];
+          debugPrint('  ${i+1}. ${pair[0]} & ${pair[1]}');
+        }
+      }
+    }
   }
 
   @override

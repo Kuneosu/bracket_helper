@@ -14,6 +14,9 @@ import 'package:bracket_helper/presentation/create_partner_tournament/create_par
 import 'package:bracket_helper/presentation/create_partner_tournament/create_partner_tournament_state.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'dart:convert';
+import 'package:drift/drift.dart' hide Column;
 
 class CreatePartnerTournamentViewModel with ChangeNotifier {
   final CreateTournamentUseCase _createTournamentUseCase;
@@ -429,6 +432,13 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
         );
       }
 
+      // 토너먼트 저장 전 파트너 쌍 정보 로깅
+      debugPrint('토너먼트 저장 전 파트너 쌍 정보: isPartnerMatching=${_state.tournament.isPartnerMatching}, 쌍 ${_state.tournament.partnerPairs.length}개');
+      for (var i = 0; i < _state.tournament.partnerPairs.length; i++) {
+        final pair = _state.tournament.partnerPairs[i];
+        debugPrint('  파트너 쌍 ${i+1}: ${pair[0]} & ${pair[1]}');
+      }
+
       final result = await _createTournamentUseCase.execute(_state.tournament);
 
       result.fold(
@@ -716,6 +726,14 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
       final players = _state.players;
       final isDoubles = _state.tournament.isDoubles;
       final gamesPerPlayer = _state.tournament.gamesPerPlayer;
+      
+      // 매치 생성 전 저장된 파트너 쌍 정보 로깅
+      if (_state.tournament.partnerPairs.isNotEmpty) {
+        debugPrint('매치 생성 전 기존 파트너 쌍 정보: ${_state.tournament.partnerPairs.length}개');
+        for (final pair in _state.tournament.partnerPairs) {
+          debugPrint('  - ${pair[0]} & ${pair[1]}');
+        }
+      }
 
       debugPrint('토너먼트 타입: ${isDoubles ? "복식" : "단식"}');
       debugPrint('플레이어 당 게임 수: $gamesPerPlayer');
@@ -832,6 +850,19 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
             );
           }
         }
+
+        // 매치 생성 후 현재 파트너 쌍 정보를 보존
+        if (fixedPairs == null && _state.tournament.partnerPairs.isNotEmpty) {
+          // fixedPairs가 명시적으로 전달되지 않았을 때 기존 파트너 쌍 정보 보존
+          debugPrint('매치 생성 후 파트너 쌍 정보 보존 (${_state.tournament.partnerPairs.length}개)');
+        } else if (fixedPairs != null) {
+          // 명시적으로 전달된 fixedPairs로 토너먼트 정보 업데이트
+          final updatedTournament = _state.tournament.copyWith(
+            partnerPairs: fixedPairs,
+          );
+          _state = _state.copyWith(tournament: updatedTournament);
+          debugPrint('매치 생성 후 파트너 쌍 정보 업데이트 (${fixedPairs.length}개)');
+        }
       } catch (e) {
         debugPrint('매치 생성 중 오류: $e');
         return;
@@ -879,6 +910,23 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
           debugPrint('토너먼트 저장 후에도 ID가 유효하지 않음');
           throw Exception('토너먼트 저장에 실패했습니다.');
         }
+      } else {
+        // 이미 존재하는 토너먼트인 경우, 명시적으로 토너먼트 데이터 업데이트
+        debugPrint('기존 토너먼트 데이터 업데이트');
+        
+        // 파트너 쌍 정보 상세 로깅
+        debugPrint('토너먼트 업데이트 전 파트너 쌍 정보: ${_state.tournament.partnerPairs.length}개');
+        for (int i = 0; i < _state.tournament.partnerPairs.length; i++) {
+          final pair = _state.tournament.partnerPairs[i];
+          if (pair.length >= 2) {
+            debugPrint('  파트너 쌍 ${i+1}: ${pair[0]} & ${pair[1]}');
+          }
+        }
+        
+        // 토너먼트 데이터 저장 - 같은 ID를 사용하면서 내용만 업데이트
+        debugPrint('토너먼트 데이터 다시 저장 - 기존 ID 유지하면서 내용 업데이트');
+        await _saveTournament();
+        debugPrint('토너먼트 데이터 업데이트 완료');
       }
 
       // 저장 후 갱신된 ID 사용

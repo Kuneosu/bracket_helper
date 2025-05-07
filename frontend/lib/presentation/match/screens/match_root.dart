@@ -44,32 +44,53 @@ class _MatchRootState extends State<MatchRoot> {
     
     debugPrint('MatchRoot 초기화: tournamentId=$tournamentId, shouldRefresh=$shouldRefresh');
     
-    // ViewModel 한 번만 초기화
-    if (!_isViewModelInitialized) {
-      _isViewModelInitialized = true;
+    // ViewModel 한 번만 초기화 또는 shouldRefresh=true인 경우 다시 초기화
+    if (!_isViewModelInitialized || shouldRefresh) {
+      debugPrint(shouldRefresh 
+        ? '새로고침 요청됨 - 새 ViewModel 인스턴스 생성'
+        : '첫 초기화 - ViewModel 인스턴스 생성');
       
-      // ViewModel 생성
-      viewModel = getIt<MatchViewModel>(param1: tournamentId);
-      
-      // 첫 진입이거나 refresh 필요 없으면 여기서 초기화 실행
-      if (!shouldRefresh) {
-        debugPrint('일반 진입 - 기본 초기화 진행');
-      } else {
-        // shouldRefresh가 true이면 데이터 새로고침 필요
-        debugPrint('대진 수정 후 돌아옴 - 데이터 새로고침 필요');
+      try {
+        // 항상 새 인스턴스 생성 (MatchViewModel을 factory로 등록했기 때문에 가능)
+        viewModel = getIt<MatchViewModel>(param1: tournamentId);
+        
+        // 초기화 완료 표시
+        _isViewModelInitialized = true;
+        _needsRefresh = false;
+        
+        debugPrint('ViewModel 생성 성공');
+      } catch (e) {
+        debugPrint('ViewModel 생성 중 오류: $e');
+        // 오류 발생 시 다음 프레임에서 다시 시도하도록 플래그 설정
+        _isViewModelInitialized = false;
         _needsRefresh = true;
       }
+    } else if (shouldRefresh && !_needsRefresh) {
+      // 이미 초기화된 상태에서 새로고침 요청이 온 경우
+      debugPrint('기존 ViewModel에 데이터 새로고침 요청');
+      _needsRefresh = true;
     }
     
     // 새로고침이 필요한 경우에만 데이터 다시 로드
-    if (_needsRefresh) {
-      debugPrint('데이터 새로고침 시작');
+    if (_needsRefresh && _isViewModelInitialized) {
+      debugPrint('데이터 새로고침 시작 - 토너먼트 ID: $tournamentId');
       
       // 다음 프레임에서 새로고침 실행
       Future.microtask(() {
         if (mounted) {
-          viewModel.init();
-          _needsRefresh = false; // 새로고침 완료 표시
+          debugPrint('데이터 새로고침 실행 - DB에서 최신 데이터 로드');
+          
+          try {
+            // 기존 뷰모델에 초기화 메서드 호출
+            debugPrint('대진표 편집 완료 후 데이터 새로고침 - 초기화 메서드 호출');
+            viewModel.init();
+            _needsRefresh = false; // 새로고침 완료 표시
+            debugPrint('데이터 새로고침 요청 완료');
+          } catch (e) {
+            debugPrint('데이터 새로고침 중 오류 발생: $e');
+            // 오류 발생 시에도 refreshed 플래그를 false로 설정하여 무한 재시도 방지
+            _needsRefresh = false;
+          }
         }
       });
     }
