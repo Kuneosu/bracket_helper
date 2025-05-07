@@ -1,4 +1,3 @@
-
 /// 애플리케이션의 모든 오류 클래스의 기본 클래스
 abstract class AppError {
   final String message;
@@ -87,4 +86,26 @@ class TournamentError extends AppError {
     required super.message,
     super.cause,
   });
+}
+
+/// 설정 및 버전 관련 오류
+class ConfigError extends AppError {
+  const ConfigError({
+    required super.message,
+    super.cause,
+  });
+  
+  factory ConfigError.networkError({String? detail, Object? cause}) {
+    return ConfigError(
+      message: detail ?? '네트워크 연결 오류가 발생했습니다.',
+      cause: cause,
+    );
+  }
+  
+  factory ConfigError.parseError({String? detail, Object? cause}) {
+    return ConfigError(
+      message: detail ?? '설정 데이터 분석 중 오류가 발생했습니다.',
+      cause: cause,
+    );
+  }
 } 
