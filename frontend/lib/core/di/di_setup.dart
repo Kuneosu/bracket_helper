@@ -182,8 +182,7 @@ Future<void> setupDependencies() async {
     ),
   );
 
-  // MatchViewModel은 factory 함수로 등록하여 tournamentId를 전달받을 수 있도록 함
-  // 이제 getIt.get<MatchViewModel>() 대신 getIt.call<MatchViewModel>(param) 형태로 사용
+  // MatchViewModel 등록 개선 - 팩토리로 등록하여 매번 새 인스턴스 생성
   getIt.registerFactoryParam<MatchViewModel, int, void>(
     (tournamentId, _) => MatchViewModel(
       tournamentId: tournamentId,

@@ -8,6 +8,7 @@ import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/repository/tournament_repository.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:convert'; // JSON 처리를 위해 추가
 
 class TournamentRepositoryImpl implements TournamentRepository {
   final TournamentDao _tournamentDao;
@@ -18,6 +19,23 @@ class TournamentRepositoryImpl implements TournamentRepository {
 
   // 데이터베이스 Tournament 모델을 도메인 Tournament 모델로 변환
   TournamentModel _mapToDomainTournament(Tournament dbTournament) {
+    // JSON 문자열에서 파트너 쌍 리스트로 변환
+    List<List<String>> partnerPairs = [];
+    try {
+      if (dbTournament.partnerPairs.isNotEmpty) {
+        final List<dynamic> jsonList = jsonDecode(dbTournament.partnerPairs);
+        partnerPairs = jsonList
+            .map((item) => (item as List<dynamic>)
+                .map((e) => e.toString())
+                .toList())
+            .toList();
+      }
+    } catch (e) {
+      debugPrint('파트너 쌍 JSON 파싱 오류: $e');
+      // 오류 발생 시 빈 리스트 사용
+      partnerPairs = [];
+    }
+
     return TournamentModel(
       id: dbTournament.id,
       title: dbTournament.title,
@@ -28,6 +46,8 @@ class TournamentRepositoryImpl implements TournamentRepository {
       gamesPerPlayer: dbTournament.gamesPerPlayer,
       isDoubles: dbTournament.isDoubles,
       process: dbTournament.process,
+      isPartnerMatching: dbTournament.isPartnerMatching,
+      partnerPairs: partnerPairs,
     );
   }
 

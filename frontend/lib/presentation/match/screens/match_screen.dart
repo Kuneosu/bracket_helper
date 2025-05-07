@@ -224,7 +224,14 @@ class _MatchScreenState extends State<MatchScreen> {
               HeaderSection(
                 playersCount: widget.players.length,
                 matchesCount: widget.matches.length,
-                onEditBracketPressed: () => widget.onAction(const MatchAction.editBracket()),
+                onEditBracketPressed: () {
+                  // isPartnerMatching 값에 따라 다른 편집 화면으로 이동
+                  if (widget.tournament.isPartnerMatching) {
+                    widget.onAction(const MatchAction.editPartnerBracket());
+                  } else {
+                    widget.onAction(const MatchAction.editBracket());
+                  }
+                },
                 onShareBracketPressed: () => widget.onAction(const MatchAction.captureAndShareBracket()),
                 shareButtonKey: shareButtonKey,
               ),

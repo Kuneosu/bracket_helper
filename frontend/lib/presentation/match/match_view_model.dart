@@ -12,6 +12,7 @@ import 'package:bracket_helper/presentation/match/match_state.dart';
 import 'package:bracket_helper/presentation/match/widgets/bracket_share_utils.dart';
 import 'package:bracket_helper/core/utils/bracket_scheduler.dart';
 import 'package:bracket_helper/core/utils/single_bracket_scheduler.dart';
+import 'package:bracket_helper/core/utils/partner_bracket_scheduler.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -76,67 +77,127 @@ class MatchViewModel with ChangeNotifier {
   Map<String, PlayerStats> get playerStats => _playerStats;
 
   Future<void> init() async {
-    await loadTournament();
-    await loadMatchesAndPlayers();
+    debugPrint('MatchViewModel - init() 호출됨');
+    try {
+      await loadTournament();
+      await loadMatchesAndPlayers();
+      debugPrint('MatchViewModel - 초기화 완료');
+    } catch (e) {
+      debugPrint('MatchViewModel - 초기화 중 오류 발생: $e');
+      // 오류가 발생해도 상태 업데이트는 진행
+      _state = _state.copyWith(
+        isLoading: false,
+        errorMessage: '데이터 로드 중 오류가 발생했습니다: $e',
+      );
+      _notifyChanges();
+    }
   }
 
   void _notifyChanges() {
     debugPrint('MatchViewModel: 상태 변경 알림');
-    notifyListeners();
+    try {
+      notifyListeners();
+    } catch (e) {
+      debugPrint('MatchViewModel: notifyListeners 호출 중 오류 - $e');
+    }
   }
 
   Future<void> loadTournament() async {
+    debugPrint('MatchViewModel - loadTournament() 호출됨');
     _state = _state.copyWith(isLoading: true);
     _notifyChanges();
-    final result = await _getTournamentByIdUseCase.execute(tournamentId);
-    if (result.isSuccess) {
-      _state = _state.copyWith(tournament: result.value);
-    } else {
-      _state = _state.copyWith(errorMessage: result.error.toString());
+    
+    try {
+      debugPrint('토너먼트 ID $tournamentId 데이터 로드 시작');
+      
+      final result = await _getTournamentByIdUseCase.execute(tournamentId);
+      if (result.isSuccess) {
+        debugPrint('토너먼트 데이터 로드 성공: ${result.value.title}');
+        
+        // 파트너 쌍 정보 상세 디버깅 로그
+        if (result.value.isPartnerMatching) {
+          if (result.value.partnerPairs.isNotEmpty) {
+            debugPrint('파트너 쌍 정보 로드됨: ${result.value.partnerPairs.length}개');
+            for (var i = 0; i < result.value.partnerPairs.length; i++) {
+              try {
+                var pair = result.value.partnerPairs[i];
+                if (pair.length >= 2) {
+                  debugPrint('  파트너 쌍 ${i+1}: ${pair[0]} & ${pair[1]}');
+                } else {
+                  debugPrint('  파트너 쌍 ${i+1}: 불완전한 쌍 데이터 (${pair.length}개 항목)');
+                }
+              } catch (e) {
+                debugPrint('  파트너 쌍 ${i+1} 파싱 오류: $e');
+              }
+            }
+          } else {
+            debugPrint('파트너 매칭 모드지만 파트너 쌍 정보가 없음');
+          }
+        }
+        
+        _state = _state.copyWith(tournament: result.value);
+      } else {
+        debugPrint('토너먼트 데이터 로드 실패: ${result.error}');
+        _state = _state.copyWith(errorMessage: result.error.toString());
+      }
+    } catch (e) {
+      debugPrint('토너먼트 데이터 로드 중 예외 발생: $e');
+      _state = _state.copyWith(errorMessage: '토너먼트 데이터 로드 중 오류: $e');
+    } finally {
+      _state = _state.copyWith(isLoading: false);
+      _notifyChanges();
     }
-    _state = _state.copyWith(isLoading: false);
-    _notifyChanges();
   }
 
   Future<void> loadMatchesAndPlayers() async {
+    debugPrint('MatchViewModel - loadMatchesAndPlayers() 호출됨');
     _state = _state.copyWith(isLoading: true);
     _notifyChanges();
     
-    debugPrint('토너먼트 ID $tournamentId의 매치 데이터 로드 시작');
-    
-    // DB에서 최신 매치 데이터 로드
-    final result = await _getMatchesInTournamentUseCase.execute(tournamentId);
-    
-    if (result.isSuccess) {
-      debugPrint('매치 데이터 로드 성공: ${result.value.length}개 매치');
-      _state = _state.copyWith(matches: result.value);
+    try {
+      debugPrint('토너먼트 ID $tournamentId의 매치 데이터 로드 시작');
       
-      // 매치 데이터로부터 플레이어 목록 추출
-      final players = <PlayerModel>{};
+      // DB에서 최신 매치 데이터 로드
+      final result = await _getMatchesInTournamentUseCase.execute(tournamentId);
       
-      for (var match in result.value) {
-        if (match.playerA != null) players.add(PlayerModel(id: 0, name: match.playerA!));
-        if (match.playerB != null) players.add(PlayerModel(id: 0, name: match.playerB!));
-        if (match.playerC != null) players.add(PlayerModel(id: 0, name: match.playerC!));
-        if (match.playerD != null) players.add(PlayerModel(id: 0, name: match.playerD!));
-      }
-      
-      debugPrint('추출된 플레이어 수: ${players.length}명');
-      _state = _state.copyWith(players: players.toList());
+      if (result.isSuccess) {
+        debugPrint('매치 데이터 로드 성공: ${result.value.length}개 매치');
+        _state = _state.copyWith(matches: result.value);
+        
+        // 매치 데이터로부터 플레이어 목록 추출
+        final players = <PlayerModel>{};
+        
+        for (var match in result.value) {
+          if (match.playerA != null) players.add(PlayerModel(id: 0, name: match.playerA!));
+          if (match.playerB != null) players.add(PlayerModel(id: 0, name: match.playerB!));
+          if (match.playerC != null) players.add(PlayerModel(id: 0, name: match.playerC!));
+          if (match.playerD != null) players.add(PlayerModel(id: 0, name: match.playerD!));
+        }
+        
+        debugPrint('추출된 플레이어 수: ${players.length}명');
+        _state = _state.copyWith(players: players.toList());
 
-      // 매치 데이터가 있으면 통계 계산
-      _calculatePlayerStats();
-    } else {
-      debugPrint('매치 데이터 로드 실패: ${result.error}');
+        // 매치 데이터가 있으면 통계 계산
+        _calculatePlayerStats();
+      } else {
+        debugPrint('매치 데이터 로드 실패: ${result.error}');
+        _state = _state.copyWith(
+          errorMessage: '매치 데이터를 불러오는데 실패했습니다: ${result.error}',
+          matches: [], // 실패 시 빈 목록으로 초기화
+          players: [], // 실패 시 빈 목록으로 초기화
+        );
+      }
+    } catch (e) {
+      debugPrint('매치 및 플레이어 데이터 로드 중 예외 발생: $e');
       _state = _state.copyWith(
-        errorMessage: '매치 데이터를 불러오는데 실패했습니다: ${result.error}',
-        matches: [], // 실패 시 빈 목록으로 초기화
-        players: [], // 실패 시 빈 목록으로 초기화
+        errorMessage: '매치 및 플레이어 데이터 로드 중 오류: $e',
+        matches: [], // 예외 발생 시 빈 목록으로 초기화
+        players: [], // 예외 발생 시 빈 목록으로 초기화
       );
+    } finally {
+      _state = _state.copyWith(isLoading: false);
+      _notifyChanges();
     }
-    
-    _state = _state.copyWith(isLoading: false);
-    _notifyChanges();
   }
 
   /// 모든 플레이어의 통계를 계산
@@ -279,15 +340,27 @@ class MatchViewModel with ChangeNotifier {
     _notifyChanges();
 
     try {
-      // 1. 현재 플레이어 목록을 무작위로 섞습니다
-      final Random random = Random();
-      final shuffledPlayers = [..._state.players]..shuffle(random);
-
-      debugPrint('선수 목록 섞기 완료: ${shuffledPlayers.length}명');
+      final isPartnerMatching = _state.tournament.isPartnerMatching;
+      final isDoubles = _state.tournament.isDoubles;
+      final int gamesPerPlayer = _state.tournament.gamesPerPlayer;
+      List<MatchModel> newMatches;
+      
+      // isPartnerMatching인 경우 선수 리스트를 섞지 않음
+      List<PlayerModel> playerList;
+      if (isPartnerMatching && isDoubles) {
+        // 파트너 지정 매칭의 경우 선수 리스트를 그대로 사용
+        playerList = [..._state.players];
+        debugPrint('파트너 지정 매칭: 선수 리스트를 섞지 않고 원래 순서 유지 (${playerList.length}명)');
+      } else {
+        // 일반 매칭의 경우 선수 리스트를 섞음
+        final Random random = Random();
+        playerList = [..._state.players]..shuffle(random);
+        debugPrint('일반 매칭: 선수 목록 섞기 완료 (${playerList.length}명)');
+      }
 
       // 유효성 검사: 선수가 최소 4명 이상이어야 함
-      if (shuffledPlayers.length < 4) {
-        debugPrint('오류: 선수가 부족합니다 (${shuffledPlayers.length}명, 최소 4명 필요)');
+      if (playerList.length < 4) {
+        debugPrint('오류: 선수가 부족합니다 (${playerList.length}명, 최소 4명 필요)');
         _state = _state.copyWith(
           isLoading: false,
           errorMessage: '대진표 생성을 위해 최소 4명의 선수가 필요합니다.',
@@ -296,35 +369,55 @@ class MatchViewModel with ChangeNotifier {
         return;
       }
 
-      // 2. 토너먼트 모드(단식/복식)에 따라 적절한 스케줄러 사용
-      final isDoubles = _state.tournament.isDoubles;
-      final int gamesPerPlayer = _state.tournament.gamesPerPlayer;
-      List<MatchModel> newMatches;
-
-      if (isDoubles) {
-        // 복식: 4명당 1코트
-        final int courts = shuffledPlayers.length ~/ 4;
+      // 토너먼트 모드에 따라 적절한 스케줄러 사용
+      if (isPartnerMatching && isDoubles) {
+        // 파트너 지정 복식 모드
+        debugPrint('파트너 지정 복식 대진표 생성 - 파트너 쌍: ${_state.tournament.partnerPairs.length}개');
+        
+        // 파트너 쌍 정보가 있는지 확인
+        if (_state.tournament.partnerPairs.isEmpty) {
+          debugPrint('경고: 파트너 쌍 정보가 없음. 기본 복식 대진표 생성으로 대체');
+          final int courts = playerList.length ~/ 4;
+          newMatches = BracketScheduler.generate(
+            playerList,
+            courts: courts,
+            gamesPer: gamesPerPlayer,
+          );
+        } else {
+          // 파트너 쌍 정보를 활용하여 대진표 생성
+          debugPrint('파트너 쌍 정보를 활용하여 대진표 생성');
+          
+          // PartnerBracketScheduler 사용
+          newMatches = PartnerBracketScheduler.generate(
+            playerList,
+            fixedPairs: _state.tournament.partnerPairs,
+            gamesPer: gamesPerPlayer,
+          );
+        }
+      } else if (isDoubles) {
+        // 일반 복식 모드
+        final int courts = playerList.length ~/ 4;
         debugPrint('복식 대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer');
 
         newMatches = BracketScheduler.generate(
-          shuffledPlayers,
+          playerList,
           courts: courts,
           gamesPer: gamesPerPlayer,
         );
       } else {
-        // 단식: 2명당 1코트
-        final int courts = shuffledPlayers.length ~/ 2;
-        debugPrint('단식 대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer, 선수 수: ${shuffledPlayers.length}명');
+        // 단식 모드
+        final int courts = playerList.length ~/ 2;
+        debugPrint('단식 대진표 생성 시작 - 코트 수: $courts, 선수당 경기 수: $gamesPerPlayer, 선수 수: ${playerList.length}명');
         
         try {
           newMatches = SinglesBracketScheduler.generate(
-            shuffledPlayers,
+            playerList,
             courts: courts,
             gamesPer: gamesPerPlayer,
           );
           
           // 예상 매치 수 계산 및 검증
-          final expectedMatches = (shuffledPlayers.length * gamesPerPlayer) ~/ 2;
+          final expectedMatches = (playerList.length * gamesPerPlayer) ~/ 2;
           debugPrint('예상 매치 수: $expectedMatches, 생성된 매치 수: ${newMatches.length}');
           
           if (newMatches.length < expectedMatches) {
@@ -338,11 +431,11 @@ class MatchViewModel with ChangeNotifier {
 
       debugPrint('새 대진표 생성 완료: ${newMatches.length}개 매치');
 
-      // 3. 기존 매치 삭제 및 새 매치 저장
+      // 기존 매치 삭제 및 새 매치 저장
       await _deleteExistingMatches();
       await _createNewMatches(newMatches);
 
-      // 4. 상태 업데이트 및 매치와 플레이어 목록 다시 로드
+      // 상태 업데이트 및 매치와 플레이어 목록 다시 로드
       await loadMatchesAndPlayers();
     } catch (e) {
       debugPrint('대진표 섞기 중 오류 발생: $e');
@@ -480,6 +573,9 @@ class MatchViewModel with ChangeNotifier {
       case EditBracket():
         editBracket(context);
         break;
+      case EditPartnerBracket():
+        editPartnerBracket(context);
+        break;
     }
   }
 
@@ -490,6 +586,21 @@ class MatchViewModel with ChangeNotifier {
     // 대진 수정 화면으로 이동
     context.go(
       '${RoutePaths.createTournament}${RoutePaths.editMatch}',
+      extra: {
+        'tournament': _state.tournament,
+        'players': _state.players,
+        'matches': _state.matches,
+      },
+    );
+  }
+  
+  // 파트너 대진표 수정 화면으로 이동
+  void editPartnerBracket(BuildContext context) {
+    debugPrint('파트너 대진표 수정 화면으로 이동: ${_state.tournament.id}');
+
+    // 파트너 대진 수정 화면으로 이동
+    context.go(
+      '${RoutePaths.createPartnerTournament}${RoutePaths.partnerEditMatch}',
       extra: {
         'tournament': _state.tournament,
         'players': _state.players,

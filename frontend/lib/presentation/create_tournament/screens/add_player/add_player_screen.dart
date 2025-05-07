@@ -403,7 +403,57 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
                       return InlineEditablePlayerItem(
                         player: widget.players[index],
                         index: index + 1,
-                        onAction: widget.onAction,
+                        onAction: (action) {
+                          // 액션 문자열로 구분하여 처리
+                          final actionStr = action.toString();
+                          if (actionStr.contains('updatePlayer')) {
+                            // PlayerModel 정보 추출
+                            final startIndex = actionStr.indexOf('player: ') + 'player: '.length;
+                            final endIndex = actionStr.lastIndexOf(')');
+                            
+                            if (startIndex > 0 && endIndex > startIndex) {
+                              final playerModelStr = actionStr.substring(startIndex, endIndex);
+                              
+                              // PlayerModel 정보에서 id와 name 추출
+                              final idMatch = RegExp(r'id: (\d+)').firstMatch(playerModelStr);
+                              final nameMatch = RegExp(r'name: ([^,)]+)').firstMatch(playerModelStr);
+                              
+                              if (idMatch != null && nameMatch != null) {
+                                final id = int.parse(idMatch.group(1)!);
+                                final name = nameMatch.group(1)!;
+                                
+                                // 중복 이름 확인
+                                final isDuplicate = widget.players
+                                    .where((p) => p.id != id) // 자신을 제외한 선수들
+                                    .any((p) => p.name == name); // 동일한 이름 확인
+                                
+                                if (isDuplicate) {
+                                  // 중복 이름 발견 시 스낵바 표시
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('\'$name\'은(는) 이미 존재하는 이름입니다.'),
+                                      backgroundColor: Colors.red,
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                  );
+                                  return;
+                                }
+                                
+                                final updatedPlayer = PlayerModel(id: id, name: name);
+                                widget.onAction(CreateTournamentAction.updatePlayer(updatedPlayer));
+                              } else {
+                                // 원본 액션 전달
+                                widget.onAction(action);
+                              }
+                            } else {
+                              // 원본 액션 전달
+                              widget.onAction(action);
+                            }
+                          } else {
+                            // 다른 액션들은 그대로 전달
+                            widget.onAction(action);
+                          }
+                        },
                       );
                     },
                   ),

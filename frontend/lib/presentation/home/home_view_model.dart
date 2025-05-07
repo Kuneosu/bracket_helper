@@ -3,6 +3,7 @@ import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/use_case/match/get_all_matches_use_case.dart';
 import 'package:bracket_helper/domain/use_case/tournament/delete_tournament_use_case.dart';
 import 'package:bracket_helper/domain/use_case/tournament/get_all_tournaments_use_case.dart';
+import 'package:bracket_helper/presentation/create_partner_tournament/create_partner_tournament_view_model.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_view_model.dart';
 import 'package:bracket_helper/presentation/home/home_action.dart';
 import 'package:bracket_helper/presentation/home/home_state.dart';
@@ -131,6 +132,8 @@ class HomeViewModel with ChangeNotifier {
         return;
       case OnTapMatchCard():
         return;
+      case OnTapPartnerTournament():
+        _handlePartnerTournament(context);
     }
   }
 
@@ -152,6 +155,33 @@ class HomeViewModel with ChangeNotifier {
       }
 
       context.go(RoutePaths.createTournament, extra: {'shouldReset': true});
+    } catch (e) {
+      debugPrint('HomeViewModel - 대진표 생성 화면 이동 중 예외 발생: $e');
+    }
+  }
+
+  void _handlePartnerTournament(BuildContext context) {
+    try {
+      debugPrint('HomeViewModel - 대진표 생성 화면으로 이동');
+
+      final hasViewModel =
+          getIt.isRegistered<CreatePartnerTournamentViewModel>();
+
+      if (hasViewModel) {
+        debugPrint('CreatePartnerTournamentViewModel 인스턴스 초기화');
+
+        try {
+          getIt.unregister<CreatePartnerTournamentViewModel>();
+          debugPrint('기존 CreatePartnerTournamentViewModel 인스턴스 제거 성공');
+        } catch (e) {
+          debugPrint('CreatePartnerTournamentViewModel 제거 중 오류: $e');
+        }
+      }
+
+      context.go(
+        RoutePaths.createPartnerTournament,
+        extra: {'shouldReset': true},
+      );
     } catch (e) {
       debugPrint('HomeViewModel - 대진표 생성 화면 이동 중 예외 발생: $e');
     }

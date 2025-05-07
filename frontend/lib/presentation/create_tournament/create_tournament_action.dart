@@ -4,7 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'create_tournament_action.freezed.dart';
 
 @freezed
-sealed class CreateTournamentAction with _$CreateTournamentAction {
+sealed class CreateTournamentAction with _$CreateTournamentAction implements CreateTournamentActionBase {
   const factory CreateTournamentAction.onDateChanged(DateTime date) = OnDateChanged;
   const factory CreateTournamentAction.onScoreChanged(String score, String type) = OnScoreChanged;
   const factory CreateTournamentAction.onTitleChanged(String title) = OnTitleChanged;
@@ -37,4 +37,7 @@ sealed class CreateTournamentAction with _$CreateTournamentAction {
   const factory CreateTournamentAction.resetState() = ResetState;
   const factory CreateTournamentAction.updateExistingTournamentMatches() = UpdateExistingTournamentMatches;
   const factory CreateTournamentAction.saveTournamentOrUpdateMatches() = SaveTournamentOrUpdateMatches;
+}
+
+class CreateTournamentActionBase {
 }
