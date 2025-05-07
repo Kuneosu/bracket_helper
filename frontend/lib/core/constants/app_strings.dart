@@ -1,7 +1,7 @@
 class AppStrings {
 
   static const String appTitle = '대진 도우미';
-  static const String currentVersion = '1.2517.4';
+  static const String currentVersion = '1.2518.8';
 
   // 홈 화면
   static const String help = '도움말';
@@ -241,6 +241,11 @@ class AppStrings {
   static const String bracketShareTitle = '%s 대진표';
   static const String bracketShareError = '대진표 공유 중 오류가 발생했습니다: %s';
 
+  // 인터넷 연결 오류
+  static const String noInternetConnection = '인터넷 연결을 확인해주세요.';
+  static const String loadingContributors = '기여자 정보를 불러오는 중...';
+  static const String loadingError = '정보를 불러오는데 실패했습니다.';
+
   // 커스텀 탭 바
   static const String bracketTab = '대진표';
   static const String currentRankingTab = '현재 순위';
@@ -373,4 +378,11 @@ class AppStrings {
   static const String partnerMaxPlayersAllowed = "최대 32명까지 등록 가능합니다.";
   static const String partnerPlayersRequired = "선수는 8~32명으로 구성해야 합니다";
   
-  }
+  // 업데이트 다이얼로그
+  static const String updateNotice = '업데이트 알림';
+  static const String newVersionAvailable = '새로운 버전이 출시되었습니다';
+  static const String updateMessage = '최신 버전으로 업데이트하여\n새로운 기능과 개선사항을 경험해보세요.';
+  static const String updateNow = '업데이트';
+  static const String updateLater = '나중에';
+
+}
