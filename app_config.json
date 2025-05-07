@@ -1,0 +1,65 @@
+{
+  "version": "1.2518.8",
+  "contributors": [
+    {
+      "name": "최은윤",
+      "role": "무조건적인 지지",
+      "color": "0xFFe8e0ff"
+    },
+    {
+      "name": "하은이아빠",
+      "role": "소중한 의견과 격려",
+      "color": "default"
+    },
+    {
+      "name": "최은미",
+      "role": "소중한 의견과 격려",
+      "color": "default"
+    },
+    {
+      "name": "송치혁",
+      "role": "소중한 의견과 격려",
+      "color": "default"
+    },
+    {
+      "name": "김봉준",
+      "role": "소중한 의견과 격려",
+      "color": "default"
+    },
+    {
+      "name": "조소희",
+      "role": "소중한 의견과 격려",
+      "color": "default"
+    },
+    {
+      "name": "김정수",
+      "role": "소중한 의견과 격려",
+      "color": "default"
+    },
+    {
+      "name": "전수옥",
+      "role": "언젠가 A조",
+      "color": "default"
+    },
+    {
+      "name": "김지연",
+      "role": "개발자 벗, iOS 출시 비용 지원",
+      "color": "0xFFB388FF"
+    },
+    {
+      "name": "박유정",
+      "role": "마코여신",
+      "color": "0xFFFF80AB"
+    },
+    {
+      "name": "마코클럽",
+      "role": "실제 사용 및 피드백 제공",
+      "color": "0xFF129575"
+    },
+    {
+      "name": "테스트",
+      "role": "테스트",
+      "color": "default"
+    }
+  ]
+}

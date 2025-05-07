@@ -14,9 +14,6 @@ import 'package:bracket_helper/presentation/create_partner_tournament/create_par
 import 'package:bracket_helper/presentation/create_partner_tournament/create_partner_tournament_state.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-import 'package:json_annotation/json_annotation.dart';
-import 'dart:convert';
-import 'package:drift/drift.dart' hide Column;
 
 class CreatePartnerTournamentViewModel with ChangeNotifier {
   final CreateTournamentUseCase _createTournamentUseCase;
