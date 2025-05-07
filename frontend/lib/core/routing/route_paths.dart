@@ -10,4 +10,9 @@ abstract class RoutePaths {
   static const String tournamentInfo = '/tournament-info';
   static const String editMatch = '/edit-match';
   static const String addPlayer = '/add-player';
+
+  static const String createPartnerTournament = '/create-partner-tournament';
+  static const String partnerTournamentInfo = '/partner-tournament-info';
+  static const String partnerAddPlayer = '/partner-add-player';
+  static const String partnerEditMatch = '/partner-edit-match';
 }

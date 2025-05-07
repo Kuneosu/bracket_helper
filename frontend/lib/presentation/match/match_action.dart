@@ -13,6 +13,7 @@ sealed class MatchAction with _$MatchAction {
   const factory MatchAction.shuffleBracket() = ShuffleBracket;
   const factory MatchAction.finishTournament() = FinishTournament;
   const factory MatchAction.editBracket() = EditBracket;
+  const factory MatchAction.editPartnerBracket() = EditPartnerBracket;
 
   const factory MatchAction.sortPlayersBy(String sortOption) = SortPlayersBy;
 }
