@@ -125,7 +125,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                 debugPrint('매치 저장 중 오류 발생: $e');
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('매치 저장 중 오류가 발생했습니다.')),
+                    SnackBar(content: Text(AppStrings.matchSaveError)),
                   );
 
                   setState(() {
@@ -136,8 +136,8 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
             },
             nextText:
                 widget.isEditMode
-                    ? (_isSaving ? '저장 중...' : '저장 후 돌아가기')
-                    : (_isSaving ? '저장 중...' : '저장 후 완료'),
+                    ? (_isSaving ? AppStrings.isSaving : AppStrings.saveAndReturn)
+                    : (_isSaving ? AppStrings.isSaving : AppStrings.saveAndComplete),
             isNextDisabled: _isSaving,
           ),
         ],
@@ -275,10 +275,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   Icon(Icons.people_outline, color: CST.primary100, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    AppStrings.participantsCount.replaceAll(
-                      '%d',
-                      playerCount.toString(),
-                    ),
+                    AppStrings.participantsCount(playerCount),
                     style: TST.normalTextRegular.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -295,10 +292,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    AppStrings.matchesCount.replaceAll(
-                      '%d',
-                      matchCount.toString(),
-                    ),
+                    AppStrings.matchesCount(matchCount),
                     style: TST.normalTextRegular.copyWith(
                       fontWeight: FontWeight.w500,
                     ),

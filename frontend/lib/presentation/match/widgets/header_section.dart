@@ -42,7 +42,7 @@ class HeaderSection extends StatelessWidget {
                   Icon(Icons.people, size: 16, color: CST.primary100),
                   const SizedBox(width: 8),
                   Text(
-                    AppStrings.participantsCount.replaceAll('%d', playersCount.toString()),
+                    AppStrings.participantsCount(playersCount),
                     style: TST.normalTextBold.copyWith(color: CST.gray1),
                   ),
                 ],
@@ -53,7 +53,7 @@ class HeaderSection extends StatelessWidget {
                   Icon(Icons.emoji_events, size: 16, color: CST.primary100),
                   const SizedBox(width: 8),
                   Text(
-                    AppStrings.matchesCount.replaceAll('%d', matchesCount.toString()),
+                    AppStrings.matchesCount(matchesCount),
                     style: TST.normalTextBold.copyWith(color: CST.gray1),
                   ),
                 ],

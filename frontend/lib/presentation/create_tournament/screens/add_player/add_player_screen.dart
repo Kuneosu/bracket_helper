@@ -384,7 +384,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
               Icon(Icons.people, size: 16, color: CST.primary100),
               SizedBox(width: 8),
               Text(
-                '${AppStrings.currentPlayerList} (${widget.players.length}명)',
+                '${AppStrings.currentPlayerList} (${widget.players.length})',
                 style: TST.mediumTextBold.copyWith(color: CST.primary100),
               ),
             ],
@@ -431,7 +431,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen>
                                   // 중복 이름 발견 시 스낵바 표시
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('\'$name\'은(는) 이미 존재하는 이름입니다.'),
+                                      content: Text(AppStrings.duplicatePlayerName),
                                       backgroundColor: Colors.red,
                                       duration: const Duration(seconds: 2),
                                     ),

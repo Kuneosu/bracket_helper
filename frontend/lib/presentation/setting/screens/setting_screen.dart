@@ -9,12 +9,29 @@ import 'package:bracket_helper/presentation/setting/widgets/contributors_dialog.
 import 'package:bracket_helper/presentation/setting/widgets/email_feedback_launcher.dart';
 import 'package:bracket_helper/presentation/setting/widgets/privacy_policy_dialog.dart';
 import 'package:bracket_helper/presentation/setting/widgets/terms_of_service_dialog.dart';
+import 'package:bracket_helper/presentation/setting/widgets/language_dropdown.dart';
+import 'package:bracket_helper/core/services/language_service.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'dart:io' show Platform;
 import 'package:url_launcher/url_launcher.dart';
 
-class SettingScreen extends StatelessWidget {
+class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
+
+  @override
+  State<SettingScreen> createState() => _SettingScreenState();
+}
+
+class _SettingScreenState extends State<SettingScreen> {
+  void _onLanguageChanged(String? language) {
+    // 언어 변경 후 UI를 다시 그립니다
+    setState(() {});
+    
+    // 앱 전체 UI를 새로고침하기 위한 처리
+    Future.delayed(const Duration(milliseconds: 300), () {
+      LanguageService.refreshApp(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +50,7 @@ class SettingScreen extends StatelessWidget {
       body: ListView(
         children: [
           const SizedBox(height: 16),
-          // SectionTitle(title: AppStrings.displaySection),
+          SectionTitle(title: AppStrings.displaySection),
           // SettingItemWithBeta(
           //   icon: Icons.brightness_6,
           //   title: AppStrings.themeSettings,
@@ -42,14 +59,14 @@ class SettingScreen extends StatelessWidget {
           //     onChanged: null, // 테마 변경 기능 구현 시 추가
           //   ),
           // ),
-          // SettingItemWithBeta(
-          //   icon: Icons.language,
-          //   title: AppStrings.languageSettings,
-          //   subtitle: AppStrings.languageOptions,
-          //   trailing: const LanguageDropdown(
-          //     onChanged: null, // 언어 변경 기능 구현 시 추가
-          //   ),
-          // ),
+          SettingItem(
+            icon: Icons.language,
+            title: AppStrings.languageSettings,
+            subtitle: AppStrings.languageOptions,
+            trailing: LanguageDropdown(
+              onChanged: _onLanguageChanged,
+            ),
+          ),
           SectionTitle(title: AppStrings.appInfoSection),
           SettingItem(
             icon: Icons.info_outline,
@@ -71,8 +88,8 @@ class SettingScreen extends StatelessWidget {
                 } else {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('스토어 페이지를 열 수 없습니다.'),
+                      SnackBar(
+                        content: Text(AppStrings.storeOpenError),
                       ),
                     );
                   }
@@ -81,7 +98,7 @@ class SettingScreen extends StatelessWidget {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('오류가 발생했습니다: $e'),
+                      content: Text(AppStrings.storeOpenError),
                     ),
                   );
                 }
@@ -113,7 +130,7 @@ class SettingScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        '시뮬레이터에서는 스토어 연결이 지원되지 않습니다. 실제 기기에서 테스트해주세요.',
+                        AppStrings.storeOpenError,
                       ),
                     ),
                   );

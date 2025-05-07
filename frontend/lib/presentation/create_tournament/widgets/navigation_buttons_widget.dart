@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 class NavigationButtonsWidget extends StatelessWidget {
   final VoidCallback onPrevious;
   final VoidCallback? onNext;
-  final String previousText;
-  final String nextText;
+  final String? previousText;
+  final String? nextText;
   final bool isNextDisabled;
   final IconData? previousIcon;
   final IconData? nextIcon;
@@ -18,8 +18,8 @@ class NavigationButtonsWidget extends StatelessWidget {
     super.key,
     required this.onPrevious,
     required this.onNext,
-    this.previousText = AppStrings.previous,
-    this.nextText = AppStrings.next,
+    this.previousText,
+    this.nextText,
     this.isNextDisabled = false,
     this.previousIcon = Icons.arrow_back_rounded,
     this.nextIcon = Icons.arrow_forward_rounded,
@@ -27,6 +27,9 @@ class NavigationButtonsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final previousText = this.previousText ?? AppStrings.previous;
+    final nextText = this.nextText ?? AppStrings.next;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,

@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/use_case/match/get_all_matches_use_case.dart';
@@ -234,7 +235,7 @@ class HomeViewModel with ChangeNotifier {
         debugPrint('HomeViewModel - 토너먼트 삭제 실패: ${result.error.message}');
         _state = _state.copyWith(
           isLoading: false,
-          errorMessage: '토너먼트를 삭제하는데 실패했습니다: ${result.error.message}',
+          errorMessage: AppStrings.tournamentDeleteError,
         );
         notifyListeners();
       }
@@ -242,7 +243,7 @@ class HomeViewModel with ChangeNotifier {
       debugPrint('HomeViewModel - 토너먼트 삭제 중 예외 발생: $e');
       _state = _state.copyWith(
         isLoading: false,
-        errorMessage: '토너먼트를 삭제하는 중 오류가 발생했습니다: $e',
+        errorMessage: AppStrings.tournamentDeleteError,
       );
       notifyListeners();
     }
@@ -273,7 +274,7 @@ class HomeViewModel with ChangeNotifier {
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('스토어 페이지를 열 수 없습니다.')),
+            SnackBar(content: Text(AppStrings.storeOpenError)),
           );
         }
       }
@@ -281,7 +282,7 @@ class HomeViewModel with ChangeNotifier {
       debugPrint('스토어 URL 열기 실패: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('오류가 발생했습니다: $e')),
+          SnackBar(content: Text(AppStrings.storeOpenError)),
         );
       }
     }

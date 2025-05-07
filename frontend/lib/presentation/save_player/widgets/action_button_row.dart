@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:bracket_helper/core/constants/app_strings.dart';
 
 class ActionButtonRow extends StatelessWidget {
-  final String cancelText;
-  final String confirmText;
+  final String? cancelText;
+  final String? confirmText;
   final VoidCallback onCancel;
   final VoidCallback? onConfirm;
   final bool isConfirmEnabled;
@@ -19,8 +19,8 @@ class ActionButtonRow extends StatelessWidget {
   /// [padding] 버튼의 패딩 (기본값: vertical 16)
   const ActionButtonRow({
     super.key,
-    this.cancelText = AppStrings.cancelButton,
-    this.confirmText = AppStrings.confirmButton,
+    this.cancelText,
+    this.confirmText,
     required this.onCancel,
     required this.onConfirm,
     this.isConfirmEnabled = true,
@@ -30,6 +30,8 @@ class ActionButtonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
+    final cancelText = this.cancelText ?? AppStrings.cancelButton;
+    final confirmText = this.confirmText ?? AppStrings.confirmButton;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
