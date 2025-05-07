@@ -7,7 +7,7 @@ abstract class ContributorDataSource {
 }
 
 class GithubContributorDataSource implements ContributorDataSource {
-  final String repositoryUrl = 'https://raw.githubusercontent.com/Kuneosu/bracket_helper/BH-44/app_config.json';
+  final String repositoryUrl = 'https://raw.githubusercontent.com/Kuneosu/bracket_helper/main/app_config.json';
 
   @override
   Future<List<Contributor>> getContributors() async {
