@@ -42,6 +42,10 @@ import 'package:bracket_helper/presentation/match/match_view_model.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_view_model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bracket_helper/domain/use_case/group/count_players_in_group_use_case.dart';
+import 'package:bracket_helper/data/data_source/config_data_source.dart';
+import 'package:bracket_helper/data/repository/config_repository.dart';
+import 'package:bracket_helper/data/services/config_service.dart';
+import 'package:bracket_helper/domain/use_case/config/check_new_version_use_case.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -57,6 +61,18 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<MatchDao>(() => MatchDao(getIt<AppDatabase>()));
   getIt.registerLazySingleton<TournamentDao>(
     () => TournamentDao(getIt<AppDatabase>()),
+  );
+
+  // 앱 설정 관련 의존성 등록
+  getIt.registerLazySingleton<ConfigDataSource>(() => GithubConfigDataSource());
+  getIt.registerLazySingleton<ConfigService>(
+    () => ConfigService(getIt<ConfigDataSource>()),
+  );
+  getIt.registerLazySingleton<ConfigRepository>(
+    () => ConfigRepository(getIt<ConfigService>()),
+  );
+  getIt.registerLazySingleton<CheckNewVersionUseCase>(
+    () => CheckNewVersionUseCase(getIt<ConfigRepository>()),
   );
 
   // 레포지토리 등록
@@ -163,6 +179,7 @@ Future<void> setupDependencies() async {
       getAllTournamentsUseCase: getIt<GetAllTournamentsUseCase>(),
       deleteTournamentUseCase: getIt<DeleteTournamentUseCase>(),
       getAllMatchesUseCase: getIt<GetAllMatchesUseCase>(),
+      checkNewVersionUseCase: getIt<CheckNewVersionUseCase>(),
     ),
   );
   
@@ -182,8 +199,7 @@ Future<void> setupDependencies() async {
     ),
   );
 
-  // MatchViewModel은 factory 함수로 등록하여 tournamentId를 전달받을 수 있도록 함
-  // 이제 getIt.get<MatchViewModel>() 대신 getIt.call<MatchViewModel>(param) 형태로 사용
+  // MatchViewModel 등록 개선 - 팩토리로 등록하여 매번 새 인스턴스 생성
   getIt.registerFactoryParam<MatchViewModel, int, void>(
     (tournamentId, _) => MatchViewModel(
       tournamentId: tournamentId,

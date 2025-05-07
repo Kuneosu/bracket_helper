@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 /// 선수 목록이 비어있을 때 표시되는 위젯
 class EmptyPlayerListWidget extends StatelessWidget {
   final String? message;
+  final String? subText;
   final IconData? icon;
 
-  const EmptyPlayerListWidget({super.key, this.message, this.icon});
+  const EmptyPlayerListWidget({super.key, this.message, this.subText, this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +29,11 @@ class EmptyPlayerListWidget extends StatelessWidget {
               Text(
                 message ?? AppStrings.noAddedPlayersMessage,
                 style: TST.mediumTextRegular.copyWith(color: CST.gray2),
+                textAlign: TextAlign.center,
               ),
               SizedBox(height: 8),
               Text(
-                AppStrings.addPlayerMessage,
+                subText ?? AppStrings.addPlayerMessage,
                 textAlign: TextAlign.center,
                 style: TST.smallTextRegular.copyWith(color: CST.gray3),
               ),

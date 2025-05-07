@@ -1,17 +1,22 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:bracket_helper/domain/model/tournament_model.dart';
 import 'package:bracket_helper/domain/use_case/match/get_all_matches_use_case.dart';
 import 'package:bracket_helper/domain/use_case/tournament/delete_tournament_use_case.dart';
 import 'package:bracket_helper/domain/use_case/tournament/get_all_tournaments_use_case.dart';
+import 'package:bracket_helper/domain/use_case/config/check_new_version_use_case.dart';
+import 'package:bracket_helper/presentation/create_partner_tournament/create_partner_tournament_view_model.dart';
 import 'package:bracket_helper/presentation/create_tournament/create_tournament_view_model.dart';
 import 'package:bracket_helper/presentation/home/home_action.dart';
 import 'package:bracket_helper/presentation/home/home_state.dart';
 import 'package:bracket_helper/presentation/home/widgets/help_dialog.dart';
 import 'package:bracket_helper/presentation/home/widgets/tournament_delete_dialog.dart';
+import 'package:bracket_helper/presentation/home/widgets/update_available_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeViewModel with ChangeNotifier {
   final List<TournamentModel> _tournaments = [];
@@ -20,6 +25,7 @@ class HomeViewModel with ChangeNotifier {
   final GetAllTournamentsUseCase _getAllTournamentsUseCase;
   final DeleteTournamentUseCase _deleteTournamentUseCase;
   final GetAllMatchesUseCase _getAllMatchesUseCase;
+  final CheckNewVersionUseCase _checkNewVersionUseCase;
 
   List<TournamentModel> get tournaments => _tournaments;
 
@@ -27,9 +33,11 @@ class HomeViewModel with ChangeNotifier {
     required GetAllTournamentsUseCase getAllTournamentsUseCase,
     required DeleteTournamentUseCase deleteTournamentUseCase,
     required GetAllMatchesUseCase getAllMatchesUseCase,
+    required CheckNewVersionUseCase checkNewVersionUseCase,
   }) : _getAllTournamentsUseCase = getAllTournamentsUseCase,
        _deleteTournamentUseCase = deleteTournamentUseCase,
-       _getAllMatchesUseCase = getAllMatchesUseCase {
+       _getAllMatchesUseCase = getAllMatchesUseCase,
+       _checkNewVersionUseCase = checkNewVersionUseCase {
     _fetchTournaments();
   }
 
@@ -53,7 +61,7 @@ class HomeViewModel with ChangeNotifier {
       }
     } catch (e) {
       _state = _state.copyWith(
-        errorMessage: '토너먼트 목록을 불러오는 중 오류가 발생했습니다: $e',
+        errorMessage: AppStrings.tournamentListLoadError,
         isLoading: false,
       );
     }
@@ -108,6 +116,23 @@ class HomeViewModel with ChangeNotifier {
     }
   }
 
+  Future<void> checkForUpdate(BuildContext context) async {
+    try {
+      final result = await _checkNewVersionUseCase.execute();
+      
+      if (result.isSuccess && result.value) {
+        if (context.mounted) {
+          final shouldGoToUpdate = await UpdateAvailableDialog.show(context: context);
+          if (shouldGoToUpdate && context.mounted) {
+            _handleCheckUpdate(context);
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('업데이트 확인 중 오류 발생: $e');
+    }
+  }
+
   void onAction(HomeAction action, BuildContext context) {
     debugPrint('HomeViewModel - 액션: $action');
 
@@ -121,6 +146,8 @@ class HomeViewModel with ChangeNotifier {
         _fetchTournaments();
       case OnTapHelp():
         _handleHelp(context);
+      case OnCheckUpdate():
+        checkForUpdate(context);
       case OnTapAllTournament():
         return;
       case OnTapPlayerManagement():
@@ -131,6 +158,8 @@ class HomeViewModel with ChangeNotifier {
         return;
       case OnTapMatchCard():
         return;
+      case OnTapPartnerTournament():
+        _handlePartnerTournament(context);
     }
   }
 
@@ -152,6 +181,33 @@ class HomeViewModel with ChangeNotifier {
       }
 
       context.go(RoutePaths.createTournament, extra: {'shouldReset': true});
+    } catch (e) {
+      debugPrint('HomeViewModel - 대진표 생성 화면 이동 중 예외 발생: $e');
+    }
+  }
+
+  void _handlePartnerTournament(BuildContext context) {
+    try {
+      debugPrint('HomeViewModel - 대진표 생성 화면으로 이동');
+
+      final hasViewModel =
+          getIt.isRegistered<CreatePartnerTournamentViewModel>();
+
+      if (hasViewModel) {
+        debugPrint('CreatePartnerTournamentViewModel 인스턴스 초기화');
+
+        try {
+          getIt.unregister<CreatePartnerTournamentViewModel>();
+          debugPrint('기존 CreatePartnerTournamentViewModel 인스턴스 제거 성공');
+        } catch (e) {
+          debugPrint('CreatePartnerTournamentViewModel 제거 중 오류: $e');
+        }
+      }
+
+      context.go(
+        RoutePaths.createPartnerTournament,
+        extra: {'shouldReset': true},
+      );
     } catch (e) {
       debugPrint('HomeViewModel - 대진표 생성 화면 이동 중 예외 발생: $e');
     }
@@ -179,7 +235,7 @@ class HomeViewModel with ChangeNotifier {
         debugPrint('HomeViewModel - 토너먼트 삭제 실패: ${result.error.message}');
         _state = _state.copyWith(
           isLoading: false,
-          errorMessage: '토너먼트를 삭제하는데 실패했습니다: ${result.error.message}',
+          errorMessage: AppStrings.tournamentDeleteError,
         );
         notifyListeners();
       }
@@ -187,7 +243,7 @@ class HomeViewModel with ChangeNotifier {
       debugPrint('HomeViewModel - 토너먼트 삭제 중 예외 발생: $e');
       _state = _state.copyWith(
         isLoading: false,
-        errorMessage: '토너먼트를 삭제하는 중 오류가 발생했습니다: $e',
+        errorMessage: AppStrings.tournamentDeleteError,
       );
       notifyListeners();
     }
@@ -196,5 +252,39 @@ class HomeViewModel with ChangeNotifier {
   void _handleHelp(BuildContext context) {
     debugPrint('HomeViewModel - 도움말 화면 표시');
     HelpDialog.show(context: context);
+  }
+  
+  void _handleCheckUpdate(BuildContext context) {
+    try {
+      final Uri url = Uri.parse(
+        'https://play.google.com/store/apps/details?id=com.kuneosu.bracket_helper'
+      );
+      
+      _launchAppStore(context, url);
+    } catch (e) {
+      debugPrint('스토어 URL 열기 실패: $e');
+    }
+  }
+  
+  void _launchAppStore(BuildContext context, Uri url) async {
+    try {
+      final canLaunch = await canLaunchUrl(url);
+      if (canLaunch) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppStrings.storeOpenError)),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('스토어 URL 열기 실패: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppStrings.storeOpenError)),
+        );
+      }
+    }
   }
 }

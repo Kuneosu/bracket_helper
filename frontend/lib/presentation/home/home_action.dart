@@ -13,4 +13,6 @@ sealed class HomeAction with _$HomeAction {
   const factory HomeAction.onTapMatchCard() = OnTapMatchCard;
   const factory HomeAction.onTapDeleteTournament(int tournamentId) =
       OnTapDeleteTournament;
+  const factory HomeAction.onTapPartnerTournament() = OnTapPartnerTournament;
+  const factory HomeAction.onCheckUpdate() = OnCheckUpdate;
 }

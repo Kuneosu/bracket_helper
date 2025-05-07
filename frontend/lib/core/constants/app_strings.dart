@@ -1,368 +1,1202 @@
-class AppStrings {
+import 'package:bracket_helper/core/constants/app_strings_en.dart';
+import 'package:bracket_helper/core/constants/app_strings_ko.dart';
+import 'package:bracket_helper/core/services/language_manager.dart';
 
-  static const String appTitle = '대진 도우미';
-  static const String currentVersion = '1.2517.4';
+class AppStrings {
+  static String get appTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.appTitle
+          : AppStringsEn.appTitle;
+  static String get currentVersion =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.currentVersion
+          : AppStringsEn.currentVersion;
 
   // 홈 화면
-  static const String help = '도움말';
-  static const String recentMatches = '최근 경기';
-  static const String viewAll = '모두 보기 >';
-  static const String services = '서비스';
-  
+  static String get help =>
+      LanguageManager.isKorean() ? AppStringsKo.help : AppStringsEn.help;
+  static String get recentMatches =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.recentMatches
+          : AppStringsEn.recentMatches;
+  static String get viewAll =>
+      LanguageManager.isKorean() ? AppStringsKo.viewAll : AppStringsEn.viewAll;
+  static String get services =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.services
+          : AppStringsEn.services;
+  static String get tournamentListLoadError =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tournamentListLoadError
+          : AppStringsEn.tournamentListLoadError;
+
   // 빈 상태 메시지
-  static const String noTournaments = '아직 진행한 경기가 없습니다';
-  static const String createNewTournament = '새 대진표를 생성해보세요!';
-  
+  static String get noTournaments =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.noTournaments
+          : AppStringsEn.noTournaments;
+  static String get createNewTournament =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.createNewTournament
+          : AppStringsEn.createNewTournament;
+
   // 기능 카드
-  static const String createBracket = '대진표 생성하기';
-  static const String createBracketDesc = '복식/단식 매칭을 쉽게 관리하세요';
-  
-  static const String playerManagement = '선수 관리';
-  static const String playerManagementDesc = '선수 정보를 등록하고 관리하세요';
-  
-  static const String groupManagement = '그룹 관리';
-  static const String groupManagementDesc = '그룹을 만들고 선수를 추가하세요';
-  
-  static const String viewStatistics = '통계 보기';
-  static const String viewStatisticsDesc = '경기 결과와 플레이어 성적을 분석하세요';
-  
-  static const String comingSoon = '업데이트 예정';
-  static const String comingSoonMessage = '추후 업데이트 예정입니다';
-  
+  static String get createBracket =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.createBracket
+          : AppStringsEn.createBracket;
+  static String get createBracketDesc =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.createBracketDesc
+          : AppStringsEn.createBracketDesc;
+
+  static String get playerManagement =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerManagement
+          : AppStringsEn.playerManagement;
+  static String get playerManagementDesc =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerManagementDesc
+          : AppStringsEn.playerManagementDesc;
+
+  static String get groupManagement =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupManagement
+          : AppStringsEn.groupManagement;
+  // 바텀 네비게이션용 짧은 그룹 관리 텍스트
+  static String get shortGroupManagement =>
+      LanguageManager.isKorean() ? '그룹' : 'Groups';
+  static String get groupManagementDesc =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupManagementDesc
+          : AppStringsEn.groupManagementDesc;
+
+  static String get designatedPartnerMatching =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.designatedPartnerMatching
+          : AppStringsEn.designatedPartnerMatching;
+  static String get designatedPartnerMatchingDesc =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.designatedPartnerMatchingDesc
+          : AppStringsEn.designatedPartnerMatchingDesc;
+
+  static String get viewStatistics =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.viewStatistics
+          : AppStringsEn.viewStatistics;
+  static String get viewStatisticsDesc =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.viewStatisticsDesc
+          : AppStringsEn.viewStatisticsDesc;
+
+  static String get comingSoon =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.comingSoon
+          : AppStringsEn.comingSoon;
+  static String get comingSoonMessage =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.comingSoonMessage
+          : AppStringsEn.comingSoonMessage;
+
   // 저작권
-  static const String copyright = '© 2025 Kuneosu. All rights reserved.';
-  
+  static String get copyright =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.copyright
+          : AppStringsEn.copyright;
+
   // 도움말 대화상자
-  static const String helpDialogTitle = '도움말';
-  static const String helpDialogDescription = '대진 도우미는 배드민턴·탁구·테니스 등 생활 체육 동호회나 학교·사내 친선전을 쉽고 빠르게 운영할 수 있도록 돕는 모바일 앱입니다.';
-  static const String helpDialogFeaturesTitle = '주요 기능:';
-  static const String helpDialogFeature1 = '복식/단식 대진표 자동 생성';
-  static const String helpDialogFeature2 = '승/무/패 점수 설정';
-  static const String helpDialogFeature3 = '경기 진행 현황 관리';
-  static const String helpDialogFeature4 = '대진표 공유';
-  static const String confirm = '확인';
-  
+  static String get helpDialogTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.helpDialogTitle
+          : AppStringsEn.helpDialogTitle;
+  static String get helpDialogDescription =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.helpDialogDescription
+          : AppStringsEn.helpDialogDescription;
+  static String get helpDialogFeaturesTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.helpDialogFeaturesTitle
+          : AppStringsEn.helpDialogFeaturesTitle;
+  static String get helpDialogFeature1 =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.helpDialogFeature1
+          : AppStringsEn.helpDialogFeature1;
+  static String get helpDialogFeature2 =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.helpDialogFeature2
+          : AppStringsEn.helpDialogFeature2;
+  static String get helpDialogFeature3 =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.helpDialogFeature3
+          : AppStringsEn.helpDialogFeature3;
+  static String get helpDialogFeature4 =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.helpDialogFeature4
+          : AppStringsEn.helpDialogFeature4;
+  static String get confirm =>
+      LanguageManager.isKorean() ? AppStringsKo.confirm : AppStringsEn.confirm;
+
   // 토너먼트 삭제 대화상자
-  static const String tournamentDeleteTitle = '토너먼트 삭제';
-  static const String tournamentDeleteQuestion = '이 토너먼트를 정말 삭제하시겠습니까?';
-  static const String tournamentDeleteWarning = '이 작업은 되돌릴 수 없습니다.';
-  static const String cancel = '취소';
-  static const String delete = '삭제';
+  static String get tournamentDeleteTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tournamentDeleteTitle
+          : AppStringsEn.tournamentDeleteTitle;
+  static String get tournamentDeleteQuestion =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tournamentDeleteQuestion
+          : AppStringsEn.tournamentDeleteQuestion;
+  static String get tournamentDeleteWarning =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tournamentDeleteWarning
+          : AppStringsEn.tournamentDeleteWarning;
+  static String get cancel =>
+      LanguageManager.isKorean() ? AppStringsKo.cancel : AppStringsEn.cancel;
+  static String get delete =>
+      LanguageManager.isKorean() ? AppStringsKo.delete : AppStringsEn.delete;
+  static String get tournamentDeleteError =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tournamentDeleteError
+          : AppStringsEn.tournamentDeleteError;
 
   // 설정 화면
-  static const String settings = '설정';
-  
+  static String get settings =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.settings
+          : AppStringsEn.settings;
+
   // 설정 섹션
-  static const String displaySection = '디스플레이';
-  static const String appInfoSection = '앱 정보';
-  static const String customerSupportSection = '고객 지원';
-  static const String otherSection = '기타';
-  
+  static String get displaySection =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.displaySection
+          : AppStringsEn.displaySection;
+  static String get appInfoSection =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.appInfoSection
+          : AppStringsEn.appInfoSection;
+  static String get customerSupportSection =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.customerSupportSection
+          : AppStringsEn.customerSupportSection;
+  static String get otherSection =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.otherSection
+          : AppStringsEn.otherSection;
+
+
   // 디스플레이 설정
-  static const String themeSettings = '테마 설정';
-  static const String themeOptions = '라이트 / 다크 / 시스템';
-  static const String languageSettings = '언어 설정';
-  static const String languageOptions = '한국어 / English';
-  
+  static String get themeSettings =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.themeSettings
+          : AppStringsEn.themeSettings;
+  static String get themeOptions =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.themeOptions
+          : AppStringsEn.themeOptions;
+  static String get languageSettings =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.languageSettings
+          : AppStringsEn.languageSettings;
+  static String get languageOptions =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.languageOptions
+          : AppStringsEn.languageOptions;
+
   // 앱 정보 설정
-  static const String appVersion = '앱 버전';
-  
-  static const String checkForUpdates = '업데이트 확인';
-  static const String checkForUpdatesSubtitle = '최신 버전으로 업데이트하세요';
-  
+  static String get appVersion =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.appVersion
+          : AppStringsEn.appVersion;
+
+  static String get checkForUpdates =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.checkForUpdates
+          : AppStringsEn.checkForUpdates;
+  static String get checkForUpdatesSubtitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.checkForUpdatesSubtitle
+          : AppStringsEn.checkForUpdatesSubtitle;
+
   // 고객 지원 설정
-  static const String inquiryAndFeedback = '문의 및 피드백';
-  static const String inquirySubtitle = '문제가 있거나 건의사항이 있으신가요?';
-  static const String rateUs = '평가하기';
-  static const String rateUsSubtitle = '앱 스토어에서 평가해주세요';
-  
+  static String get inquiryAndFeedback =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.inquiryAndFeedback
+          : AppStringsEn.inquiryAndFeedback;
+  static String get inquirySubtitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.inquirySubtitle
+          : AppStringsEn.inquirySubtitle;
+  static String get rateUs =>
+      LanguageManager.isKorean() ? AppStringsKo.rateUs : AppStringsEn.rateUs;
+  static String get rateUsSubtitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.rateUsSubtitle
+          : AppStringsEn.rateUsSubtitle;
+  static String get storeOpenError =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.storeOpenError
+          : AppStringsEn.storeOpenError;
   // 기타 설정
-  static const String developerInfo = '개발자 정보';
-  static const String thanksFor = 'Thanks for';
-  static const String privacyPolicy = '개인정보 처리방침';
-  static const String termsOfService = '서비스 이용약관';
-  
+  static String get developerInfo =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.developerInfo
+          : AppStringsEn.developerInfo;
+  static String get thanksFor =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.thanksFor
+          : AppStringsEn.thanksFor;
+  static String get privacyPolicy =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.privacyPolicy
+          : AppStringsEn.privacyPolicy;
+  static String get termsOfService =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.termsOfService
+          : AppStringsEn.termsOfService;
+
   // 컨트리뷰터 대화상자
-  static const String close = '닫기';
-  
+  static String get close =>
+      LanguageManager.isKorean() ? AppStringsKo.close : AppStringsEn.close;
+
   // 그룹 관리 에러 메시지
-  static const String invalidPlayerId = '유효하지 않은 선수 ID입니다.';
-  static const String invalidGroupId = '유효하지 않은 그룹 ID입니다.';
-  static const String removePlayerError = '그룹에서 선수를 제거하는 중 오류가 발생했습니다.';
-  static const String playerNotFound = '선수를 찾을 수 없습니다';
-  
+  static String get invalidPlayerId =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.invalidPlayerId
+          : AppStringsEn.invalidPlayerId;
+  static String get invalidGroupId =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.invalidGroupId
+          : AppStringsEn.invalidGroupId;
+  static String get removePlayerError =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.removePlayerError
+          : AppStringsEn.removePlayerError;
+  static String get playerNotFound =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerNotFound
+          : AppStringsEn.playerNotFound;
+
   // 로그 메시지
-  static const String removePlayerAttempt = '그룹에서 선수 제거 시도 - 선수 ID: {0}, 그룹 ID: {1}';
-  static const String removePlayerSuccess = '그룹에서 선수 제거 성공 - 영향받은 행: {0}';
-  static const String removePlayerFail = '그룹에서 선수 제거 실패 - {0}';
-  static const String exceptionOccurred = '예외 발생 - {0}';
-  
+  static String get removePlayerAttempt =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.removePlayerAttempt
+          : AppStringsEn.removePlayerAttempt;
+  static String get removePlayerSuccess =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.removePlayerSuccess
+          : AppStringsEn.removePlayerSuccess;
+  static String get removePlayerFail =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.removePlayerFail
+          : AppStringsEn.removePlayerFail;
+  static String get exceptionOccurred =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.exceptionOccurred
+          : AppStringsEn.exceptionOccurred;
+
   // 개발자 정보 바텀시트
-  static const String developerInfoTitle = '개발자 정보';
-  static const String developerName = '김권수(Kuneosu)';
-  static const String developerDescription = '대진 도우미 앱을 개발한 개발자입니다.\n문의나 피드백은 언제든지 환영합니다.';
-  static const String cannotOpenWebsite = '웹사이트를 열 수 없습니다.';
-  static const String errorOccurred = '오류가 발생했습니다: {0}';
-  
+  static String get developerInfoTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.developerInfoTitle
+          : AppStringsEn.developerInfoTitle;
+  static String get developerName =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.developerName
+          : AppStringsEn.developerName;
+  static String get developerDescription =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.developerDescription
+          : AppStringsEn.developerDescription;
+  static String get cannotOpenWebsite =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.cannotOpenWebsite
+          : AppStringsEn.cannotOpenWebsite;
+  static String get errorOccurred =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.errorOccurred
+          : AppStringsEn.errorOccurred;
+
   // 이메일 피드백 런처
-  static const String developerEmail = 'brackethelper@gmail.com';
-  static const String emailSubject = '[대진 도우미] 문의 및 피드백';
-  static const String emailBody = '''
-안녕하세요, 대진 도우미 개발자입니다.
+  static String get developerEmail =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.developerEmail
+          : AppStringsEn.developerEmail;
+  static String get emailSubject =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.emailSubject
+          : AppStringsEn.emailSubject;
+  static String get emailBody =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.emailBody
+          : AppStringsEn.emailBody;
+  static String get emailAppErrorTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.emailAppErrorTitle
+          : AppStringsEn.emailAppErrorTitle;
+  static String get emailAppErrorContent =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.emailAppErrorContent
+          : AppStringsEn.emailAppErrorContent;
+  static String get emailAppErrorContact =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.emailAppErrorContact
+          : AppStringsEn.emailAppErrorContact;
 
-아래에 문의하실 내용이나 피드백을 자유롭게 작성해 주세요.
--------------------------------------------------
-
-앱 버전: {0}
-기기 정보: 
-
--------------------------------------------------
-''';
-
-  static const String emailAppErrorTitle = '이메일 앱 실행 불가';
-  static const String emailAppErrorContent = '죄송합니다. 현재 기본 메일앱 사용이 불가능하여 앱에서 바로 메일을 전송할 수 없습니다.';
-  static const String emailAppErrorContact = '아래 이메일로 연락주시면 빠르게 답변드리도록 하겠습니다.';
-  
   // 언어 설정
-  static const String korean = '한국어';
-  static const String english = '영어';
-  
+  static String get korean =>
+      LanguageManager.isKorean() ? AppStringsKo.korean : AppStringsEn.korean;
+  static String get english =>
+      LanguageManager.isKorean() ? AppStringsKo.english : AppStringsEn.english;
+
   // 개인정보 처리방침 대화상자
-  static const String privacyPolicyTitle = '개인정보 처리방침';
-  static const String privacyPolicyDescription1 = '이 앱은 인터넷 서버와 통신하지 않으며, 사용자의 어떤 개인정보도 수집하거나 저장하지 않습니다.';
-  static const String privacyPolicyDescription2 = '단, 향후 광고 기능이 추가될 경우 광고 SDK를 통해 일부 정보가 수집될 수 있으며, 이에 대한 안내는 추후 별도로 제공됩니다.';
-  static const String privacyPolicyDate = '2025.04.24';
+  static String get privacyPolicyTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.privacyPolicyTitle
+          : AppStringsEn.privacyPolicyTitle;
+  static String get privacyPolicyDescription1 =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.privacyPolicyDescription1
+          : AppStringsEn.privacyPolicyDescription1;
+  static String get privacyPolicyDescription2 =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.privacyPolicyDescription2
+          : AppStringsEn.privacyPolicyDescription2;
+  static String get privacyPolicyDate =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.privacyPolicyDate
+          : AppStringsEn.privacyPolicyDate;
 
   // 설정 아이템 베타 표시
-  static const String beta = '준비중';
+  static String get beta =>
+      LanguageManager.isKorean() ? AppStringsKo.beta : AppStringsEn.beta;
 
   // 서비스 이용약관 대화상자
-  static const String termsOfServiceTitle = '서비스 이용약관';
-  static const String termsArticle1Title = '제 1조 (목적)';
-  static const String termsArticle1Content = '이 앱은 무료로 제공되며, 모든 콘텐츠는 "있는 그대로" 제공됩니다.';
-  static const String termsArticle2Title = '제 2조 (이용제한)';
-  static const String termsArticle2Content = '사용자는 자유롭게 앱을 사용할 수 있으나, 불법적인 목적이나 타인의 권리를 침해하는 목적으로 사용해서는 안 됩니다.';
-  static const String termsArticle3Title = '제 3조 (면책조항)';
-  static const String termsArticle3Content = '개발자는 이 앱의 사용으로 인해 발생하는 어떠한 직접적, 간접적, 부수적 손해에 대해서도 책임을 지지 않습니다.';
-  static const String termsDate = '2025.04.24';
+  static String get termsOfServiceTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.termsOfServiceTitle
+          : AppStringsEn.termsOfServiceTitle;
+  static String get termsArticle1Title =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.termsArticle1Title
+          : AppStringsEn.termsArticle1Title;
+  static String get termsArticle1Content =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.termsArticle1Content
+          : AppStringsEn.termsArticle1Content;
+  static String get termsArticle2Title =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.termsArticle2Title
+          : AppStringsEn.termsArticle2Title;
+  static String get termsArticle2Content =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.termsArticle2Content
+          : AppStringsEn.termsArticle2Content;
+  static String get termsArticle3Title =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.termsArticle3Title
+          : AppStringsEn.termsArticle3Title;
+  static String get termsArticle3Content =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.termsArticle3Content
+          : AppStringsEn.termsArticle3Content;
+  static String get termsDate =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.termsDate
+          : AppStringsEn.termsDate;
 
   // 테마 설정
-  static const String themeLight = '라이트';
-  static const String themeDark = '다크';
-  static const String themeSystem = '시스템';
-  
+  static String get themeLight =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.themeLight
+          : AppStringsEn.themeLight;
+  static String get themeDark =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.themeDark
+          : AppStringsEn.themeDark;
+  static String get themeSystem =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.themeSystem
+          : AppStringsEn.themeSystem;
+
   // 그룹 생성 화면
-  static const String enterGroupInfo = '그룹 정보를 입력해주세요';
-  static const String groupName = '그룹명';
-  static const String enterGroupName = '그룹명을 입력해주세요';
-  static const String maxChars = '최대 20자까지 입력 가능합니다';
-  static const String groupColor = '그룹 색상';
-  static const String selectGroupColor = '그룹을 대표할 색상을 선택하세요';
-  static const String cancelCreation = '생성 취소';
-  static const String createGroup = '그룹 생성하기';
-  
+  static String get groupDetailTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupDetailTitle
+          : AppStringsEn.groupDetailTitle;
+  static String get createGroupTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.createGroupTitle
+          : AppStringsEn.createGroupTitle;
+  static String get groupListTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupListTitle
+          : AppStringsEn.groupListTitle;
+  static String get enterGroupInfo =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.enterGroupInfo
+          : AppStringsEn.enterGroupInfo;
+  static String get groupName =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupName
+          : AppStringsEn.groupName;
+  static String get enterGroupName =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.enterGroupName
+          : AppStringsEn.enterGroupName;
+  static String get maxChars =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.maxChars
+          : AppStringsEn.maxChars;
+  static String get groupColor =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupColor
+          : AppStringsEn.groupColor;
+  static String get selectGroupColor =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.selectGroupColor
+          : AppStringsEn.selectGroupColor;
+  static String get cancelCreation =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.cancelCreation
+          : AppStringsEn.cancelCreation;
+  static String get createGroup =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.createGroup
+          : AppStringsEn.createGroup;
+
   // 그룹 상세 화면
-  static const String playerList = '선수 목록';
-  
+  static String get playerList =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerList
+          : AppStringsEn.playerList;
+  static String addPlayerToGroup(String groupName) {
+    String format =
+        LanguageManager.isKorean()
+            ? AppStringsKo.addPlayerToGroup
+            : AppStringsEn.addPlayerToGroup;
+    return format.replaceAll('%s', groupName);
+  }
+
+  static String get addPlayerLabel =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addPlayerLabel
+          : AppStringsEn.addPlayerLabel;
+  static String get addPlayerHint =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addPlayerHint
+          : AppStringsEn.addPlayerHint;
+  static String get addPlayerError =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addPlayerError
+          : AppStringsEn.addPlayerError;
+  static String get addPlayerFeatureTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addPlayerFeatureTitle
+          : AppStringsEn.addPlayerFeatureTitle;
+  static String get addPlayerFeatureGuide =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addPlayerFeatureGuide
+          : AppStringsEn.addPlayerFeatureGuide;
+  static String get add =>
+      LanguageManager.isKorean() ? AppStringsKo.add : AppStringsEn.add;
+  static String get error =>
+      LanguageManager.isKorean() ? AppStringsKo.error : AppStringsEn.error;
+  static String get tryAgain =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tryAgain
+          : AppStringsEn.tryAgain;
+  static String get groupNotFound =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupNotFound
+          : AppStringsEn.groupNotFound;
+  static String get groupNotFoundMessage =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupNotFoundMessage
+          : AppStringsEn.groupNotFoundMessage;
+  static String get goToGroupList =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.goToGroupList
+          : AppStringsEn.goToGroupList;
+
   // 그룹 목록 화면
-  static const String groupList = '그룹 목록';
-  static const String searchHint = '그룹 또는 선수 이름으로 검색...';
-  static const String noSearchResults = '검색 결과가 없습니다';
-  static const String searchResultsHelp = '다른 검색어를 입력하거나 그룹을 생성해보세요';
-  static const String saveChanges = '변경사항 저장';
-  static const String manage = '관리';
-  static const String createGroupButton = '그룹 생성';
-  
+  static String get groupList =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupList
+          : AppStringsEn.groupList;
+  static String get searchHint =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.searchHint
+          : AppStringsEn.searchHint;
+  static String get noSearchResults =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.noSearchResults
+          : AppStringsEn.noSearchResults;
+  static String get searchResultsHelp =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.searchResultsHelp
+          : AppStringsEn.searchResultsHelp;
+  static String get saveChanges =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.saveChanges
+          : AppStringsEn.saveChanges;
+  static String get manage =>
+      LanguageManager.isKorean() ? AppStringsKo.manage : AppStringsEn.manage;
+  static String get createGroupButton =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.createGroupButton
+          : AppStringsEn.createGroupButton;
+
   // 액션 버튼
-  static const String cancelButton = '취소';
-  static const String confirmButton = '확인';
-  
+  static String get cancelButton =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.cancelButton
+          : AppStringsEn.cancelButton;
+  static String get confirmButton =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.confirmButton
+          : AppStringsEn.confirmButton;
+
   // 선수 정보 수정 대화상자
-  static const String editPlayerTitle = '선수 정보 수정';
-  static const String playerNameLabel = '선수 이름';
-  static const String enterNameHint = '이름을 입력하세요';
-  static const String nameValidationError = '선수 이름을 입력해주세요';
-  static const String saveButton = '저장';
-  
+  static String get editPlayerTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.editPlayerTitle
+          : AppStringsEn.editPlayerTitle;
+  static String get playerNameLabel =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerNameLabel
+          : AppStringsEn.playerNameLabel;
+  static String get enterNameHint =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.enterNameHint
+          : AppStringsEn.enterNameHint;
+  static String get nameValidationError =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.nameValidationError
+          : AppStringsEn.nameValidationError;
+  static String get saveButton =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.saveButton
+          : AppStringsEn.saveButton;
+
   // 빈 선수 목록 위젯
-  static const String noPlayersMessage = '등록된 선수가 없습니다';
-  static const String addPlayerButton = '선수 추가하기';
-  
+  static String get noPlayersMessage =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.noPlayersMessage
+          : AppStringsEn.noPlayersMessage;
+  static String get addPlayerButton =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addPlayerButton
+          : AppStringsEn.addPlayerButton;
+
   // 그룹 헤더 위젯
-  static const String playerCountLabel = '소속 선수: %d명';
-  static const String addPlayer = '선수 추가';
+  static String playerCountLabel(int count) {
+    String format =
+        LanguageManager.isKorean()
+            ? AppStringsKo.playerCountLabel
+            : AppStringsEn.playerCountLabel;
+    return format.replaceAll('%d', count.toString());
+  }
+
+  static String get addPlayer =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addPlayer
+          : AppStringsEn.addPlayer;
 
   // 그룹 목록 아이템
-  static const String groupDelete = '그룹 삭제';
-  static const String deleteGroupConfirm = '그룹을 삭제하시겠습니까?';
-  static const String deleteGroupWarning = '이 작업은 되돌릴 수 없으며 그룹 내 모든 연결 정보가 삭제됩니다.';
-  static const String remove = '제거';
-  static const String changeGroupColor = '그룹 색상 변경';
-  static const String change = '변경';
-  static const String searchedPlayers = '검색된 선수:';
+  static String get groupDelete =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupDelete
+          : AppStringsEn.groupDelete;
+  static String get deleteGroupConfirm =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.deleteGroupConfirm
+          : AppStringsEn.deleteGroupConfirm;
+  static String get deleteGroupWarning =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.deleteGroupWarning
+          : AppStringsEn.deleteGroupWarning;
+  static String get remove =>
+      LanguageManager.isKorean() ? AppStringsKo.remove : AppStringsEn.remove;
+  static String get changeGroupColor =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.changeGroupColor
+          : AppStringsEn.changeGroupColor;
+  static String get change =>
+      LanguageManager.isKorean() ? AppStringsKo.change : AppStringsEn.change;
+  static String get searchedPlayers =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.searchedPlayers
+          : AppStringsEn.searchedPlayers;
 
   // 선수 삭제 확인 대화상자
-  static const String playerDelete = '선수 삭제';
-  static const String playerDeleteConfirm = ' 선수를 정말 삭제하시겠습니까?';
-  static const String playerDeleteWarning = '삭제된 선수는 복구할 수 없습니다.';
+  static String get playerDelete =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerDelete
+          : AppStringsEn.playerDelete;
+  static String get playerDeleteConfirm =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerDeleteConfirm
+          : AppStringsEn.playerDeleteConfirm;
+  static String get playerDeleteWarning =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerDeleteWarning
+          : AppStringsEn.playerDeleteWarning;
 
   // 선수 목록 아이템
-  static const String edit = '수정';
+  static String get edit =>
+      LanguageManager.isKorean() ? AppStringsKo.edit : AppStringsEn.edit;
 
   // 선수 검색 필드
-  static const String searchPlayerByName = '선수 이름으로 검색';
-  static const String searchResults = '검색 결과 (%d명)';
+  static String get searchPlayerByName =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.searchPlayerByName
+          : AppStringsEn.searchPlayerByName;
+  static String searchResults(int count) {
+    String format =
+        LanguageManager.isKorean()
+            ? AppStringsKo.searchResults
+            : AppStringsEn.searchResults;
+    return format.replaceAll('%d', count.toString());
+  }
 
   // 그룹 이름 변경 대화상자
-  static const String changeGroupName = '그룹 이름 변경';
-  static const String changeGroupNamePrefix = '그룹 이름을 ';
-  static const String changeGroupNameSuffix = '으로 변경하시겠습니까?';
+  static String get changeGroupName =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.changeGroupName
+          : AppStringsEn.changeGroupName;
+  static String get changeGroupNamePrefix =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.changeGroupNamePrefix
+          : AppStringsEn.changeGroupNamePrefix;
+  static String get changeGroupNameSuffix =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.changeGroupNameSuffix
+          : AppStringsEn.changeGroupNameSuffix;
 
   // 경기 화면
-  static const String loading = '로딩 중...';
-  static const String loadingBracket = '대진표를 불러오고 있습니다...';
-  static const String tournamentInfo = '토너먼트 정보';
-  
+  static String get loading =>
+      LanguageManager.isKorean() ? AppStringsKo.loading : AppStringsEn.loading;
+  static String get loadingBracket =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.loadingBracket
+          : AppStringsEn.loadingBracket;
+  static String get tournamentInfo =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tournamentInfo
+          : AppStringsEn.tournamentInfo;
+  static String get matchScoreInputInfo =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.matchScoreInputInfo
+          : AppStringsEn.matchScoreInputInfo;
+  static String get shareBracketGuide =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.shareBracketGuide
+          : AppStringsEn.shareBracketGuide;
+  static String get shareBracketInfo =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.shareBracketInfo
+          : AppStringsEn.shareBracketInfo;
+  static String get shareBracketSkip =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.shareBracketSkip
+          : AppStringsEn.shareBracketSkip;
+  static String get share =>
+      LanguageManager.isKorean() ? AppStringsKo.share : AppStringsEn.share;
+
   // 하단 액션 버튼
-  static const String reshuffleBracket = '섞어서 다시 돌리기';
-  static const String finishMatch = '경기 종료';
+  static String get reshuffleBracket =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.reshuffleBracket
+          : AppStringsEn.reshuffleBracket;
+  static String get finishMatch =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.finishMatch
+          : AppStringsEn.finishMatch;
 
   // 대진표 이미지 생성기
-  static const String participantsAndMatches = "참가자 %d명 · 경기 %d경기";
-  static const String generatedBy = "대진표 생성: 대진 도우미";
-  static const String generatingBracketImage = '대진표 이미지 생성 중...';
-  
+  static String get participantsAndMatches =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.participantsAndMatches
+          : AppStringsEn.participantsAndMatches;
+  static String get generatedBy =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.generatedBy
+          : AppStringsEn.generatedBy;
+  static String get generatingBracketImage =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.generatingBracketImage
+          : AppStringsEn.generatingBracketImage;
+
   // 대진표 공유 유틸리티
-  static const String generatingBracketImageMessage = '대진표 이미지를 생성 중입니다...';
-  static const String imageCancelled = '이미지 생성이 취소되었습니다.';
-  static const String bracketShareTitle = '%s 대진표';
-  static const String bracketShareError = '대진표 공유 중 오류가 발생했습니다: %s';
+  static String get generatingBracketImageMessage =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.generatingBracketImageMessage
+          : AppStringsEn.generatingBracketImageMessage;
+  static String get imageCancelled =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.imageCancelled
+          : AppStringsEn.imageCancelled;
+  static String get bracketShareTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.bracketShareTitle
+          : AppStringsEn.bracketShareTitle;
+  static String get bracketShareError =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.bracketShareError
+          : AppStringsEn.bracketShareError;
+
+  // 인터넷 연결 오류
+  static String get noInternetConnection =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.noInternetConnection
+          : AppStringsEn.noInternetConnection;
+  static String get loadingContributors =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.loadingContributors
+          : AppStringsEn.loadingContributors;
+  static String get loadingError =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.loadingError
+          : AppStringsEn.loadingError;
 
   // 커스텀 탭 바
-  static const String bracketTab = '대진표';
-  static const String currentRankingTab = '현재 순위';
+  static String get bracketTab =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.bracketTab
+          : AppStringsEn.bracketTab;
+  static String get currentRankingTab =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.currentRankingTab
+          : AppStringsEn.currentRankingTab;
 
   // 헤더 섹션
-  static const String participantsCount = '참가 인원: %d명';
-  static const String matchesCount = '경기 수: %d경기';
-  static const String editBracket = '대진 수정';
-  static const String shareBracket = '대진 공유';
+  static String participantsCount(int count) {
+    String format =
+        LanguageManager.isKorean()
+            ? AppStringsKo.participantsCount
+            : AppStringsEn.participantsCount;
+    return format.replaceAll('%d', count.toString());
+  }
+
+  static String matchesCount(int count) {
+    String format =
+        LanguageManager.isKorean()
+            ? AppStringsKo.matchesCount
+            : AppStringsEn.matchesCount;
+    return format.replaceAll('%d', count.toString());
+  }
+
+  static String get editBracket =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.editBracket
+          : AppStringsEn.editBracket;
+  static String get shareBracket =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.shareBracket
+          : AppStringsEn.shareBracket;
 
   // 랭킹 헤더
-  static const String rank = '순위';
-  static const String name = '이름';
-  static const String win = '승';
-  static const String draw = '무';
-  static const String lose = '패';
-  static const String points = '승점';
-  static const String goalDifference = '득실';
+  static String get rank =>
+      LanguageManager.isKorean() ? AppStringsKo.rank : AppStringsEn.rank;
+  static String get name =>
+      LanguageManager.isKorean() ? AppStringsKo.name : AppStringsEn.name;
+  static String get win =>
+      LanguageManager.isKorean() ? AppStringsKo.win : AppStringsEn.win;
+  static String get draw =>
+      LanguageManager.isKorean() ? AppStringsKo.draw : AppStringsEn.draw;
+  static String get lose =>
+      LanguageManager.isKorean() ? AppStringsKo.lose : AppStringsEn.lose;
+  static String get points =>
+      LanguageManager.isKorean() ? AppStringsKo.points : AppStringsEn.points;
+  static String get goalDifference =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.goalDifference
+          : AppStringsEn.goalDifference;
 
   // 정렬 옵션 바
-  static const String sortBy = '정렬:';
-  
+  static String get sortBy =>
+      LanguageManager.isKorean() ? AppStringsKo.sortBy : AppStringsEn.sortBy;
+
   // 토너먼트 정보 대화상자
-  static const String titleLabel = '제목';
-  static const String participantsCountLabel = '참가자 수';
-  static const String participantsCountValue = '%d명';
-  static const String matchesCountLabel = '경기 수';
-  static const String matchesCountValue = '%d경기';
+  static String get titleLabel =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.titleLabel
+          : AppStringsEn.titleLabel;
+  static String get participantsCountLabel =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.participantsCountLabel
+          : AppStringsEn.participantsCountLabel;
+  static String get participantsCountValue =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.participantsCountValue
+          : AppStringsEn.participantsCountValue;
+  static String get matchesCountLabel =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.matchesCountLabel
+          : AppStringsEn.matchesCountLabel;
+  static String get matchesCountValue =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.matchesCountValue
+          : AppStringsEn.matchesCountValue;
 
   // 메인 화면
-  static const String exitApp = '앱 종료';
-  static const String exitConfirm = '앱을 종료하시겠습니까?';
-  static const String exit = '종료';
-  static const String home = '홈';
+  static String get exitApp =>
+      LanguageManager.isKorean() ? AppStringsKo.exitApp : AppStringsEn.exitApp;
+  static String get exitConfirm =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.exitConfirm
+          : AppStringsEn.exitConfirm;
+  static String get exit =>
+      LanguageManager.isKorean() ? AppStringsKo.exit : AppStringsEn.exit;
+  static String get home =>
+      LanguageManager.isKorean() ? AppStringsKo.home : AppStringsEn.home;
 
   // 대회 생성 화면
-  static const String createBracketTitle = '대진표 생성';
-  static const String basicInfo = '기본 정보';
-  static const String addPlayers = '선수 추가';
-  static const String editBracketTitle = '대진표 수정';
-  static const String exitTournamentCreation = '대회 생성 종료';
-  static const String exitTournamentConfirm = '대회 생성을 종료하시겠습니까?';
-  static const String unsavedChangesWarning = '지금까지 입력한 모든 정보는 저장되지 않습니다.';
-  static const String exitTournament = '종료하기';
-  
+  static String get createBracketTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.createBracketTitle
+          : AppStringsEn.createBracketTitle;
+  static String get basicInfo =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.basicInfo
+          : AppStringsEn.basicInfo;
+  static String get addPlayers =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addPlayers
+          : AppStringsEn.addPlayers;
+  static String get editBracketTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.editBracketTitle
+          : AppStringsEn.editBracketTitle;
+  static String get exitTournamentCreation =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.exitTournamentCreation
+          : AppStringsEn.exitTournamentCreation;
+  static String get exitTournamentConfirm =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.exitTournamentConfirm
+          : AppStringsEn.exitTournamentConfirm;
+  static String get unsavedChangesWarning =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.unsavedChangesWarning
+          : AppStringsEn.unsavedChangesWarning;
+  static String get exitTournament =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.exitTournament
+          : AppStringsEn.exitTournament;
+
   // 대회 정보 입력 화면
-  static const String tournamentInfoInput = '대회 정보 입력';
-  static const String reset = '초기화';
-  static const String reGenerate = '재생성';
-  static const String tournamentName = '대회명';
-  static const String enterTournamentName = '대회명을 입력해주세요';
-  static const String tournamentNameAutoSetInfo = "대회명을 입력하지 않으면 '[날짜] 대회'로 자동 설정됩니다.";
-  static const String tournamentDate = '대회 날짜';
-  static const String scoreInput = '승점 입력';
-  static const String gameSettings = '경기 설정';
-  static const String gamesPerPlayer = '1인당 게임수';
-  static const String gamesPerPlayerInfo = '현재는 1인당 4게임만 지원됩니다. 추후 업데이트 예정입니다.';
-  static const String gameFormat = '경기 형식';
-  static const String doubles = '복식';
-  static const String singles = '단식';
-  static const String gameFormatInfo = '현재는 복식 경기만 지원됩니다. 단식은 추후 업데이트 예정입니다.';
-  
+  static String get tournamentInfoInput =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tournamentInfoInput
+          : AppStringsEn.tournamentInfoInput;
+  static String get reset =>
+      LanguageManager.isKorean() ? AppStringsKo.reset : AppStringsEn.reset;
+  static String get reGenerate =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.reGenerate
+          : AppStringsEn.reGenerate;
+  static String get tournamentName =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tournamentName
+          : AppStringsEn.tournamentName;
+  static String get enterTournamentName =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.enterTournamentName
+          : AppStringsEn.enterTournamentName;
+  static String get tournamentNameAutoSetInfo =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tournamentNameAutoSetInfo
+          : AppStringsEn.tournamentNameAutoSetInfo;
+  static String get tournamentDate =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tournamentDate
+          : AppStringsEn.tournamentDate;
+  static String get scoreInput =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.scoreInput
+          : AppStringsEn.scoreInput;
+  static String get gameSettings =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.gameSettings
+          : AppStringsEn.gameSettings;
+  static String get gamesPerPlayer =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.gamesPerPlayer
+          : AppStringsEn.gamesPerPlayer;
+  static String get gamesPerPlayerInfo =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.gamesPerPlayerInfo
+          : AppStringsEn.gamesPerPlayerInfo;
+  static String get gameFormat =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.gameFormat
+          : AppStringsEn.gameFormat;
+  static String get doubles =>
+      LanguageManager.isKorean() ? AppStringsKo.doubles : AppStringsEn.doubles;
+  static String get singles =>
+      LanguageManager.isKorean() ? AppStringsKo.singles : AppStringsEn.singles;
+  static String get gameFormatInfo =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.gameFormatInfo
+          : AppStringsEn.gameFormatInfo;
+
   // 입력 초기화 대화상자
-  static const String resetInput = '입력 초기화';
-  static const String resetConfirm = '모든 입력을 초기화하시겠습니까?';
-  static const String resetWarning = '입력한 모든 정보가 지워집니다.';
-  static const String resetButton = '초기화';
+  static String get resetInput =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.resetInput
+          : AppStringsEn.resetInput;
+  static String get resetConfirm =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.resetConfirm
+          : AppStringsEn.resetConfirm;
+  static String get resetWarning =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.resetWarning
+          : AppStringsEn.resetWarning;
+  static String get resetButton =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.resetButton
+          : AppStringsEn.resetButton;
 
   // AddPlayerScreen strings
-  static const String savedPlayers = "저장된 선수";
-  static const String currentPlayerList = "현재 선수 목록";
-  static const String minPlayersRequired = "최소 4명의 선수가 필요합니다.";
-  static const String maxPlayersAllowed = "최대 32명까지 등록 가능합니다.";
-  static const String playersRequired = "선수는 4~32명으로 구성해야 합니다";
+  static String get savedPlayers =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.savedPlayers
+          : AppStringsEn.savedPlayers;
+  static String get currentPlayerList =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.currentPlayerList
+          : AppStringsEn.currentPlayerList;
+  static String get minPlayersRequired =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.minPlayersRequired
+          : AppStringsEn.minPlayersRequired;
+  static String get maxPlayersAllowed =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.maxPlayersAllowed
+          : AppStringsEn.maxPlayersAllowed;
+  static String get playersRequired =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playersRequired
+          : AppStringsEn.playersRequired;
 
   // EditMatchScreen strings
-  static const String noMatches = '등록된 매치가 없습니다.';
-  static const String autoGenerateMatch = '매치 자동 생성';
-  static const String courtCount = '코트 수';
-  static const String saveAndReturn = '저장 후 돌아가기';
-  static const String saveAndComplete = '저장 후 완료';
-  static const String matchSaveError = '매치 저장 중 오류가 발생했습니다.';
-  static const String courtNumberLimitError = '코트 수는 인원 수의 1/4 이하로만 설정할 수 있습니다.';
-  static const String noPlayer = '선수 없음';
-  static const String versus = 'VS';
-
-
+  static String get noMatches =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.noMatches
+          : AppStringsEn.noMatches;
+  static String get autoGenerateMatch =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.autoGenerateMatch
+          : AppStringsEn.autoGenerateMatch;
+  static String get courtCount =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.courtCount
+          : AppStringsEn.courtCount;
+  static String get saveAndReturn =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.saveAndReturn
+          : AppStringsEn.saveAndReturn;
+  static String get saveAndComplete =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.saveAndComplete
+          : AppStringsEn.saveAndComplete;
+  static String get matchSaveError =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.matchSaveError
+          : AppStringsEn.matchSaveError;
+  static String get courtNumberLimitError =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.courtNumberLimitError
+          : AppStringsEn.courtNumberLimitError;
+  static String get noPlayer =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.noPlayer
+          : AppStringsEn.noPlayer;
+  static String get versus =>
+      LanguageManager.isKorean() ? AppStringsKo.versus : AppStringsEn.versus;
+  static String get isSaving =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.isSaving
+          : AppStringsEn.isSaving;
+  static String get duplicatePlayerName =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.duplicatePlayerName
+          : AppStringsEn.duplicatePlayerName;
   // AddPlayerActionButton strings
-  static const String addSelectedPlayers = '선택한 선수 추가하기 (%d명)';
-  static const String addNoPlayers = '선택한 선수 추가하기 (0명)';
+  static String get addSelectedPlayers =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addSelectedPlayers
+          : AppStringsEn.addSelectedPlayers;
+  static String get addNoPlayers =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addNoPlayers
+          : AppStringsEn.addNoPlayers;
 
   // EmptyPlayerListWidget strings
-  static const String noAddedPlayersMessage = '아직 추가된 선수가 없습니다';
-  static const String addPlayerMessage = '위 입력창에 이름을 입력하거나\n저장된 선수 탭에서 선수를 추가하세요';
+  static String get noAddedPlayersMessage =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.noAddedPlayersMessage
+          : AppStringsEn.noAddedPlayersMessage;
+  static String get addPlayerMessage =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addPlayerMessage
+          : AppStringsEn.addPlayerMessage;
 
   // GroupDropdown strings
-  static const String selectGroup = '그룹 선택';
-  static const String allGroups = '그룹 전체';
-  static const String noSavedGroups = '저장된 그룹이 없습니다';
+  static String get selectGroup =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.selectGroup
+          : AppStringsEn.selectGroup;
+  static String get allGroups =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.allGroups
+          : AppStringsEn.allGroups;
+  static String get noSavedGroups =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.noSavedGroups
+          : AppStringsEn.noSavedGroups;
 
   // GroupRefreshButton strings
-  static const String refreshGroups = '그룹 목록 새로고침';
+  static String get refreshGroups =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.refreshGroups
+          : AppStringsEn.refreshGroups;
 
   // InlineEditablePlayerItem strings
-  static const String playerNameInputHint = '선수 이름 입력';
-  static const String save = '저장';
-  static const String tapToEdit = '탭하여 이름 수정';
-  static const String toggleEdit = '편집';
-  
+  static String get playerNameInputHint =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerNameInputHint
+          : AppStringsEn.playerNameInputHint;
+  static String get save =>
+      LanguageManager.isKorean() ? AppStringsKo.save : AppStringsEn.save;
+  static String get tapToEdit =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.tapToEdit
+          : AppStringsEn.tapToEdit;
+  static String get toggleEdit =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.toggleEdit
+          : AppStringsEn.toggleEdit;
+
   // NoGroupsMessage strings
-  static const String noGroupsMessage = '저장된 그룹이 없습니다.\n그룹을 먼저 생성하거나 새로고침하세요.';
+  static String get noGroupsMessage =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.noGroupsMessage
+          : AppStringsEn.noGroupsMessage;
 
   // PlayerInputField strings
-  static const String playerNameInputLabel = '선수 이름';
-  static const String addPlayerButtonText = '선수 추가';
-  static const String playerNameInputInfo = '여러 선수는 공백으로 구분해서 입력할 수 있습니다. (예: 홍길동 김철수)';
+  static String get playerNameInputLabel =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerNameInputLabel
+          : AppStringsEn.playerNameInputLabel;
+  static String get addPlayerButtonText =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.addPlayerButtonText
+          : AppStringsEn.addPlayerButtonText;
+  static String get playerNameInputInfo =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.playerNameInputInfo
+          : AppStringsEn.playerNameInputInfo;
 
   // PlayerSelectionList strings
-  static const String selectGroupToAddPlayers = '위에서 그룹을 선택하세요';
-  static const String noPlayersInGroup = '이 그룹에는 선수가 없습니다.';
-  static const String alreadyAdded = '이미 추가됨';
-  
+  static String get selectGroupToAddPlayers =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.selectGroupToAddPlayers
+          : AppStringsEn.selectGroupToAddPlayers;
+  static String get noPlayersInGroup =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.noPlayersInGroup
+          : AppStringsEn.noPlayersInGroup;
+  static String get alreadyAdded =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.alreadyAdded
+          : AppStringsEn.alreadyAdded;
 
   // NavigationButtonsWidget strings
-  static const String previous = '이전';
-  static const String next = '다음';
-  
+  static String get previous =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.previous
+          : AppStringsEn.previous;
+  static String get next =>
+      LanguageManager.isKorean() ? AppStringsKo.next : AppStringsEn.next;
+
+  // PartnerAddPlayerScreen strings
+  static String get partnerMinPlayersRequired =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.partnerMinPlayersRequired
+          : AppStringsEn.partnerMinPlayersRequired;
+  static String get partnerMaxPlayersAllowed =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.partnerMaxPlayersAllowed
+          : AppStringsEn.partnerMaxPlayersAllowed;
+  static String get partnerPlayersRequired =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.partnerPlayersRequired
+          : AppStringsEn.partnerPlayersRequired;
+  static String get partnerRequired =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.partnerRequired
+          : AppStringsEn.partnerRequired;
+  static String get partnerPairOverLimit =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.partnerPairOverLimit
+          : AppStringsEn.partnerPairOverLimit;
+  static String partnerPairOverLimitMessage(int playerCount, int maxPairs) {
+    String format =
+        LanguageManager.isKorean()
+            ? AppStringsKo.partnerPairOverLimitMessage
+            : AppStringsEn.partnerPairOverLimitMessage;
+    return format
+        .replaceAll('%d1', playerCount.toString())
+        .replaceAll('%d2', maxPairs.toString());
   }
+  static String get matchGenerationFailed =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.matchGenerationFailed
+          : AppStringsEn.matchGenerationFailed;
+  static String get matchGenerationFailedMessage =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.matchGenerationFailedMessage
+          : AppStringsEn.matchGenerationFailedMessage;
+  static String get partnerPairNoPlayer =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.partnerPairNoPlayer
+          : AppStringsEn.partnerPairNoPlayer;
+  static String get partnerPairNoPlayerSubText =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.partnerPairNoPlayerSubText
+          : AppStringsEn.partnerPairNoPlayerSubText;
+  static String get singleTournamentNoPartner =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.singleTournamentNoPartner
+          : AppStringsEn.singleTournamentNoPartner;
+  static String get partnerPairs =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.partnerPairs
+          : AppStringsEn.partnerPairs;
+
+
+
+  // 업데이트 다이얼로그
+  static String get updateNotice =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.updateNotice
+          : AppStringsEn.updateNotice;
+  static String get newVersionAvailable =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.newVersionAvailable
+          : AppStringsEn.newVersionAvailable;
+  static String get updateMessage =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.updateMessage
+          : AppStringsEn.updateMessage;
+  static String get updateNow =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.updateNow
+          : AppStringsEn.updateNow;
+  static String get updateLater =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.updateLater
+          : AppStringsEn.updateLater;
+}

@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/domain/model/player_model.dart';
 import 'package:bracket_helper/presentation/save_player/save_player_action.dart';
 import 'package:bracket_helper/presentation/save_player/screens/group_detail/group_detail_screen.dart';
@@ -89,7 +90,7 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                 Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
                 const SizedBox(height: 16),
                 Text(
-                  '오류가 발생했습니다',
+                  AppStrings.error,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 8),
@@ -101,7 +102,7 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _refreshData,
-                  child: const Text('다시 시도'),
+                  child: Text(AppStrings.tryAgain),
                 ),
               ],
             ),
@@ -119,12 +120,12 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                 Icon(Icons.group_off, size: 64, color: Colors.grey.shade400),
                 const SizedBox(height: 16),
                 Text(
-                  '그룹을 찾을 수 없습니다',
+                  AppStrings.groupNotFound,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '그룹이 삭제되었거나 접근할 수 없습니다',
+                  AppStrings.groupNotFoundMessage,
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 24),
@@ -134,7 +135,7 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                     Navigator.of(context).pop();
                   },
                   icon: const Icon(Icons.arrow_back),
-                  label: const Text('그룹 목록으로 돌아가기'),
+                  label: Text(AppStrings.goToGroupList),
                 ),
               ],
             ),
@@ -151,7 +152,7 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
             if (playersSnapshot.hasError) {
               return Center(
                 child: Text(
-                  '선수 목록을 불러오는 중 오류가 발생했습니다: ${playersSnapshot.error}',
+                  AppStrings.error,
                 ),
               );
             }
@@ -262,7 +263,7 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
 
                         // 제목
                         Text(
-                          '${group.name}에 선수 추가',
+                          AppStrings.addPlayerToGroup(group.name),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -276,8 +277,8 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                         TextField(
                           controller: playerNameController,
                           decoration: InputDecoration(
-                            labelText: '선수 이름',
-                            hintText: '선수 이름을 입력하세요',
+                            labelText: AppStrings.addPlayerLabel,
+                            hintText: AppStrings.addPlayerHint,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -292,7 +293,7 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                                 playerNameController.text.trim().isEmpty &&
                                         !isNameValid
                                     ? null
-                                    : (isNameValid ? null : '선수 이름을 입력해주세요'),
+                                    : (isNameValid ? null : AppStrings.addPlayerError),
                           ),
                           autofocus: true,
                           onChanged: (value) {
@@ -331,7 +332,7 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    '여러 선수 한 번에 추가하기',
+                                    AppStrings.addPlayerFeatureTitle,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
@@ -341,8 +342,8 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                                 ],
                               ),
                               const SizedBox(height: 5),
-                              const Text(
-                                '띄어쓰기로 구분하여 여러 명의 선수를 한 번에 등록할 수 있습니다.\n예: "홍길동 김철수"',
+                              Text(
+                                AppStrings.addPlayerFeatureGuide,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.black87,
@@ -372,8 +373,8 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                                   vertical: 10,
                                 ),
                               ),
-                              child: const Text(
-                                '취소',
+                              child: Text(
+                                AppStrings.cancel,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -467,8 +468,8 @@ class _GroupDetailRootState extends State<GroupDetailRoot> {
                                   vertical: 10,
                                 ),
                               ),
-                              child: const Text(
-                                '추가',
+                              child: Text(
+                                AppStrings.add,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,

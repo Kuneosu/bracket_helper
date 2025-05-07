@@ -11,6 +11,8 @@ class Tournaments extends Table {
   IntColumn get gamesPerPlayer => integer().withDefault(const Constant(4))();
   BoolColumn get isDoubles => boolean().withDefault(const Constant(true))();
   IntColumn get process => integer().withDefault(const Constant(0))();
+  BoolColumn get isPartnerMatching => boolean().withDefault(const Constant(false))();
+  TextColumn get partnerPairs => text().withDefault(const Constant('[]'))(); // JSON 문자열로 저장
 }
 
 /* ──────────────── 2) 그룹(폴더) ──────────────── */

@@ -145,7 +145,7 @@ class CreateTournamentViewModel with ChangeNotifier {
         _state = _state.copyWith(
           tournament: _state.tournament.copyWith(
             title:
-                '${DateFormatter.formatToYYYYMMDD(_state.tournament.date)} 대회',
+                DateFormatter.formatToYYYYMMDD(_state.tournament.date),
           ),
         );
         _notifyChanges();
@@ -204,6 +204,20 @@ class CreateTournamentViewModel with ChangeNotifier {
         debugPrint(
           '플레이어 수정 시작: ${action.player.id} - ${action.player.name} (현재 선수 수: ${_state.players.length})',
         );
+
+        // 이름 중복 확인 및 처리
+        final updatedName = action.player.name.trim();
+        
+        // 자기 자신을 제외한 나머지 선수들 중에서 동일한 이름 검사
+        final isDuplicate = _state.players
+            .where((p) => p.id != action.player.id) // 자신을 제외한 선수들
+            .any((p) => p.name == updatedName);      // 동일한 이름 확인
+        
+        if (isDuplicate) {
+          debugPrint('선수 수정 실패: 중복된 이름이 존재합니다 - $updatedName');
+          // 중복된 이름이 있을 경우 수정 무시
+          return;
+        }
 
         // 버그 수정: 특정 ID의 선수만 업데이트하도록 변경
         // 기존 선수 리스트 복사
@@ -386,7 +400,7 @@ class CreateTournamentViewModel with ChangeNotifier {
       // 타이틀이 비어있는 경우 자동으로 날짜를 사용하여 설정
       String title = _state.tournament.title;
       if (title.isEmpty) {
-        title = '${DateFormatter.formatToYYYYMMDD(_state.tournament.date)} 대회';
+        title = DateFormatter.formatToYYYYMMDD(_state.tournament.date);
         _state = _state.copyWith(
           tournament: _state.tournament.copyWith(title: title),
         );
