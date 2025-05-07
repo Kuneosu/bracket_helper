@@ -63,13 +63,13 @@ class HeaderSection extends StatelessWidget {
           const Spacer(),
           _buildSquareButton(
             icon: Icons.edit,
-            label: '수정',
+            label: AppStrings.edit,
             onTap: onEditBracketPressed,
           ),
           const SizedBox(width: 10),
           _buildSquareButton(
             icon: Icons.share,
-            label: '공유',
+            label: AppStrings.share,
             onTap: onShareBracketPressed,
             key: shareButtonKey,
           ),

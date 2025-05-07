@@ -5,6 +5,7 @@ import 'package:bracket_helper/ui/color_constants.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:bracket_helper/core/constants/app_strings.dart';
+import 'package:bracket_helper/core/services/language_manager.dart';
 import 'package:flutter/material.dart';
 
 class GroupListItem extends StatefulWidget {
@@ -559,9 +560,11 @@ class _GroupListItemState extends State<GroupListItem>
                                 _showDeleteConfirmation(context);
                               },
                               color: CST.error,
-                              width: 60,
+                              width: LanguageManager.isKorean() ? 60 : 75,
                               height: 36,
-                              textStyle: TST.smallTextBold,
+                              textStyle: TST.smallTextBold.copyWith(
+                                fontSize: LanguageManager.isKorean() ? null : 11,
+                              ),
                             ),
                           )
                           : Padding(

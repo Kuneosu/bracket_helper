@@ -13,6 +13,7 @@ class NavigationButtonsWidget extends StatelessWidget {
   final bool isNextDisabled;
   final IconData? previousIcon;
   final IconData? nextIcon;
+  final double textScaleFactor;
 
   const NavigationButtonsWidget({
     super.key,
@@ -23,6 +24,7 @@ class NavigationButtonsWidget extends StatelessWidget {
     this.isNextDisabled = false,
     this.previousIcon = Icons.arrow_back_rounded,
     this.nextIcon = Icons.arrow_forward_rounded,
+    this.textScaleFactor = 1.0,
   });
 
   @override
@@ -42,11 +44,12 @@ class NavigationButtonsWidget extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         children: [
           // 이전 버튼
           Expanded(
+            flex: 2,
             child: InkWell(
               onTap: onPrevious,
               borderRadius: BorderRadius.circular(12),
@@ -67,11 +70,17 @@ class NavigationButtonsWidget extends StatelessWidget {
                         size: 20,
                       ),
                     if (previousIcon != null)
-                      const SizedBox(width: 8),
-                    Text(
-                      previousText,
-                      style: TST.mediumTextBold.copyWith(
-                        color: CST.primary100,
+                      const SizedBox(width: 5),
+                    Flexible(
+                      child: Text(
+                        previousText,
+                        style: TST.mediumTextBold.copyWith(
+                          color: CST.primary100,
+                          fontSize: TST.mediumTextBold.fontSize! * textScaleFactor,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ],
@@ -79,9 +88,10 @@ class NavigationButtonsWidget extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           // 다음 버튼
           Expanded(
+            flex: 3,
             child: InkWell(
               onTap: isNextDisabled ? null : onNext,
               borderRadius: BorderRadius.circular(12),
@@ -108,14 +118,23 @@ class NavigationButtonsWidget extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        nextText,
-                        style: TST.mediumTextBold.copyWith(
-                          color: Colors.white,
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: Text(
+                            nextText,
+                            style: TST.mediumTextBold.copyWith(
+                              color: Colors.white,
+                              fontSize: TST.mediumTextBold.fontSize! * textScaleFactor,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                       if (nextIcon != null)
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 4),
                       if (nextIcon != null)
                         Icon(
                           nextIcon,

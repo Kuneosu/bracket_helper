@@ -24,12 +24,15 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   void _onLanguageChanged(String? language) {
-    // 언어 변경 후 UI를 다시 그립니다
+    // 언어 변경 후 현재 화면 UI를 먼저 갱신
     setState(() {});
-    
+
     // 앱 전체 UI를 새로고침하기 위한 처리
-    Future.delayed(const Duration(milliseconds: 300), () {
-      LanguageService.refreshApp(context);
+    // 더 빠른 응답을 위해 지연 시간 감소
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) {
+        LanguageService.refreshApp(context);
+      }
     });
   }
 
@@ -63,9 +66,7 @@ class _SettingScreenState extends State<SettingScreen> {
             icon: Icons.language,
             title: AppStrings.languageSettings,
             subtitle: AppStrings.languageOptions,
-            trailing: LanguageDropdown(
-              onChanged: _onLanguageChanged,
-            ),
+            trailing: LanguageDropdown(onChanged: _onLanguageChanged),
           ),
           SectionTitle(title: AppStrings.appInfoSection),
           SettingItem(
@@ -79,27 +80,28 @@ class _SettingScreenState extends State<SettingScreen> {
             subtitle: AppStrings.checkForUpdatesSubtitle,
             onTap: () async {
               try {
-                final Uri url = Platform.isIOS
-                    ? Uri.parse('https://apps.apple.com/app/id6745153734') // iOS 앱스토어 ID
-                    : Uri.parse('https://play.google.com/store/apps/details?id=com.kuneosu.bracket_helper'); // 패키지명 기준
-                
+                final Uri url =
+                    Platform.isIOS
+                        ? Uri.parse(
+                          'https://apps.apple.com/app/id6745153734',
+                        ) // iOS 앱스토어 ID
+                        : Uri.parse(
+                          'https://play.google.com/store/apps/details?id=com.kuneosu.bracket_helper',
+                        ); // 패키지명 기준
+
                 if (await canLaunchUrl(url)) {
                   await launchUrl(url, mode: LaunchMode.externalApplication);
                 } else {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(AppStrings.storeOpenError),
-                      ),
+                      SnackBar(content: Text(AppStrings.storeOpenError)),
                     );
                   }
                 }
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(AppStrings.storeOpenError),
-                    ),
+                    SnackBar(content: Text(AppStrings.storeOpenError)),
                   );
                 }
               }
@@ -128,11 +130,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 // 시뮬레이터에서 발생하는 예외 처리
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        AppStrings.storeOpenError,
-                      ),
-                    ),
+                    SnackBar(content: Text(AppStrings.storeOpenError)),
                   );
                 }
               }

@@ -8,6 +8,7 @@ import 'package:bracket_helper/presentation/create_tournament/create_tournament_
 import 'package:bracket_helper/presentation/create_tournament/widgets/index.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/services/language_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -139,6 +140,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                     ? (_isSaving ? AppStrings.isSaving : AppStrings.saveAndReturn)
                     : (_isSaving ? AppStrings.isSaving : AppStrings.saveAndComplete),
             isNextDisabled: _isSaving,
+            textScaleFactor: LanguageManager.isKorean() ? 1.0 : 0.85,
           ),
         ],
       ),
@@ -332,7 +334,10 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   const SizedBox(width: 4),
                   Text(
                     AppStrings.courtCount,
-                    style: TST.smallTextBold.copyWith(color: CST.primary100),
+                    style: TST.smallTextBold.copyWith(
+                      color: CST.primary100,
+                      fontSize: LanguageManager.isKorean() ? null : 11,
+                    ),
                   ),
                 ],
               ),
@@ -386,8 +391,8 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
               },
               borderRadius: BorderRadius.circular(6),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
+                padding: EdgeInsets.symmetric(
+                  horizontal: LanguageManager.isKorean() ? 12 : 8,
                   vertical: 8,
                 ),
                 child: Column(
@@ -400,7 +405,10 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                     const SizedBox(height: 2),
                     Text(
                       AppStrings.reGenerate,
-                      style: TST.smallTextBold.copyWith(color: CST.primary100),
+                      style: TST.smallTextBold.copyWith(
+                        color: CST.primary100,
+                        fontSize: LanguageManager.isKorean() ? null : 11,
+                      ),
                     ),
                   ],
                 ),

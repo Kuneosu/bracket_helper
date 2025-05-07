@@ -33,7 +33,7 @@ class ScoreInputWidget extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: TST.normalTextBold.copyWith(color: Colors.white),
+            style: TST.normalTextBold.copyWith(color: Colors.white).copyWith(fontSize: 14),
           ),
         ),
         Container(

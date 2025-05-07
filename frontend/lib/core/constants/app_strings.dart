@@ -63,6 +63,9 @@ class AppStrings {
       LanguageManager.isKorean()
           ? AppStringsKo.groupManagement
           : AppStringsEn.groupManagement;
+  // 바텀 네비게이션용 짧은 그룹 관리 텍스트
+  static String get shortGroupManagement =>
+      LanguageManager.isKorean() ? '그룹' : 'Groups';
   static String get groupManagementDesc =>
       LanguageManager.isKorean()
           ? AppStringsKo.groupManagementDesc
@@ -415,6 +418,18 @@ class AppStrings {
           : AppStringsEn.themeSystem;
 
   // 그룹 생성 화면
+  static String get groupDetailTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupDetailTitle
+          : AppStringsEn.groupDetailTitle;
+  static String get createGroupTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.createGroupTitle
+          : AppStringsEn.createGroupTitle;
+  static String get groupListTitle =>
+      LanguageManager.isKorean()
+          ? AppStringsKo.groupListTitle
+          : AppStringsEn.groupListTitle;
   static String get enterGroupInfo =>
       LanguageManager.isKorean()
           ? AppStringsKo.enterGroupInfo
@@ -684,6 +699,8 @@ class AppStrings {
       LanguageManager.isKorean()
           ? AppStringsKo.shareBracketSkip
           : AppStringsEn.shareBracketSkip;
+  static String get share =>
+      LanguageManager.isKorean() ? AppStringsKo.share : AppStringsEn.share;
 
   // 하단 액션 버튼
   static String get reshuffleBracket =>

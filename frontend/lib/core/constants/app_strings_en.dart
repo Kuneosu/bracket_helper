@@ -44,6 +44,9 @@ class AppStringsEn {
   static const String helpDialogFeature3 = 'Match progress management';
   static const String helpDialogFeature4 = 'Share brackets';
   static const String confirm = 'Confirm';
+  static const String edit = 'Edit';
+  static const String share = 'Share';
+  
   
   // Tournament delete dialog
   static const String tournamentDeleteTitle = 'Delete Tournament';
@@ -156,13 +159,16 @@ Device info:
   static const String themeSystem = 'System';
   
   // Group creation screen
+  static const String groupDetailTitle = 'Group Detail';
+  static const String createGroupTitle = 'Create Group';
+  static const String groupListTitle = 'Group List';
   static const String enterGroupInfo = 'Enter Group Information';
   static const String groupName = 'Group Name';
   static const String enterGroupName = 'Enter group name';
   static const String maxChars = 'Maximum 20 characters';
   static const String groupColor = 'Group Color';
   static const String selectGroupColor = 'Select a color to represent the group';
-  static const String cancelCreation = 'Cancel Creation';
+  static const String cancelCreation = 'Cancel';
   static const String createGroup = 'Create Group';
   
   // Group detail screen
@@ -224,7 +230,6 @@ Device info:
   static const String playerDeleteWarning = 'Deleted players cannot be recovered.';
 
   // Player list item
-  static const String edit = 'Edit';
 
   // Player search field
   static const String searchPlayerByName = 'Search by player name';
@@ -312,10 +317,10 @@ Device info:
   // Tournament info input screen
   static const String tournamentInfoInput = 'Tournament Info Input';
   static const String reset = 'Reset';
-  static const String reGenerate = 'Regenerate';
+  static const String reGenerate = 'Re-gen';
   static const String tournamentName = 'Tournament Name';
   static const String enterTournamentName = 'Enter tournament name';
-  static const String tournamentNameAutoSetInfo = "If you don't enter a tournament name, it will be automatically set to '[Date] Tournament'.";
+  static const String tournamentNameAutoSetInfo = "If you don't enter a tournament name, it will be automatically set to 'Date'.";
   static const String tournamentDate = 'Tournament Date';
   static const String scoreInput = 'Score Input';
   static const String gameSettings = 'Game Settings';
@@ -342,7 +347,7 @@ Device info:
   // EditMatchScreen strings
   static const String noMatches = 'No matches registered.';
   static const String autoGenerateMatch = 'Auto Generate Match';
-  static const String courtCount = 'Court Count';
+  static const String courtCount = 'Courts';
   static const String saveAndReturn = 'Save and Return';
   static const String saveAndComplete = 'Save and Complete';
   static const String matchSaveError = 'Error while saving match.';

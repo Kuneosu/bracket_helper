@@ -157,6 +157,9 @@ class AppStringsKo {
   static const String themeSystem = '시스템';
   
   // 그룹 생성 화면
+  static const String groupDetailTitle = '그룹 상세';
+  static const String createGroupTitle = '그룹 생성';
+  static const String groupListTitle = '그룹 목록';
   static const String enterGroupInfo = '그룹 정보를 입력해주세요';
   static const String groupName = '그룹명';
   static const String enterGroupName = '그룹명을 입력해주세요';
@@ -224,8 +227,6 @@ class AppStringsKo {
   static const String playerDeleteWarning = '삭제된 선수는 복구할 수 없습니다.';
 
   // 선수 목록 아이템
-  static const String edit = '수정';
-
   // 선수 검색 필드
   static const String searchPlayerByName = '선수 이름으로 검색';
   static const String searchResults = '검색 결과 (%d명)';
@@ -243,6 +244,8 @@ class AppStringsKo {
   static const String shareBracketGuide = '대진표 공유하기';
   static const String shareBracketInfo = '여기를 눌러 대진표를 공유해보세요!';
   static const String shareBracketSkip = '건너뛰기';
+  static const String share = '공유';
+  static const String edit = '수정';
 
   // 하단 액션 버튼
   static const String reshuffleBracket = '섞어서 다시 돌리기';
@@ -315,7 +318,7 @@ class AppStringsKo {
   static const String reGenerate = '재생성';
   static const String tournamentName = '대회명';
   static const String enterTournamentName = '대회명을 입력해주세요';
-  static const String tournamentNameAutoSetInfo = "대회명을 입력하지 않으면 '[날짜] 대회'로 자동 설정됩니다.";
+  static const String tournamentNameAutoSetInfo = "대회명을 입력하지 않으면 '날짜'로 자동 설정됩니다.";
   static const String tournamentDate = '대회 날짜';
   static const String scoreInput = '승점 입력';
   static const String gameSettings = '경기 설정';

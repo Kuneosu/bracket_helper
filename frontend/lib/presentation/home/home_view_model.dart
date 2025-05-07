@@ -61,7 +61,7 @@ class HomeViewModel with ChangeNotifier {
       }
     } catch (e) {
       _state = _state.copyWith(
-        errorMessage: '토너먼트 목록을 불러오는 중 오류가 발생했습니다: $e',
+        errorMessage: AppStrings.tournamentListLoadError,
         isLoading: false,
       );
     }
