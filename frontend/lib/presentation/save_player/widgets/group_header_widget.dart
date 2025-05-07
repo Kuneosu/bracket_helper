@@ -42,7 +42,7 @@ class GroupHeaderWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                AppStrings.playerCountLabel.replaceAll('%d', playerCount.toString()),
+                AppStrings.playerCountLabel(playerCount),
                 style: TST.smallTextRegular.copyWith(color: Colors.grey[600]),
               ),
             ],

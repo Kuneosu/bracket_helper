@@ -101,7 +101,7 @@ class _PlayerSearchFieldState extends State<PlayerSearchField> {
                 Padding(
                   padding: const EdgeInsets.only(left: 8, bottom: 4),
                   child: Text(
-                    AppStrings.searchResults.replaceAll('%d', _filteredPlayers.length.toString()),
+                    AppStrings.searchResults(_filteredPlayers.length),
                     style: TST.smallTextBold,
                   ),
                 ),

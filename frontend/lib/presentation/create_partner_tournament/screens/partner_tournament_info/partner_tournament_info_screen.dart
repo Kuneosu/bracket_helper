@@ -6,6 +6,7 @@ import 'package:bracket_helper/presentation/create_tournament/widgets/index.dart
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
 import 'package:bracket_helper/core/constants/app_strings.dart';
+import 'package:bracket_helper/core/services/language_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -122,15 +123,17 @@ class _PartnerTournamentInfoScreenState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(
                             AppStrings.tournamentInfoInput,
                             style: TST.headerTextBold.copyWith(
                               color: CST.primary100,
+                              fontSize: LanguageManager.isKorean() ? null : 22,
                             ),
                           ),
-                          const Spacer(),
                           IconButton(
                             icon: const Icon(
                               Icons.refresh,

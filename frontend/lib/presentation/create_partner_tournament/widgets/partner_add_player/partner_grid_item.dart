@@ -69,7 +69,7 @@ class PartnerGridItem extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    "${index}",
+                    "$index",
                     style: TST.smallTextBold.copyWith(color: Colors.white),
                   ),
                 ),

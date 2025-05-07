@@ -1,3 +1,4 @@
+import 'package:bracket_helper/core/constants/app_strings.dart';
 import 'package:bracket_helper/core/di/di_setup.dart';
 import 'package:bracket_helper/core/routing/route_paths.dart';
 import 'package:bracket_helper/core/routing/router.dart';
@@ -164,7 +165,7 @@ class _SavePlayerRootState extends State<SavePlayerRoot> with RouteAware {
       _loadGroupColor(groupId);
 
       // 위젯을 미리 생성
-      _title = '그룹 상세';
+      _title = AppStrings.groupDetailTitle;
       _body = GroupDetailRoot(
         groupId: groupId,
         getGroupById: _viewModel.getGroupById,
@@ -173,13 +174,13 @@ class _SavePlayerRootState extends State<SavePlayerRoot> with RouteAware {
       );
       _showBackButton = true;
     } else if (location.endsWith(RoutePaths.createGroup)) {
-      _title = '그룹 생성';
+      _title = AppStrings.createGroupTitle;
       _body = createGroupRoot;
       _showBackButton = true;
       _appBarColor = null; // 그룹 생성 화면에서는 기본 색상 사용
     } else {
       // 기본 화면 (그룹 목록)
-      _title = '그룹 목록';
+      _title = AppStrings.groupListTitle;
       _body = GroupListRoot(
         groups: _viewModel.state.groups,
         viewModel: _viewModel,

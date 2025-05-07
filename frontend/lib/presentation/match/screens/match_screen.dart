@@ -114,7 +114,7 @@ class _MatchScreenState extends State<MatchScreen> {
     tutorialCoachMark = TutorialCoachMark(
       targets: _createTargets(),
       colorShadow: CST.primary100,
-      textSkip: '건너뛰기',
+      textSkip: AppStrings.shareBracketSkip,
       paddingFocus: 10,
       opacityShadow: 0.8,
       onFinish: () {
@@ -143,12 +143,12 @@ class _MatchScreenState extends State<MatchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '대진표 공유하기',
+                    AppStrings.shareBracketGuide,
                     style: TST.mediumTextBold.copyWith(color: CST.white),
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    '여기를 눌러 대진표를 공유해보세요!',
+                    AppStrings.shareBracketInfo,
                     style: TST.smallTextRegular.copyWith(color: CST.white),
                   ),
                 ],
@@ -246,7 +246,7 @@ class _MatchScreenState extends State<MatchScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        "입력한 점수는 '경기 종료' 버튼을 눌러야 저장됩니다. 대진표를 수정하면 기존 점수가 초기화됩니다.",
+                        AppStrings.matchScoreInputInfo,
                         style: TST.smallTextRegular.copyWith(color: CST.primary100),
                       ),
                     ),

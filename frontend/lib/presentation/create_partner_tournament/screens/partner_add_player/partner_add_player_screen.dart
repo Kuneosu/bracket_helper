@@ -408,7 +408,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
 
     // 경고 메시지 결정
     final String warningMessage =
-        !isValidPlayerCount ? playerCountWarning : "최소 한 쌍 이상의 파트너를 지정해주세요.";
+        !isValidPlayerCount ? playerCountWarning : AppStrings.partnerRequired;
 
     return Column(
       children: [
@@ -437,7 +437,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
                   children: [
                     Icon(Icons.link, size: 16),
                     SizedBox(width: 6),
-                    Text("파트너 쌍"),
+                    Text(AppStrings.partnerPairs),
                   ],
                 ),
               ),
@@ -500,7 +500,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
                 SnackBar(
                   content: Text(
                     playerCount < 8
-                        ? "최소 8명의 선수가 필요합니다."
+                        ? AppStrings.partnerMinPlayersRequired
                         : AppStrings.partnerMaxPlayersAllowed,
                   ),
                   backgroundColor: Colors.red,
@@ -515,7 +515,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
               // 파트너 쌍이 없을 때 스낵바로 안내
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text("최소 한 쌍 이상의 파트너를 지정해주세요."),
+                  content: Text(AppStrings.partnerRequired),
                   backgroundColor: Colors.red,
                   duration: const Duration(seconds: 2),
                 ),
@@ -543,8 +543,8 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
 
               if (_fixedPairs.length > maxPairs) {
                 _showErrorDialog(
-                  '파트너 쌍 과다',
-                  '홀수 인원(${widget.players.length}명)에 고정 파트너 쌍이 너무 많습니다.\n\n${widget.players.length}명일 경우 최대 $maxPairs쌍까지만 고정 파트너를 지정할 수 있습니다.\n\n파트너 쌍 수를 줄이거나 선수를 한 명 더 추가하세요.',
+                  AppStrings.partnerPairOverLimit,
+                  AppStrings.partnerPairOverLimitMessage(widget.players.length, maxPairs),
                 );
                 return;
               }
@@ -604,8 +604,8 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
                 // 에러 다이얼로그 표시
                 if (context.mounted) {
                   _showErrorDialog(
-                    '대진표 생성 실패',
-                    '지정된 파트너 쌍으로는 조건을 만족하는 대진표를 생성할 수 없습니다.\n\n다음 방법을 시도해보세요:\n- 파트너 쌍 수를 줄이기\n- 참가 인원 늘리기\n- 파트너 쌍을 다르게 지정하기',
+                    AppStrings.matchGenerationFailed,
+                    AppStrings.matchGenerationFailedMessage,
                   );
                 }
               }
@@ -664,7 +664,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
               Icon(Icons.people, size: 16, color: CST.primary100),
               SizedBox(width: 8),
               Text(
-                '${AppStrings.currentPlayerList} (${widget.players.length}명)',
+                '${AppStrings.currentPlayerList} (${widget.players.length})',
                 style: TST.mediumTextBold.copyWith(color: CST.primary100),
               ),
             ],
@@ -700,8 +700,8 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
                   widget.players.isEmpty
                       ? EmptyPlayerListWidget(
                         icon: Icons.link_off,
-                        message: '파트너 쌍을 설정할 선수가 없습니다.',
-                        subText: '선수 목록 탭 또는 저장된 선수 탭에서\n먼저 선수를 추가해주세요.',
+                        message: AppStrings.partnerPairNoPlayer,
+                        subText: AppStrings.partnerPairNoPlayerSubText,
                       )
                       : Column(
                         children: [
@@ -739,7 +739,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
               Icon(Icons.sports_tennis, size: 64, color: CST.primary40),
               SizedBox(height: 16),
               Text(
-                '단식 토너먼트에서는\n파트너 설정이 필요하지 않습니다.',
+                AppStrings.singleTournamentNoPartner,
                 textAlign: TextAlign.center,
                 style: TST.mediumTextBold.copyWith(color: CST.primary100),
               ),
@@ -857,7 +857,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
                   // 중복 이름 발견 시 스낵바 표시
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('\'$name\'은(는) 이미 존재하는 이름입니다.'),
+                      content: Text(AppStrings.duplicatePlayerName),
                       backgroundColor: CST.error,
                       duration: const Duration(seconds: 2),
                     ),
@@ -980,7 +980,7 @@ class _PartnerAddPlayerScreenState extends State<PartnerAddPlayerScreen>
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: Text('확인', style: TST.normalTextBold),
+                    child: Text(AppStrings.confirm, style: TST.normalTextBold),
                   ),
                 ),
                 SizedBox(height: 24),

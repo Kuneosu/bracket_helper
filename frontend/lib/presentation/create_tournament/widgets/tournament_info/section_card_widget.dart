@@ -24,7 +24,7 @@ class SectionCardWidget extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TST.largeTextBold.copyWith(color: CST.primary100),
+              style: TST.largeTextBold.copyWith(color: CST.primary100).copyWith(fontSize: 18),
             ),
             SizedBox(height: 12),
             content,

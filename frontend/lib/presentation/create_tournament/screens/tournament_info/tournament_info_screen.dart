@@ -114,15 +114,17 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(
                             AppStrings.tournamentInfoInput,
                             style: TST.headerTextBold.copyWith(
                               color: CST.primary100,
+                              fontSize: 22,
                             ),
                           ),
-                          const Spacer(),
                           IconButton(
                             icon: const Icon(
                               Icons.refresh,
@@ -301,7 +303,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                             widget.tournament.isDoubles
                                 ? [
                                   BoxShadow(
-                                    color: CST.primary100.withOpacity(0.3),
+                                    color: CST.primary100.withValues(alpha: 0.3),
                                     blurRadius: 4,
                                     offset: const Offset(0, 2),
                                   ),
@@ -327,7 +329,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                                   widget.tournament.isDoubles
                                       ? CST.white
                                       : CST.gray1,
-                            ),
+                            ).copyWith(fontSize: 14),
                           ),
                         ],
                       ),
@@ -357,7 +359,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                             !widget.tournament.isDoubles
                                 ? [
                                   BoxShadow(
-                                    color: CST.primary100.withOpacity(0.3),
+                                    color: CST.primary100.withValues(alpha: 0.3),
                                     blurRadius: 4,
                                     offset: const Offset(0, 2),
                                   ),
@@ -383,7 +385,7 @@ class _TournamentInfoScreenState extends State<TournamentInfoScreen>
                                   !widget.tournament.isDoubles
                                       ? CST.white
                                       : CST.gray1,
-                            ),
+                            ).copyWith(fontSize: 14),
                           ),
                         ],
                       ),

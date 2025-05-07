@@ -23,7 +23,7 @@ dependencies:
   sqlite3: ^2.7.5
   mockito: ^5.4.5
   flutter_native_splash: ^2.4.6
-  intl: ^0.20.2
+  intl: ^0.19.0
   flutter_staggered_animations: ^1.1.1
   collection: ^1.19.1
   share_plus: ^11.0.0

@@ -152,7 +152,7 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
         _state = _state.copyWith(
           tournament: _state.tournament.copyWith(
             title:
-                '${DateFormatter.formatToYYYYMMDD(_state.tournament.date)} 대회',
+                DateFormatter.formatToYYYYMMDD(_state.tournament.date),
           ),
         );
         _notifyChanges();
@@ -423,7 +423,7 @@ class CreatePartnerTournamentViewModel with ChangeNotifier {
       // 타이틀이 비어있는 경우 자동으로 날짜를 사용하여 설정
       String title = _state.tournament.title;
       if (title.isEmpty) {
-        title = '${DateFormatter.formatToYYYYMMDD(_state.tournament.date)} 대회';
+        title = DateFormatter.formatToYYYYMMDD(_state.tournament.date);
         _state = _state.copyWith(
           tournament: _state.tournament.copyWith(title: title),
         );

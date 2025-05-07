@@ -8,6 +8,7 @@ import 'package:bracket_helper/presentation/create_tournament/create_tournament_
 import 'package:bracket_helper/presentation/create_tournament/widgets/index.dart';
 import 'package:bracket_helper/ui/color_st.dart';
 import 'package:bracket_helper/ui/text_st.dart';
+import 'package:bracket_helper/core/services/language_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -125,7 +126,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                 debugPrint('매치 저장 중 오류 발생: $e');
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('매치 저장 중 오류가 발생했습니다.')),
+                    SnackBar(content: Text(AppStrings.matchSaveError)),
                   );
 
                   setState(() {
@@ -136,9 +137,10 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
             },
             nextText:
                 widget.isEditMode
-                    ? (_isSaving ? '저장 중...' : '저장 후 돌아가기')
-                    : (_isSaving ? '저장 중...' : '저장 후 완료'),
+                    ? (_isSaving ? AppStrings.isSaving : AppStrings.saveAndReturn)
+                    : (_isSaving ? AppStrings.isSaving : AppStrings.saveAndComplete),
             isNextDisabled: _isSaving,
+            textScaleFactor: LanguageManager.isKorean() ? 1.0 : 0.85,
           ),
         ],
       ),
@@ -275,10 +277,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   Icon(Icons.people_outline, color: CST.primary100, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    AppStrings.participantsCount.replaceAll(
-                      '%d',
-                      playerCount.toString(),
-                    ),
+                    AppStrings.participantsCount(playerCount),
                     style: TST.normalTextRegular.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -295,10 +294,7 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    AppStrings.matchesCount.replaceAll(
-                      '%d',
-                      matchCount.toString(),
-                    ),
+                    AppStrings.matchesCount(matchCount),
                     style: TST.normalTextRegular.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -338,7 +334,10 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                   const SizedBox(width: 4),
                   Text(
                     AppStrings.courtCount,
-                    style: TST.smallTextBold.copyWith(color: CST.primary100),
+                    style: TST.smallTextBold.copyWith(
+                      color: CST.primary100,
+                      fontSize: LanguageManager.isKorean() ? null : 11,
+                    ),
                   ),
                 ],
               ),
@@ -392,8 +391,8 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
               },
               borderRadius: BorderRadius.circular(6),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
+                padding: EdgeInsets.symmetric(
+                  horizontal: LanguageManager.isKorean() ? 12 : 8,
                   vertical: 8,
                 ),
                 child: Column(
@@ -406,7 +405,10 @@ class _EditMatchScreenState extends State<EditMatchScreen> {
                     const SizedBox(height: 2),
                     Text(
                       AppStrings.reGenerate,
-                      style: TST.smallTextBold.copyWith(color: CST.primary100),
+                      style: TST.smallTextBold.copyWith(
+                        color: CST.primary100,
+                        fontSize: LanguageManager.isKorean() ? null : 11,
+                      ),
                     ),
                   ],
                 ),
